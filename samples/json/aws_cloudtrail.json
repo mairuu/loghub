@@ -1,0 +1,9 @@
+{
+  "tenant": "demoB",
+  "source": "aws",
+  "cloud": {"service": "iam", "account_id": "123456789012", "region": "ap-southeast-1"},
+  "event_type": "CreateUser",
+  "user": "admin",
+  "@timestamp": "2025-08-20T09:10:00Z",
+  "raw": {"eventName": "CreateUser", "requestParameters": {"userName": "temp-user"}}
+}

@@ -1,0 +1,10 @@
+{
+  "tenant": "demoB",
+  "source": "m365",
+  "event_type": "UserLoggedIn",
+  "user": "bob@demo.local",
+  "ip": "198.51.100.23",
+  "status": "Success",
+  "workload": "Exchange",
+  "@timestamp": "2025-08-20T10:05:00Z"
+}

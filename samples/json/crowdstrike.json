@@ -1,0 +1,11 @@
+{
+  "tenant": "demoA",
+  "source": "crowdstrike",
+  "event_type": "malware_detected",
+  "host": "WIN10-01",
+  "process": "powershell.exe",
+  "severity": 8,
+  "sha256": "abc...",
+  "action": "quarantine",
+  "@timestamp": "2025-08-20T08:00:00Z"
+}

@@ -1,0 +1,11 @@
+{
+  "tenant": "demoA",
+  "source": "ad",
+  "event_id": 4625,
+  "event_type": "LogonFailed",
+  "user": "demo\\eve",
+  "host": "DC01",
+  "ip": "203.0.113.77",
+  "logon_type": 3,
+  "@timestamp": "2025-08-20T11:11:11Z"
+}
