@@ -58,6 +58,19 @@ type Defaults struct {
 	Source string
 }
 
+// Validate refuses defaults no record could be stored with, so a caller can
+// report them once rather than reject every record that falls back on them.
+// The error is errors.Malformed with code invalid_parameter.
+func (d Defaults) Validate() error {
+	if d.Tenant != "" && !tenantPattern.MatchString(d.Tenant) {
+		return errors.Malformed("invalid_parameter", "tenant must be 1 to 64 letters, digits, '-' or '_'")
+	}
+	if d.Source != "" && !gen.Source(strings.ToLower(d.Source)).Valid() {
+		return errors.Malformed("invalid_parameter", fmt.Sprintf("source %q is not a known source category", clip(d.Source)))
+	}
+	return nil
+}
+
 type Normalizer struct {
 	// Retention is how old an event may be before its time is replaced with
 	// the receipt time. Zero means DefaultRetention.

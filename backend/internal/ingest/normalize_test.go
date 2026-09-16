@@ -420,6 +420,34 @@ func TestNormalizeDefaults(t *testing.T) {
 	}
 }
 
+func TestDefaultsValidate(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		defaults Defaults
+		want     string
+	}{
+		{"none", Defaults{}, ""},
+		{"both", Defaults{"demoA", "aws"}, ""},
+		{"source in capitals", Defaults{Source: "AWS"}, ""},
+		{"tenant with a space", Defaults{Tenant: "a b"}, "tenant must be 1 to 64 letters, digits, '-' or '_'"},
+		{"tenant too long", Defaults{Tenant: strings.Repeat("a", 65)}, "tenant must be 1 to 64 letters, digits, '-' or '_'"},
+		{"unknown source", Defaults{Source: "syslog"}, `source "syslog" is not a known source category`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.defaults.Validate()
+			if tc.want == "" {
+				if err != nil {
+					t.Errorf("refused: %v", err)
+				}
+				return
+			}
+			if errors.CodeOf(err) != "invalid_parameter" || errors.MessageOf(err) != tc.want {
+				t.Errorf("err = %v, want invalid_parameter: %s", err, tc.want)
+			}
+		})
+	}
+}
+
 func TestAuthClassification(t *testing.T) {
 	for _, tc := range []struct {
 		name, record, action, tag string

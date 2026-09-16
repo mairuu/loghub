@@ -76,6 +76,11 @@ paths:
         event is committed before this call returns, so it is searchable
         immediately.
 
+        A body that is not a JSON object is answered with 400 `invalid_json`.
+        An event that is JSON but cannot be stored is answered with 200, and
+        `errors[0]` says why, as it would for a line of a batch. The body may
+        be at most 1 MiB.
+
         Caddy exposes this as `POST /ingest` at the edge, which is the form
         the sample senders use.
       tags: [Ingest]
@@ -183,6 +188,9 @@ paths:
         buffer, so rejecting a whole batch for one poison line would retry it
         forever and stall the buffer behind it. A non-2xx status here means the
         request was unusable as a whole, not that some records were bad.
+
+        Blank lines are skipped and are not records. A line may be at most
+        1 MiB, and the body at most 32 MiB.
       tags: [Ingest]
       requestBody:
         required: true
@@ -813,7 +821,9 @@ components:
         index:
           type: integer
           format: int32
-          description: Zero-based position in the request. Always 0 for a single event.
+          description: |
+            Zero-based position in the request: the line number in an NDJSON
+            body, counting blank lines. Always 0 for a single event.
         code:
           type: string
           example: unknown_source
@@ -825,6 +835,7 @@ components:
               one that is not a valid tenant ID, or one that does not exist.
             - `missing_source`, `unknown_source`: no source on a record that
               is not a syslog line, or one outside the known categories.
+            - `record_too_large`: the line is longer than 1 MiB.
             - `unstorable_event`: the database refused one of the record's
               values. The normalizer is meant to prevent this, so it points
               to a loghub bug worth reporting.

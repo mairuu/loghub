@@ -1,0 +1,239 @@
+package api
+
+import (
+	"bufio"
+	"bytes"
+	"cmp"
+	"fmt"
+	"io"
+	"mime"
+	"net/http"
+	"slices"
+	"strings"
+
+	"github.com/mairuu/loghub/backend/internal/api/gen"
+	"github.com/mairuu/loghub/backend/internal/ingest"
+	"github.com/mairuu/loghub/backend/internal/platform/errors"
+	"github.com/mairuu/loghub/backend/internal/store"
+)
+
+const (
+	// maxRecordBytes bounds one event: a whole single-event body, or one
+	// NDJSON line.
+	maxRecordBytes = 1 << 20
+	// maxNDJSONBytes bounds a batch or file body. Every event in it is held
+	// in memory until the insert, so this is also the memory one request
+	// may pin.
+	maxNDJSONBytes = 32 << 20
+	// maxReported caps errors[] in a response; `rejected` still counts all.
+	maxReported = 100
+)
+
+func (s *Server) IngestEvent(w http.ResponseWriter, r *http.Request) {
+	if err := requireMediaType(r, "application/json"); err != nil {
+		s.failWith(w, r, http.StatusUnsupportedMediaType, err)
+		return
+	}
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxRecordBytes))
+	if err != nil {
+		s.failRead(w, r, err, maxRecordBytes)
+		return
+	}
+
+	var b batch
+	ev, err := s.normalizer.Normalize(body, ingest.Defaults{})
+	switch {
+	case errors.KindOf(err) == errors.KindMalformed:
+		// Not an event at all, so it is the request that failed rather than
+		// a record in it.
+		s.fail(w, r, errors.Malformed("invalid_json", "request body is not a JSON object").Wrapping(err))
+		return
+	case err != nil:
+		b.reject(0, err)
+	default:
+		b.add(0, ev)
+	}
+	s.store(w, r, &b)
+}
+
+func (s *Server) IngestBatch(w http.ResponseWriter, r *http.Request) {
+	s.ingestNDJSON(w, r, ingest.Defaults{})
+}
+
+func (s *Server) IngestFile(w http.ResponseWriter, r *http.Request, p gen.IngestFileParams) {
+	d := ingest.Defaults{
+		Tenant: strings.TrimSpace(deref(p.Tenant)),
+		Source: strings.TrimSpace(string(deref(p.Source))),
+	}
+	if err := d.Validate(); err != nil {
+		s.fail(w, r, err)
+		return
+	}
+	s.ingestNDJSON(w, r, d)
+}
+
+func (s *Server) ingestNDJSON(w http.ResponseWriter, r *http.Request, d ingest.Defaults) {
+	if err := requireMediaType(r, "application/x-ndjson"); err != nil {
+		s.failWith(w, r, http.StatusUnsupportedMediaType, err)
+		return
+	}
+
+	var b batch
+	err := eachRecord(http.MaxBytesReader(w, r.Body, maxNDJSONBytes), func(index int, record []byte) {
+		if record == nil {
+			b.reject(index, errors.Invalid("record_too_large", fmt.Sprintf("record exceeds %s", mebibytes(maxRecordBytes))))
+			return
+		}
+		ev, err := s.normalizer.Normalize(record, d)
+		if err != nil {
+			b.reject(index, err)
+			return
+		}
+		b.add(index, ev)
+	})
+	if err != nil {
+		s.failRead(w, r, err, maxNDJSONBytes)
+		return
+	}
+	s.store(w, r, &b)
+}
+
+// store inserts the batch's events and answers with what happened to every
+// record. Nothing is stored if the insert fails.
+func (s *Server) store(w http.ResponseWriter, r *http.Request, b *batch) {
+	if len(b.events) > 0 {
+		refused, err := s.events.Insert(r.Context(), b.events)
+		if err != nil {
+			s.fail(w, r, err)
+			return
+		}
+		b.merge(refused)
+	}
+	s.respond(w, r, http.StatusOK, b.result())
+}
+
+// batch collects the outcome of each record in a request.
+type batch struct {
+	events []store.NewEventParams
+	// lines holds each event's index in the request.
+	lines []int
+	// rejected counts every rejected record, and refused the events among
+	// them that the insert turned away.
+	rejected, refused int
+	// reported is the first maxReported rejections, in request order.
+	reported []gen.IngestRejection
+}
+
+func (b *batch) add(index int, ev store.NewEventParams) {
+	b.events = append(b.events, ev)
+	b.lines = append(b.lines, index)
+}
+
+func (b *batch) reject(index int, err error) {
+	b.rejected++
+	if len(b.reported) < maxReported {
+		b.reported = append(b.reported, rejection(index, err))
+	}
+}
+
+// merge adds the insert's rejections, keeping the report in request order.
+// Both lists are already ordered, so the first maxReported of each are
+// enough to find the first maxReported of both.
+func (b *batch) merge(refused []error) {
+	var late []gen.IngestRejection
+	for i, err := range refused {
+		if err == nil {
+			continue
+		}
+		b.rejected++
+		b.refused++
+		if len(late) < maxReported {
+			late = append(late, rejection(b.lines[i], err))
+		}
+	}
+	if len(late) == 0 {
+		return
+	}
+	b.reported = append(b.reported, late...)
+	slices.SortFunc(b.reported, func(x, y gen.IngestRejection) int { return cmp.Compare(x.Index, y.Index) })
+	b.reported = b.reported[:min(len(b.reported), maxReported)]
+}
+
+func (b *batch) result() gen.IngestResult {
+	out := gen.IngestResult{
+		Accepted: int32(len(b.events) - b.refused),
+		Rejected: int32(b.rejected),
+	}
+	if len(b.reported) > 0 {
+		out.Errors = &b.reported
+	}
+	return out
+}
+
+func rejection(index int, err error) gen.IngestRejection {
+	return gen.IngestRejection{
+		Index:   int32(index),
+		Code:    errors.CodeOf(err),
+		Message: errors.MessageOf(err),
+	}
+}
+
+// eachRecord calls fn with every non-blank line of body, trimmed, and its
+// zero-based line number. A line longer than maxRecordBytes, not counting its
+// line ending, is passed as nil. The record is only valid until fn returns.
+func eachRecord(body io.Reader, fn func(index int, record []byte)) error {
+	// Room for the longest line and a CRLF, so a line that fits is always
+	// read whole.
+	br := bufio.NewReaderSize(body, maxRecordBytes+2)
+	for index := 0; ; index++ {
+		line, err := br.ReadSlice('\n')
+		tooLong := false
+		for errors.Is(err, bufio.ErrBufferFull) {
+			tooLong = true
+			_, err = br.ReadSlice('\n')
+		}
+		if err != nil && !errors.Is(err, io.EOF) {
+			return err
+		}
+
+		line = bytes.TrimSuffix(bytes.TrimSuffix(line, []byte("\n")), []byte("\r"))
+		switch record := bytes.TrimSpace(line); {
+		case tooLong || len(line) > maxRecordBytes:
+			fn(index, nil)
+		case len(record) > 0:
+			fn(index, record)
+		}
+		if err != nil {
+			return nil
+		}
+	}
+}
+
+func requireMediaType(r *http.Request, want string) error {
+	got, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if err != nil || got != want {
+		return errors.Malformed("unsupported_media_type", "expected "+want)
+	}
+	return nil
+}
+
+// failRead answers a request whose body could not be read.
+func (s *Server) failRead(w http.ResponseWriter, r *http.Request, err error, limit int64) {
+	var tooLarge *http.MaxBytesError
+	if errors.As(err, &tooLarge) {
+		s.failWith(w, r, http.StatusRequestEntityTooLarge,
+			errors.Malformed("body_too_large", "request body exceeds "+mebibytes(limit)))
+		return
+	}
+	s.fail(w, r, errors.Malformed("unreadable_body", "cannot read the request body").Wrapping(err))
+}
+
+func mebibytes(n int64) string { return fmt.Sprintf("%d MiB", n>>20) }
+
+func deref[T any](p *T) T {
+	var zero T
+	if p == nil {
+		return zero
+	}
+	return *p
+}

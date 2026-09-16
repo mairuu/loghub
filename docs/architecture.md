@@ -53,6 +53,8 @@ flowchart LR
 
 Every path hands the normalizer one JSON object per event. Vector wraps a syslog line as `{"tenant": "...", "message": "<line>"}` and adds its receipt metadata. The HTTP paths pass the sender's JSON through unchanged. A batch always answers 200 with accepted and rejected counts, so one bad line never makes Vector retry the whole batch.
 
+The handlers are in `backend/internal/api`. A record may be at most 1 MiB, and an NDJSON body at most 32 MiB. The body is read one line at a time, but every normalized event is held until the single insert at the end, so the body limit also bounds what one request holds in memory.
+
 ### Normalization
 
 A record is rejected only when it can't be stored: it isn't a JSON object, or its tenant or source is missing or unknown. A field whose value can't be normalized is left empty, and the event is tagged `invalid:<field>`. The same happens to text longer than 2048 bytes, which Postgres can't index. The original is always kept in `raw`. NUL characters and invalid UTF-8, which Postgres can't store at all, are replaced with U+FFFD everywhere, `raw` included.
