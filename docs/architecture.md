@@ -55,7 +55,7 @@ Every path hands the normalizer one JSON object per event. Vector wraps a syslog
 
 ### Normalization
 
-A record is rejected only when it can't be stored: it isn't a JSON object, or its tenant or source is missing or unknown. A field whose value can't be normalized is left empty, and the event is tagged `invalid:<field>`. The original is always kept in `raw`.
+A record is rejected only when it can't be stored: it isn't a JSON object, or its tenant or source is missing or unknown. A field whose value can't be normalized is left empty, and the event is tagged `invalid:<field>`. The same happens to text longer than 2048 bytes, which Postgres can't index. The original is always kept in `raw`. NUL characters and invalid UTF-8, which Postgres can't store at all, are replaced with U+FFFD everywhere, `raw` included.
 
 **Syslog lines** are records with a `message` whose source is absent, `firewall` or `network`.
 - The header may be RFC 5424, which `logger` sends by default, or RFC 3164. It gives host, process and severity; syslog's 0–7 scale is mapped onto 0–10. Only an RFC 5424 timestamp is used, because RFC 3164 has no year or zone.
@@ -84,3 +84,13 @@ A record is rejected only when it can't be stored: it isn't a JSON object, or it
 **Time** is taken from `@timestamp`, then the RFC 5424 header, then the receipt time. A time older than the retention window, or more than an hour ahead, is replaced with the receipt time and tagged `rebased:timestamp`. Without this, sample data from 2025 would be purged on arrival and never appear in a search.
 
 The rules live in `backend/internal/ingest`, and every file in `samples/` is one of its test cases.
+
+### Storage
+
+All events from one request are stored in one transaction. If the database fails, nothing is stored, the request answers 5xx, and Vector retries it.
+- An event whose tenant doesn't exist is rejected with `unknown_tenant`.
+- Events are inserted one tenant at a time, with that tenant set as the transaction's row-level security context ([ADR 0003](adr/0003-tenant-isolation-rls.md)). A row for any other tenant would fail the policy check.
+- Inserts go to Postgres in batches of 1000, one round trip each. `COPY` would be faster, but Postgres doesn't allow it on a table with row-level security.
+- If Postgres refuses a value anyway, the batch is rolled back to a savepoint and retried one event at a time. Only the refused event is rejected, with `unstorable_event`; failing the whole batch would make Vector retry it forever. The normalizer is meant to make this impossible, so the tests store every sample and a set of hostile records and expect no rejections.
+
+The code is `EventRepo` in `backend/internal/store`. `make test-db` runs its tests against the dev Postgres, as the `loghub_app` role, so they exercise the real policies.

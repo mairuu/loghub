@@ -12,19 +12,20 @@ import (
 
 // Store owns the database handles that repositories read and write through.
 type Store struct {
-	pool *pgxpool.Pool
-	q    *gen.Queries
+	db pg.Beginner
+	q  *gen.Queries
 }
 
 func New(pool *pgxpool.Pool) *Store {
-	return &Store{pool: pool, q: gen.New(pool)}
+	return &Store{db: pool, q: gen.New(pool)}
 }
 
 // InTx runs fn against a Store whose queries all go through one transaction.
 // Repositories must be built from the Store passed to fn; ones built from the
-// outer Store still go straight to the pool.
+// outer Store still go through the outer handle. Called on a Store that is
+// already in a transaction, InTx runs fn in a savepoint instead.
 func (s *Store) InTx(ctx context.Context, fn func(*Store) error) error {
-	return pg.InTx(ctx, s.pool, func(tx pgx.Tx) error {
-		return fn(&Store{pool: s.pool, q: s.q.WithTx(tx)})
+	return pg.InTx(ctx, s.db, func(tx pgx.Tx) error {
+		return fn(&Store{db: tx, q: s.q.WithTx(tx)})
 	})
 }

@@ -4,9 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"io/fs"
+	"net"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
@@ -64,12 +67,19 @@ func Check(ctx context.Context, pool *pgxpool.Pool) error {
 	return nil
 }
 
+// Beginner is a pool, a connection or an open transaction. Begin on a
+// transaction starts a savepoint.
+type Beginner interface {
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
+
 // InTx runs fn inside a transaction, committing on success and rolling back on
-// error or panic.
-func InTx(ctx context.Context, pool *pgxpool.Pool, fn func(pgx.Tx) error) (err error) {
-	tx, err := pool.Begin(ctx)
+// error or panic. Given an open transaction, it runs fn in a savepoint, so a
+// failure rolls back only fn's work.
+func InTx(ctx context.Context, db Beginner, fn func(pgx.Tx) error) (err error) {
+	tx, err := db.Begin(ctx)
 	if err != nil {
-		return errors.Internal("cannot begin transaction").Wrapping(err)
+		return Wrap(err, "cannot begin transaction")
 	}
 	defer func() {
 		if p := recover(); p != nil {
@@ -85,9 +95,39 @@ func InTx(ctx context.Context, pool *pgxpool.Pool, fn func(pgx.Tx) error) (err e
 		return err
 	}
 	if err = tx.Commit(ctx); err != nil {
-		return errors.Internal("cannot commit transaction").Wrapping(err)
+		return Wrap(err, "cannot commit transaction")
 	}
 	return nil
+}
+
+// Wrap classifies a database failure.
+func Wrap(err error, message string) *errors.Error {
+	if unreachable(err) {
+		return errors.Unavailable("database_unavailable", "cannot reach the database").
+			With("during", message).Wrapping(err)
+	}
+	return errors.Internal(message).Wrapping(err)
+}
+
+func unreachable(err error) bool {
+	var connectErr *pgconn.ConnectError
+	var netErr net.Error
+	if errors.As(err, &connectErr) || errors.As(err, &netErr) || pgconn.Timeout(err) {
+		return true
+	}
+	var pgErr *pgconn.PgError
+	if !errors.As(err, &pgErr) {
+		return false
+	}
+	switch {
+	case strings.HasPrefix(pgErr.Code, "08"): // connection exception
+		return true
+	case strings.HasPrefix(pgErr.Code, "53"): // insufficient resources: disk full, too many connections
+		return true
+	case strings.HasPrefix(pgErr.Code, "57P"): // server shutting down or starting up
+		return true
+	}
+	return false
 }
 
 // EnsureLoginRole creates role with LOGIN and the given password, or brings an

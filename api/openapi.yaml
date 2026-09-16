@@ -651,9 +651,12 @@ components:
         nested `cloud` object is flattened.
 
         A record is rejected only when it cannot be stored: it is not a JSON
-        object, or its tenant or source is missing or not recognised. A hint
-        whose value cannot be normalized, such as `"severity": "high"`, is left
-        empty instead, and the event is tagged `invalid:<field>`.
+        object, its tenant is missing or does not exist, or its source is
+        missing or not recognised. A hint whose value cannot be normalized,
+        such as `"severity": "high"` or text longer than 2048 bytes, is left
+        empty instead, and the event is tagged `invalid:<field>`. NUL
+        characters and invalid UTF-8, which the database cannot hold, are
+        replaced with U+FFFD wherever they appear.
 
         `tenant` is required for now because there is no authenticated identity
         to derive it from. Once ingest keys carry a tenant, the key wins and
@@ -802,6 +805,17 @@ components:
         code:
           type: string
           example: unknown_source
+          description: |
+            Why the record was not stored:
+
+            - `invalid_json`: the line is not a JSON object.
+            - `missing_tenant`, `invalid_tenant`, `unknown_tenant`: no tenant,
+              one that is not a valid tenant ID, or one that does not exist.
+            - `missing_source`, `unknown_source`: no source on a record that
+              is not a syslog line, or one outside the known categories.
+            - `unstorable_event`: the database refused one of the record's
+              values. The normalizer is meant to prevent this, so it points
+              to a loghub bug worth reporting.
         message:
           type: string
 

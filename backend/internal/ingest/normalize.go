@@ -40,6 +40,11 @@ const (
 	TagRebasedTime = "rebased:timestamp"
 )
 
+// maxText is the longest text value a field or tag takes, in bytes. event_type
+// and user_name are btree-indexed and tags GIN-indexed, and Postgres cannot
+// index an entry over about 2.7 kB.
+const maxText = 2048
+
 // Same rule as the CHECK on tenants.id.
 var tenantPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
 
@@ -116,6 +121,7 @@ func (n Normalizer) Normalize(record []byte, d Defaults) (store.NewEventParams, 
 	b.enrich()
 	normalizeAction(b.ev.Action)
 	b.ev.Tags = b.assembleTags()
+	b.ev.Raw = storableJSON(b.ev.Raw)
 	return b.ev, nil
 }
 
@@ -223,9 +229,7 @@ func (b *builder) fromJSON(record []byte) {
 				if !ok || string(raw) == "null" {
 					continue
 				}
-				if v, ok := scalar(raw); ok {
-					setText(dst, v)
-				} else {
+				if v, ok := scalar(raw); !ok || !setText(dst, v) {
 					b.invalid("cloud." + key)
 				}
 			}
@@ -372,16 +376,77 @@ func (b *builder) timestamp(now time.Time, retention time.Duration, header *time
 }
 
 func (b *builder) assembleTags() []string {
+	for _, t := range b.senderTags {
+		if len(cleanText(t)) > maxText {
+			b.invalid("_tags")
+			break
+		}
+	}
+
 	tags := make([]string, 0, len(b.senderTags)+len(b.derived))
 	seen := make(map[string]bool, cap(tags))
 	for _, t := range slices.Concat(b.senderTags, b.derived) {
-		if t = strings.TrimSpace(t); t != "" && !seen[t] {
+		if t = cleanText(t); t != "" && len(t) <= maxText && !seen[t] {
 			seen[t] = true
 			tags = append(tags, t)
 		}
 	}
 	return tags
 }
+
+// storableJSON returns raw in a form Postgres accepts as jsonb, which refuses
+// invalid UTF-8, unpaired surrogates and the escaped NUL, \u0000. Decoding
+// replaces the first two with U+FFFD, as it already does for every string the
+// normalizer reads, and cleanNUL does the same for NUL. Anything else is
+// returned as it is.
+func storableJSON(raw []byte) []byte {
+	if utf8.Valid(raw) && !riskyEscape.Match(raw) {
+		return raw
+	}
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.UseNumber()
+	var v any
+	if err := dec.Decode(&v); err != nil {
+		return raw
+	}
+	var out bytes.Buffer
+	enc := json.NewEncoder(&out)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(cleanJSON(v)); err != nil {
+		return raw
+	}
+	return bytes.TrimSuffix(out.Bytes(), []byte("\n"))
+}
+
+// riskyEscape also matches an escaped backslash followed by u0000, and valid
+// surrogate pairs. Re-encoding those is harmless.
+var riskyEscape = regexp.MustCompile(`(?i)\\u(0000|d[89a-f])`)
+
+func cleanJSON(v any) any {
+	switch v := v.(type) {
+	case string:
+		return cleanNUL(v)
+	case []any:
+		for i := range v {
+			v[i] = cleanJSON(v[i])
+		}
+	case map[string]any:
+		out := make(map[string]any, len(v))
+		for k, e := range v {
+			out[cleanNUL(k)] = cleanJSON(e)
+		}
+		return out
+	}
+	return v
+}
+
+// cleanText is the form every text value is stored in: trimmed, valid UTF-8,
+// and free of NUL, which Postgres text cannot hold.
+func cleanText(v string) string {
+	return cleanNUL(strings.ToValidUTF8(strings.TrimSpace(v), string(utf8.RuneError)))
+}
+
+func cleanNUL(v string) string { return strings.ReplaceAll(v, "\x00", string(utf8.RuneError)) }
 
 // setters store a textual value under a schema field name. Each reports
 // false when the value cannot be coerced, and leaves a field that is already
@@ -430,9 +495,13 @@ func scalar(raw json.RawMessage) (string, bool) {
 // An empty value counts as absent, so it is never an error.
 
 func setText(dst **string, v string) bool {
-	if v = strings.TrimSpace(v); *dst == nil && v != "" {
-		*dst = &v
+	if v = cleanText(v); *dst != nil || v == "" {
+		return true
 	}
+	if len(v) > maxText {
+		return false
+	}
+	*dst = &v
 	return true
 }
 

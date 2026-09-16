@@ -20,7 +20,7 @@ DEV_DATABASE_URL         = postgres://loghub_app:$(APP_DB_PASSWORD)@127.0.0.1:54
 DEV_MIGRATE_DATABASE_URL = postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 
 .PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api \
-        gen-sql check-sql gen-api check-api lint-api postman lint
+        test test-db gen-sql check-sql gen-api check-api lint-api postman lint
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -63,6 +63,15 @@ dev-deps: env ## Start only Postgres
 dev-api: ## Run the API on the host
 	cd backend && MIGRATE_DATABASE_URL='$(DEV_MIGRATE_DATABASE_URL)' go run ./cmd/loghub migrate
 	cd backend && DATABASE_URL='$(DEV_DATABASE_URL)' go run ./cmd/loghub serve
+
+test: ## Run the Go tests; database tests are skipped
+	cd backend && go test ./...
+
+# Each test package creates and drops its own scratch database, so the dev
+# data is untouched.
+test-db: dev-deps ## Run the Go tests, database tests included, against the dev Postgres
+	@echo "go test ./... with TEST_DATABASE_URL set to the dev Postgres"
+	@cd backend && TEST_DATABASE_URL='$(DEV_MIGRATE_DATABASE_URL)' go test ./...
 
 gen-sql: ## Regenerate the sqlc code in backend/internal/store/gen
 	docker run --rm -u "$$(id -u):$$(id -g)" -v "$(CURDIR)/backend:/src" -w /src $(SQLC_IMAGE) generate

@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
@@ -183,6 +184,12 @@ func TestNormalizeInvalidFieldsKept(t *testing.T) {
 			func(e store.NewEventParams) bool { return bytes.Contains(e.Raw, []byte(`"tenant"`)) }},
 		{"bad port in a syslog line", `{"message":"<134>Aug 20 12:44:56 fw01 action=deny spt=abc"}`, "invalid:spt",
 			func(e store.NewEventParams) bool { return e.SrcPort == nil && deref(e.Action) == "deny" }},
+		{"text too long to index", `{"user":"` + long + `","host":"h"}`, "invalid:user",
+			func(e store.NewEventParams) bool { return e.UserName == nil && deref(e.Host) == "h" }},
+		{"cloud field too long", `{"cloud":{"region":"` + long + `"}}`, "invalid:cloud.region",
+			func(e store.NewEventParams) bool { return e.CloudRegion == nil }},
+		{"tag too long", `{"_tags":["ok","` + long + `"]}`, "invalid:_tags",
+			func(e store.NewEventParams) bool { return slices.Equal(e.Tags, []string{"ok", "invalid:_tags"}) }},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := at(sampleNow).Normalize(testRecord(tc.record), Defaults{})
@@ -196,6 +203,94 @@ func TestNormalizeInvalidFieldsKept(t *testing.T) {
 				t.Errorf("unexpected event: %s", dump(got))
 			}
 		})
+	}
+}
+
+// long is one byte over what a text field takes.
+var long = strings.Repeat("x", maxText+1)
+
+// TestNormalizeStorable covers values Postgres refuses: NUL in text, and
+// invalid UTF-8, unpaired surrogates or an escaped NUL in jsonb.
+func TestNormalizeStorable(t *testing.T) {
+	const (
+		nul       = `\u0000`
+		surrogate = `\ud800`
+		badUTF8   = "\xff"
+		fffd      = "\uFFFD"
+	)
+	for _, tc := range []struct {
+		name, record string
+		ok           func(store.NewEventParams) bool
+	}{
+		{"escaped NUL in a field and in raw", `{"user":"bo` + nul + `b","x":{"k` + nul + `":["` + nul + `"]}}`,
+			func(e store.NewEventParams) bool { return deref(e.UserName) == "bo"+fffd+"b" }},
+		{"escaped NUL in a sender tag", `{"_tags":["a` + nul + `"]}`,
+			func(e store.NewEventParams) bool { return slices.Equal(e.Tags, []string{"a" + fffd}) }},
+		{"escaped NUL in the sender's raw", `{"raw":{"a":"` + nul + `"}}`,
+			func(e store.NewEventParams) bool { return string(e.Raw) == `{"a":"`+fffd+`"}` }},
+		{"unpaired surrogate", `{"user":"` + surrogate + `","note":"` + surrogate + `x"}`,
+			func(e store.NewEventParams) bool { return deref(e.UserName) == fffd }},
+		{"invalid UTF-8", `{"user":"a` + badUTF8 + `","note":"` + badUTF8 + `"}`,
+			func(e store.NewEventParams) bool { return deref(e.UserName) == "a"+fffd }},
+		{"escaped NUL in a syslog line", `{"message":"<13>Sep 16 16:48:31 tofu app: x` + nul + `y host=h` + nul + `"}`,
+			func(e store.NewEventParams) bool { return deref(e.Host) == "h"+fffd }},
+		{"surrogate pair is kept", `{"user":"\ud83d\ude00"}`,
+			func(e store.NewEventParams) bool { return deref(e.UserName) == "\U0001F600" }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := at(sampleNow).Normalize(testRecord(tc.record), Defaults{})
+			if err != nil {
+				t.Fatalf("rejected: %v", err)
+			}
+			assertStorable(t, got)
+			if !tc.ok(got) {
+				t.Errorf("unexpected event: %s", dump(got))
+			}
+		})
+	}
+
+	t.Run("escaped backslash before u0000 is left alone", func(t *testing.T) {
+		record := testRecord(`{"path":"C\\u0000"}`)
+		got, err := at(sampleNow).Normalize(record, Defaults{})
+		if err != nil {
+			t.Fatalf("rejected: %v", err)
+		}
+		var raw map[string]any
+		if err := json.Unmarshal(got.Raw, &raw); err != nil || raw["path"] != `C\u0000` {
+			t.Errorf("raw = %s", got.Raw)
+		}
+	})
+
+	t.Run("clean raw is stored byte for byte", func(t *testing.T) {
+		record := testRecord(`{"b": 1, "a": "x"}`)
+		got, err := at(sampleNow).Normalize(record, Defaults{})
+		if err != nil {
+			t.Fatalf("rejected: %v", err)
+		}
+		if !bytes.Equal(got.Raw, record) {
+			t.Errorf("raw = %s, want %s", got.Raw, record)
+		}
+	})
+}
+
+// assertStorable checks what Postgres would refuse: text that is not valid
+// UTF-8 or holds NUL, and raw with an escape jsonb rejects.
+func assertStorable(t *testing.T, e store.NewEventParams) {
+	t.Helper()
+	text := slices.Clone(e.Tags)
+	v := reflect.ValueOf(e)
+	for i := range v.NumField() {
+		if s, ok := v.Field(i).Interface().(*string); ok && s != nil {
+			text = append(text, *s)
+		}
+	}
+	for _, s := range text {
+		if !utf8.ValidString(s) || strings.ContainsRune(s, 0) {
+			t.Errorf("unstorable text %q", s)
+		}
+	}
+	if !utf8.Valid(e.Raw) || !json.Valid(e.Raw) || riskyEscape.Match(e.Raw) {
+		t.Errorf("unstorable raw %q", e.Raw)
 	}
 }
 
