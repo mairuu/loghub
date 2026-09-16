@@ -7,7 +7,7 @@
 The backend takes ingest traffic, serves the search, dashboard and alert APIs, run background jobs for retention and alert evaluation.
 
 ## Decision
-Write the backend in Go as one binary `loghub` with the subcommands `serve`, `migrate`, `seed`, `health`
+Write the backend in Go as one binary `loghub` with the subcommands `serve`, `migrate`, `seed`, `healthcheck`
 
 - HTTP routing use stdlib `net/http` and `http.ServeMux`
 - Postgres access uses pgx v5; logs use `log/slog` (JSON).
