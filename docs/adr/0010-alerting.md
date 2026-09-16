@@ -9,7 +9,7 @@ Requirement 3.6 needs at least one alert rule and one delivery channel, and the 
 The alternative to scheduled evaluation is evaluating each event as it is ingested. That keeps state per rule in memory, has to survive restarts, and would make ingest latency depend on how many rules exist. The events are already in a partitioned, indexed table, so the same question can be asked as a query.
 
 ## Decision
-- `alert_rules` holds rules as data: a tenant, an optional filter over the normalized fields (`source`, `event_type`, `action`, `severity`), a `group_by` column drawn from an allow-list, a threshold and a window in minutes. The worked example is one row, not code.
+- `alert_rules` holds rules as data: a tenant, an optional filter over the normalized fields (`source`, `event_type`, `action`, `severity`, `tags`), a `group_by` column drawn from an allow-list, a threshold and a window in minutes. The worked example is one row, not code: `tags` contains `auth_failure`, grouped by `src_ip`. The normalizer adds that tag to failed logins from every source, so the rule doesn't have to list each vendor's event name.
 - `alerts` holds each firing: rule, tenant, group key, window bounds, the matched count, and `created_at`.
 - A ticker in the `serve` process (ADR 0001) evaluates every 60 seconds. Each rule becomes one grouped `COUNT(*) ... HAVING count >= threshold` over its window — the shape `events_tenant_type_ts_idx` and `events_tenant_ts_idx` already serve.
 - Evaluation loops over tenants and runs each rule inside the tenant-aware transaction helper (ADR 0003), so RLS applies to the evaluator exactly as it does to a request. The evaluator does not run as an admin.

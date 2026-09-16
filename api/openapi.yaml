@@ -192,7 +192,7 @@ paths:
               type: string
               description: Newline-delimited JSON; one event object per line.
             example: |
-              {"tenant":"demoA","source":"firewall","action":"deny","src_ip":"10.0.1.10","dst_ip":"8.8.8.8","@timestamp":"2025-08-20T12:44:56Z"}
+              {"tenant":"demoA","message":"<134>Aug 20 12:44:56 fw01 vendor=demo product=ngfw action=deny src=10.0.1.10 dst=8.8.8.8 spt=5353 dpt=53 proto=udp msg=DNS blocked policy=Block-DNS"}
               {"tenant":"demoA","source":"api","event_type":"app_login_failed","user":"alice","ip":"203.0.113.7","@timestamp":"2025-08-20T07:20:00Z"}
       responses:
         '200':
@@ -633,21 +633,27 @@ components:
     IngestEvent:
       type: object
       additionalProperties: true
-      required: [tenant, source]
+      required: [tenant]
       # No x-go-type-import: the generated file already imports encoding/json,
       # and declaring it again emits a duplicate import.
       x-go-type: json.RawMessage
       description: |
         One vendor event, as the vendor emits it.
 
-        Only `tenant` and `source` are required. The properties below are hints
-        the normalizer looks for; anything else is kept verbatim in `raw` and
-        stays searchable through the free-text filter. Sending a field this
-        list does not mention is normal and is not an error.
+        Only `tenant` is always required, and `source` is required unless the
+        record is a syslog line. The properties below are hints the normalizer
+        looks for; anything else is kept verbatim in `raw` and stays
+        searchable through the free-text filter. Sending a field this list
+        does not mention is normal and is not an error.
 
         Some vendors spell things differently, and those spellings are
         understood: `ip` means `src_ip`, `user` means the user field, and a
         nested `cloud` object is flattened.
+
+        A record is rejected only when it cannot be stored: it is not a JSON
+        object, or its tenant or source is missing or not recognised. A hint
+        whose value cannot be normalized, such as `"severity": "high"`, is left
+        empty instead, and the event is tagged `invalid:<field>`.
 
         `tenant` is required for now because there is no authenticated identity
         to derive it from. Once ingest keys carry a tenant, the key wins and
@@ -659,14 +665,27 @@ components:
         source:
           type: string
           description: |
-            Matched against the known source categories. An unrecognised value
-            rejects the record with `unknown_source`.
+            Matched against the known source categories, ignoring case. An
+            unrecognised value rejects the record with `unknown_source`.
+
+            May be omitted when `message` holds a syslog line. The source is
+            then `firewall` if the line has firewall key=value fields (`action`,
+            `src`, `dst`, `spt`, `dpt`, `proto`, `policy`), and `network`
+            otherwise.
           example: ad
         '@timestamp':
           type: string
           format: date-time
           x-go-name: Timestamp
-          description: Event time. Defaults to time of receipt when absent.
+          description: |
+            Event time. When absent or unparseable, the syslog header time is
+            used if the line has an RFC 5424 header, and otherwise the time of
+            receipt.
+
+            A time more than the retention period in the past, or more than an
+            hour in the future, is replaced with the time of receipt and the
+            event is tagged `rebased:timestamp`. Otherwise the event would be
+            deleted on arrival or stored ahead of the partitions that exist.
         event_type:
           type: string
         event_subtype:
@@ -718,7 +737,11 @@ components:
           $ref: '#/components/schemas/CloudContext'
         message:
           type: string
-          description: A raw syslog line or other free text.
+          description: |
+            A raw syslog line. When `source` is absent, `firewall` or `network`,
+            the line is parsed: an RFC 5424 or RFC 3164 header gives host,
+            process and severity, and a key=value body gives the other fields.
+            For any other source, `message` is kept in `raw` and not parsed.
         raw:
           type: object
           additionalProperties: true
@@ -888,6 +911,17 @@ components:
           items:
             type: string
           x-go-name: Tags
+          description: |
+            The sender's own tags, followed by tags the normalizer adds:
+
+            - `auth_success`, `auth_failure`: a login and whether it succeeded,
+              recognised the same way for every source. Filter on these rather
+              than on vendor event names.
+            - `rebased:timestamp`: the sent time was outside the accepted
+              window, so `@timestamp` is the time of receipt.
+            - `invalid:<field>`: that field's value could not be normalized and
+              was left empty. The original value is still in `raw`.
+          example: [auth_failure]
 
     EventPage:
       type: object

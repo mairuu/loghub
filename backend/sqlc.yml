@@ -10,6 +10,9 @@ sql:
         sql_package: pgx/v5
         emit_empty_slices: true
         emit_pointers_for_null_types: true
+        # SrcIP, URL, HTTPMethod: the same spelling oapi-codegen produces with
+        # ToCamelCaseWithInitialisms, so store and API types map field to field.
+        initialisms: [id, ip, url, http]
         overrides:
           - db_type: timestamptz
             go_type: time.Time

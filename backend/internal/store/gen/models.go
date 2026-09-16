@@ -21,16 +21,16 @@ type Event struct {
 	EventSubtype   *string
 	Severity       *int16
 	Action         *string
-	SrcIp          *netip.Addr
+	SrcIP          *netip.Addr
 	SrcPort        *int32
-	DstIp          *netip.Addr
+	DstIP          *netip.Addr
 	DstPort        *int32
 	Protocol       *string
 	UserName       *string
 	Host           *string
 	Process        *string
-	Url            *string
-	HttpMethod     *string
+	URL            *string
+	HTTPMethod     *string
 	StatusCode     *int32
 	RuleName       *string
 	RuleID         *string
@@ -53,16 +53,16 @@ type EventsDefault struct {
 	EventSubtype   *string
 	Severity       *int16
 	Action         *string
-	SrcIp          *netip.Addr
+	SrcIP          *netip.Addr
 	SrcPort        *int32
-	DstIp          *netip.Addr
+	DstIP          *netip.Addr
 	DstPort        *int32
 	Protocol       *string
 	UserName       *string
 	Host           *string
 	Process        *string
-	Url            *string
-	HttpMethod     *string
+	URL            *string
+	HTTPMethod     *string
 	StatusCode     *int32
 	RuleName       *string
 	RuleID         *string
