@@ -2,6 +2,7 @@
 
 COMPOSE     := docker compose
 DEV_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.dev.yml
+SQLC_IMAGE  := sqlc/sqlc:1.31.1
 
 -include .env
 export
@@ -9,7 +10,7 @@ export
 DEV_DATABASE_URL         = postgres://loghub_app:$(APP_DB_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 DEV_MIGRATE_DATABASE_URL = postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 
-.PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api lint
+.PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api gen-sql check-sql lint
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -53,6 +54,16 @@ dev-api: ## Run the API on the host
 	cd backend && MIGRATE_DATABASE_URL='$(DEV_MIGRATE_DATABASE_URL)' go run ./cmd/loghub migrate
 	cd backend && DATABASE_URL='$(DEV_DATABASE_URL)' go run ./cmd/loghub serve
 
-lint: ## gofmt, go vet
+gen-sql: ## Regenerate the sqlc code in backend/internal/store/gen
+	docker run --rm -u "$$(id -u):$$(id -g)" -v "$(CURDIR)/backend:/src" -w /src $(SQLC_IMAGE) generate
+
+# Regenerating leaves the tree untouched when the committed code is current.
+check-sql: gen-sql ## Fail if the committed sqlc code is stale
+	@git diff --quiet -- backend/internal/store/gen \
+	  && [ -z "$$(git ls-files --others --exclude-standard -- backend/internal/store/gen)" ] \
+	  || { echo "sqlc output is stale; stage what 'make gen-sql' produced:"; \
+	       git status --short -- backend/internal/store/gen; exit 1; }
+
+lint: check-sql ## gofmt, go vet, sqlc drift
 	@out=$$(gofmt -l backend); if [ -n "$$out" ]; then echo "Files need gofmt:"; echo "$$out"; exit 1; fi
 	cd backend && go vet ./...

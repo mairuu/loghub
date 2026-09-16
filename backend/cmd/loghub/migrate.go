@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 
-	"github.com/mairuu/loghub/backend/db/migrations"
 	"github.com/mairuu/loghub/backend/internal/platform/config"
 	"github.com/mairuu/loghub/backend/internal/platform/pg"
+	"github.com/mairuu/loghub/backend/internal/store/migrations"
 )
 
 // appRole is the role the backend connects as. The migrations grant its privileges.
