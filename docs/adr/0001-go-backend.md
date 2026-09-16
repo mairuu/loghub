@@ -1,7 +1,7 @@
 # 0001. Go single-binary backend
 
 - Status: Accepted
-- Date: 2026-09-15
+- Date: 2026-09-14
 
 ## Context
 The backend takes ingest traffic, serves the search, dashboard and alert APIs, run background jobs for retention and alert evaluation.

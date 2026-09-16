@@ -7,6 +7,11 @@ Short records of the decisions that shape loghub.
 | [0001](0001-go-backend.md) | Go single-binary backend | Accepted |
 | [0002](0002-postgres-event-store.md) | PostgreSQL event store with daily partitions | Accepted |
 | [0003](0003-tenant-isolation-rls.md) | Tenant isolation with row-level security | Accepted |
+| [0004](0004-vector-transport-only.md) | Vector as transport only; normalization in Go | Accepted |
+| [0005](0005-caddy-edge.md) | Caddy at the edge for TLS and SPA hosting | Accepted |
+| [0006](0006-react-vite-frontend.md) | React + Vite + TypeScript frontend | Accepted |
+| [0007](0007-openapi-spec-first.md) | Spec-first OpenAPI with code generation | Accepted |
+| [0008](0008-sqlc-queries.md) | sqlc for fixed queries, hand-written SQL for search | Accepted |
 
 ## Template
 
