@@ -3,6 +3,15 @@
 COMPOSE     := docker compose
 DEV_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.dev.yml
 SQLC_IMAGE  := sqlc/sqlc:1.31.1
+NODE_IMAGE  := node:24-alpine
+OAPI_SPEC   := api/openapi.yaml
+P2C_VERSION := 5.0.0
+REDOCLY_VER := 1.34.2
+API_GEN_OUT := backend/internal/api/gen
+
+# npx needs a writable HOME once we drop to the caller's uid.
+NPX := docker run --rm -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
+         -v "$(CURDIR):/work" -w /work $(NODE_IMAGE) npx -y
 
 -include .env
 export
@@ -10,7 +19,8 @@ export
 DEV_DATABASE_URL         = postgres://loghub_app:$(APP_DB_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 DEV_MIGRATE_DATABASE_URL = postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 
-.PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api gen-sql check-sql lint
+.PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api \
+        gen-sql check-sql gen-api check-api lint-api postman lint
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -64,6 +74,27 @@ check-sql: gen-sql ## Fail if the committed sqlc code is stale
 	  || { echo "sqlc output is stale; stage what 'make gen-sql' produced:"; \
 	       git status --short -- backend/internal/store/gen; exit 1; }
 
-lint: check-sql ## gofmt, go vet, sqlc drift
+gen-api: ## Regenerate the API code in backend/internal/api/gen
+	cd backend && go tool oapi-codegen -config oapi-codegen.models.yml ../$(OAPI_SPEC)
+	cd backend && go tool oapi-codegen -config oapi-codegen.server.yml ../$(OAPI_SPEC)
+
+# Regenerating leaves the tree untouched when the committed code is current.
+check-api: gen-api ## Fail if the committed API code is stale
+	@git diff --quiet -- $(API_GEN_OUT) \
+	  && [ -z "$$(git ls-files --others --exclude-standard -- $(API_GEN_OUT))" ] \
+	  || { echo "openapi output is stale; stage what 'make gen-api' produced:"; \
+	       git status --short -- $(API_GEN_OUT); exit 1; }
+
+# Not part of `lint`: the converter stamps a random info._postman_id on every
+# run, so the output can never be drift-checked. Regenerate before a release.
+postman: ## Convert the spec into docs/postman_collection.json
+	$(NPX) openapi-to-postmanv2@$(P2C_VERSION) -s $(OAPI_SPEC) \
+	  -o docs/postman_collection.json -p \
+	  -O folderStrategy=Tags,requestParametersResolution=Example
+
+lint-api: ## Validate api/openapi.yaml itself
+	$(NPX) @redocly/cli@$(REDOCLY_VER) lint $(OAPI_SPEC)
+
+lint: check-sql check-api lint-api ## gofmt, go vet, sqlc drift, api drift, spec lint
 	@out=$$(gofmt -l backend); if [ -n "$$out" ]; then echo "Files need gofmt:"; echo "$$out"; exit 1; fi
 	cd backend && go vet ./...

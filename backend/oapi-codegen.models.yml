@@ -1,0 +1,19 @@
+# Request and response types, plus the embedded spec served at /api/openapi.json.
+# See docs/adr/0007-openapi-spec-first.md.
+package: gen
+output: internal/api/gen/models.gen.go
+generate:
+  models: true
+  embedded-spec: true
+output-options:
+  # Keep every schema in components, not only those reachable from paths, so
+  # the models file stays a faithful rendering of the spec.
+  skip-prune: true
+  # Yields ID, URL, SrcIP, HTTPMethod rather than Id, Url, SrcIp, HttpMethod,
+  # which also matches what sqlc emits. Changing this renames every generated
+  # identifier, so it is settled here.
+  name-normalizer: ToCamelCaseWithInitialisms
+compatibility:
+  # SourceFirewall, not a bare Firewall. Without this, constants are prefixed
+  # only once two enums collide, which silently renames the existing ones.
+  always-prefix-enum-values: true

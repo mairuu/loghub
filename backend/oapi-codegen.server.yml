@@ -1,0 +1,8 @@
+# ServerInterface and the http.ServeMux registration. Same package as the
+# models, generated separately so the two files stay readable.
+package: gen
+output: internal/api/gen/server.gen.go
+generate:
+  std-http-server: true
+output-options:
+  name-normalizer: ToCamelCaseWithInitialisms

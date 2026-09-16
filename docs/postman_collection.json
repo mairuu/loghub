@@ -1,0 +1,2877 @@
+{
+    "item": [
+        {
+            "name": "Health",
+            "description": "Liveness and readiness.",
+            "item": [
+                {
+                    "id": "318f658e-542c-43cd-a19b-ee429177e9cf",
+                    "name": "Readiness probe",
+                    "request": {
+                        "name": "Readiness probe",
+                        "description": {
+                            "content": "Reports whether the service can reach its database. Used by the\ncontainer healthcheck and by the `loghub healthcheck` subcommand,\nboth of which read only the status code.\n",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "healthz"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "GET",
+                        "body": {},
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "6e0818b6-49d5-4d18-b5ca-9e4112b72d95",
+                            "name": "Service is ready.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "healthz"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"status\": \"ok\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "dfd7405c-fe13-4b24-b203-f88ad8087e4f",
+                            "name": "A dependency, normally the database, is unreachable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "healthz"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Ingest",
+            "description": "Getting events in. Three paths, one normalizer: a single JSON event, an\nNDJSON batch from the collector, and a whole vendor export file.\n",
+            "item": [
+                {
+                    "id": "077b50b9-2cbf-4b63-b2e2-94cea46bb8e5",
+                    "name": "Ingest a single event",
+                    "request": {
+                        "name": "Ingest a single event",
+                        "description": {
+                            "content": "Accepts one vendor event as JSON, normalizes it, and stores it. The\nevent is committed before this call returns, so it is searchable\nimmediately.\n\nCaddy exposes this as `POST /ingest` at the edge, which is the form\nthe sample senders use.\n",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "ingest"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "headerFamily": "json",
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "3896c1ab-80cd-4a63-ae8f-50180b44204a",
+                            "name": "Processed. `accepted` is 1 when the event was stored; a rejected\nevent reports why in `errors[0]`.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"accepted\": \"<integer>\",\n  \"rejected\": \"<integer>\",\n  \"errors\": [\n    {\n      \"index\": \"<integer>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "056586ed-2ba6-41a5-8b7f-dfae57a11bd4",
+                            "name": "The request could not be parsed or a parameter was unusable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "287b301d-0f72-483c-9c31-26508a8438e7",
+                            "name": "The request body exceeded the configured limit.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Request Entity Too Large",
+                            "code": 413,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "60eb27d5-614b-4e3b-b88f-f5142b643efd",
+                            "name": "The Content-Type is not one this endpoint accepts.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Unsupported Media Type",
+                            "code": 415,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "b8f208cf-97f6-4320-8f9a-1e56a0ff5b8b",
+                            "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                            "code": 422,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "ab004fc7-56ef-4df9-9dbc-e28fcb87a828",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "d3984143-ede9-4adb-b585-026779fccba9",
+                            "name": "A dependency, normally the database, is unreachable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"dolor64\": true,\n    \"aute1f0\": true,\n    \"anim9\": 56394327.19835463\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "id": "0a2f7f38-5c84-49da-af50-832d246476bd",
+                    "name": "Ingest a batch of events as NDJSON",
+                    "request": {
+                        "name": "Ingest a batch of events as NDJSON",
+                        "description": {
+                            "content": "One JSON event per line. This is what the collector forwards after\nbuffering syslog and file input.\n\nA malformed or unmappable line does not fail the request: the response\nreports `accepted` and `rejected` counts with per-line detail. This is\ndeliberate — the collector retries any non-2xx response from its disk\nbuffer, so rejecting a whole batch for one poison line would retry it\nforever and stall the buffer behind it. A non-2xx status here means the\nrequest was unusable as a whole, not that some records were bad.\n",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "ingest",
+                                "batch"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/x-ndjson"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "<string>"
+                        },
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "9c053aac-e187-4217-a366-4fb066b13d7f",
+                            "name": "Batch processed; counts report how many records stored.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "batch"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"accepted\": \"<integer>\",\n  \"rejected\": \"<integer>\",\n  \"errors\": [\n    {\n      \"index\": \"<integer>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "a76c74a9-63eb-4bb2-8b1b-c1981a7bde58",
+                            "name": "The request could not be parsed or a parameter was unusable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "batch"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "d5274452-f1f7-46f0-8229-a3b4ea31eeaa",
+                            "name": "The request body exceeded the configured limit.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "batch"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Request Entity Too Large",
+                            "code": 413,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "b0c3c831-328f-43f6-8099-a48e25cbf794",
+                            "name": "The Content-Type is not one this endpoint accepts.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "batch"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Unsupported Media Type",
+                            "code": 415,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "42ab2a04-a558-4baa-993d-0f2e8608ea1d",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "batch"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "e3606027-681e-4b80-b987-45a98a3f14bc",
+                            "name": "A dependency, normally the database, is unreachable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "batch"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "id": "11cfb418-91cd-41b9-96ae-fbb178e63e32",
+                    "name": "Ingest a whole export file as NDJSON",
+                    "request": {
+                        "name": "Ingest a whole export file as NDJSON",
+                        "description": {
+                            "content": "Same wire format and same per-record error handling as the batch\nendpoint, for uploading a vendor export directly:\n\n```\ncurl -H 'Content-Type: application/x-ndjson' \\\n     --data-binary @samples/json/aws_cloudtrail.ndjson \\\n     https://localhost/api/v1/ingest/file\n```\n\n`tenant` and `source` may be supplied as query parameters, and apply\nonly to records that do not carry their own.\n",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "ingest",
+                                "file"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Default tenant for records that omit one.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "tenant",
+                                    "value": "AqI_PsM_sgiXMm2xR"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Default source for records that omit one.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "source",
+                                    "value": "ad"
+                                }
+                            ],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/x-ndjson"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "<string>"
+                        },
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "8536ae0b-db7d-4f01-a3c9-dd04366c006e",
+                            "name": "File processed; counts report how many records stored.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "file"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default tenant for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default source for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "ad"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"accepted\": \"<integer>\",\n  \"rejected\": \"<integer>\",\n  \"errors\": [\n    {\n      \"index\": \"<integer>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"index\": \"<integer>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "14259fd6-14e6-4702-ba9a-a483cc5d6ee7",
+                            "name": "The request could not be parsed or a parameter was unusable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "file"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default tenant for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default source for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "ad"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "c5da9483-e5e1-4e93-9d56-3e1c480e8333",
+                            "name": "The request body exceeded the configured limit.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "file"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default tenant for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default source for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "ad"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Request Entity Too Large",
+                            "code": 413,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "17510169-9c40-47a8-9a2d-7db800839b5b",
+                            "name": "The Content-Type is not one this endpoint accepts.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "file"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default tenant for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default source for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "ad"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Unsupported Media Type",
+                            "code": 415,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "917d74fc-c501-4eba-ae64-e1cfc11d3348",
+                            "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "file"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default tenant for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default source for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "ad"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                            "code": 422,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "a9aaf93f-1b26-40a0-9e50-7b0f4bd6e54f",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "file"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default tenant for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default source for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "ad"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "7d709060-7fb6-449f-824a-2da331fe54ca",
+                            "name": "A dependency, normally the database, is unreachable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "ingest",
+                                        "file"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default tenant for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Default source for records that omit one.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "ad"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-ndjson"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "<string>"
+                                }
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Search",
+            "description": "Querying stored events.",
+            "item": [
+                {
+                    "id": "0ac95b90-83be-4855-a49b-57e0b34c557e",
+                    "name": "Search events",
+                    "request": {
+                        "name": "Search events",
+                        "description": {
+                            "content": "Filtered, time-ordered list of normalized events.\n\nResults are paged with an opaque cursor rather than an offset. Events\narrive continuously, so an offset would shift under the reader between\npages, showing duplicates and silently skipping rows. Pass the\n`next_cursor` from one response as `cursor` on the next request; its\nabsence means there are no more results.\n\nA cursor is tied to the filters it was produced with. Re-using one with\ndifferent filters is rejected rather than silently paging through a\ndifferent result set.\n",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "events"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Narrows results to one tenant, within the set the caller may already\nread. This parameter can only narrow, never widen: the readable set is\nenforced beneath the API by row-level security.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n\nUntil authentication is wired up there is no caller identity, so\nomitting it currently returns every tenant.\n",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "tenant",
+                                    "value": "AqI_PsM_sgiXMm2xR"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Only events at or after this time. Defaults to 24 hours ago.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "from",
+                                    "value": "<dateTime>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Only events strictly before this time. Defaults to now.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "to",
+                                    "value": "<dateTime>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Repeat to match any of several sources.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "source",
+                                    "value": "api"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Repeat to match any of several sources.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "source",
+                                    "value": "crowdstrike"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "event_type",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "action",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Only events with severity at or above this. Excludes events with no severity.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "severity_min",
+                                    "value": "<integer>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Only events with severity at or below this. Excludes events with no severity.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "severity_max",
+                                    "value": "<integer>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Exact source address match.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "src_ip",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Exact match on the user associated with the event.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "user",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "host",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Repeat to require several tags; an event must carry all of them.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "tag",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Repeat to require several tags; an event must carry all of them.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "tag",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "q",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Maximum events to return. Defaults to 50.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "limit",
+                                    "value": "<integer>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "The `next_cursor` from a previous response. Opaque: its encoding is not\npart of this contract and may change between releases.\n",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "cursor",
+                                    "value": "<string>"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Order by event time. Defaults to `desc`, newest first.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "order",
+                                    "value": "asc"
+                                }
+                            ],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "GET",
+                        "body": {},
+                        "auth": null
+                    },
+                    "response": [
+                        {
+                            "id": "b1d1d878-8f76-4002-9c5f-1136e1d206f1",
+                            "name": "Matching events, newest first unless `order=asc`.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "events"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant, within the set the caller may already\nread. This parameter can only narrow, never widen: the readable set is\nenforced beneath the API by row-level security.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n\nUntil authentication is wired up there is no caller identity, so\nomitting it currently returns every tenant.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events at or after this time. Defaults to 24 hours ago.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "from",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "to",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to match any of several sources.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "crowdstrike"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "event_type",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "action",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or above this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_min",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or below this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_max",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact source address match.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "src_ip",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact match on the user associated with the event.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "user",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "host",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to require several tags; an event must carry all of them.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tag",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "q",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum events to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "The `next_cursor` from a previous response. Opaque: its encoding is not\npart of this contract and may change between releases.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "cursor",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Order by event time. Defaults to `desc`, newest first.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "order",
+                                            "value": "asc"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"items\": [\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"network\",\n      \"raw\": {\n        \"do_b92\": \"non aliquip ipsum laborum\"\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    },\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"ad\",\n      \"raw\": {\n        \"reprehenderit979\": -75157740\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    }\n  ],\n  \"next_cursor\": \"<string>\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "df151193-c3c4-4db5-9d79-3605ecbf275c",
+                            "name": "The request could not be parsed or a parameter was unusable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "events"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant, within the set the caller may already\nread. This parameter can only narrow, never widen: the readable set is\nenforced beneath the API by row-level security.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n\nUntil authentication is wired up there is no caller identity, so\nomitting it currently returns every tenant.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events at or after this time. Defaults to 24 hours ago.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "from",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "to",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to match any of several sources.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "crowdstrike"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "event_type",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "action",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or above this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_min",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or below this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_max",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact source address match.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "src_ip",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact match on the user associated with the event.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "user",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "host",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to require several tags; an event must carry all of them.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tag",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "q",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum events to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "The `next_cursor` from a previous response. Opaque: its encoding is not\npart of this contract and may change between releases.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "cursor",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Order by event time. Defaults to `desc`, newest first.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "order",
+                                            "value": "asc"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "5a738c6f-9d17-47fd-b2ff-afb1584cf195",
+                            "name": "The caller may not read what was asked for.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "events"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant, within the set the caller may already\nread. This parameter can only narrow, never widen: the readable set is\nenforced beneath the API by row-level security.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n\nUntil authentication is wired up there is no caller identity, so\nomitting it currently returns every tenant.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events at or after this time. Defaults to 24 hours ago.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "from",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "to",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to match any of several sources.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "crowdstrike"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "event_type",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "action",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or above this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_min",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or below this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_max",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact source address match.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "src_ip",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact match on the user associated with the event.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "user",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "host",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to require several tags; an event must carry all of them.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tag",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "q",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum events to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "The `next_cursor` from a previous response. Opaque: its encoding is not\npart of this contract and may change between releases.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "cursor",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Order by event time. Defaults to `desc`, newest first.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "order",
+                                            "value": "asc"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Forbidden",
+                            "code": 403,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "4cb102c0-5df8-438b-a248-c83246dcdaba",
+                            "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "events"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant, within the set the caller may already\nread. This parameter can only narrow, never widen: the readable set is\nenforced beneath the API by row-level security.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n\nUntil authentication is wired up there is no caller identity, so\nomitting it currently returns every tenant.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events at or after this time. Defaults to 24 hours ago.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "from",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "to",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to match any of several sources.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "crowdstrike"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "event_type",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "action",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or above this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_min",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or below this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_max",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact source address match.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "src_ip",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact match on the user associated with the event.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "user",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "host",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to require several tags; an event must carry all of them.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tag",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "q",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum events to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "The `next_cursor` from a previous response. Opaque: its encoding is not\npart of this contract and may change between releases.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "cursor",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Order by event time. Defaults to `desc`, newest first.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "order",
+                                            "value": "asc"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                            "code": 422,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "f500df27-e6ea-49e6-84e5-511014adbb17",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "events"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant, within the set the caller may already\nread. This parameter can only narrow, never widen: the readable set is\nenforced beneath the API by row-level security.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n\nUntil authentication is wired up there is no caller identity, so\nomitting it currently returns every tenant.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events at or after this time. Defaults to 24 hours ago.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "from",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "to",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to match any of several sources.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "crowdstrike"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "event_type",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "action",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or above this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_min",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or below this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_max",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact source address match.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "src_ip",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact match on the user associated with the event.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "user",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "host",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to require several tags; an event must carry all of them.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tag",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "q",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum events to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "The `next_cursor` from a previous response. Opaque: its encoding is not\npart of this contract and may change between releases.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "cursor",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Order by event time. Defaults to `desc`, newest first.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "order",
+                                            "value": "asc"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "d39a540f-2c26-48d0-bf3a-644df71a8769",
+                            "name": "A dependency, normally the database, is unreachable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "events"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant, within the set the caller may already\nread. This parameter can only narrow, never widen: the readable set is\nenforced beneath the API by row-level security.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n\nUntil authentication is wired up there is no caller identity, so\nomitting it currently returns every tenant.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "AqI_PsM_sgiXMm2xR"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events at or after this time. Defaults to 24 hours ago.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "from",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "to",
+                                            "value": "<dateTime>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to match any of several sources.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "source",
+                                            "value": "crowdstrike"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "event_type",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "action",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or above this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_min",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Only events with severity at or below this. Excludes events with no severity.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "severity_max",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact source address match.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "src_ip",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Exact match on the user associated with the event.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "user",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "host",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Repeat to require several tags; an event must carry all of them.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tag",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "q",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum events to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "The `next_cursor` from a previous response. Opaque: its encoding is not\npart of this contract and may change between releases.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "cursor",
+                                            "value": "<string>"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Order by event time. Defaults to `desc`, newest first.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "order",
+                                            "value": "asc"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        }
+    ],
+    "event": [],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "https://localhost"
+        }
+    ],
+    "info": {
+        "_postman_id": "7152aa8b-6d4d-442d-9c4c-60d14ab4f43d",
+        "name": "loghub API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": {
+            "content": "Multi-tenant log management: ingest events from many sources, normalize them\ninto one schema, and search them.\n\n## Shape of this API\n\nIngest is permissive and search is strict. A sender may post whatever its\nvendor emits; unknown fields are preserved verbatim in `raw` and stay\nsearchable. What comes back out of search is the normalized schema, with\nevery field named as in the common event schema.\n\n## Errors\n\nEvery error is the same JSON envelope: a stable `code` to match on, a\nhuman `message` that may change, and `request_id` correlating with the\nserver log. `422` additionally carries per-field failures in `errors[]`;\nno other status does.\n\nA `404` or `405` from an unrouted path is generated by the Go HTTP mux and\nis plain text rather than this envelope.\n\n## Not yet implemented\n\nThis is the first slice. Authentication is not wired up: no endpoint\ncurrently requires a credential, and `tenant` is taken from the request\nrather than from a verified token. Both change in the auth milestone, and\nthe affected fields say so individually.\n",
+            "type": "text/plain"
+        }
+    }
+}
