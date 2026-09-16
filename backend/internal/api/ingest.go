@@ -6,6 +6,7 @@ import (
 	"cmp"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"slices"
@@ -109,7 +110,26 @@ func (s *Server) store(w http.ResponseWriter, r *http.Request, b *batch) {
 		}
 		b.merge(refused)
 	}
-	s.respond(w, r, http.StatusOK, b.result())
+
+	res := b.result()
+	if b.rejected > 0 {
+		// A collector never reads the response, so this is the only place
+		// its rejected records show.
+		first := b.reported[0]
+		s.logger.LogAttrs(r.Context(), slog.LevelWarn, "records rejected",
+			slog.String("request_id", requestID(r.Context())),
+			slog.String("path", r.URL.Path),
+			slog.Int("accepted", int(res.Accepted)),
+			slog.Int("rejected", b.rejected),
+			slog.Any("codes", b.codes),
+			slog.Group("first",
+				slog.Int("index", int(first.Index)),
+				slog.String("code", first.Code),
+				slog.String("message", first.Message),
+			),
+		)
+	}
+	s.respond(w, r, http.StatusOK, res)
 }
 
 // batch collects the outcome of each record in a request.
@@ -120,6 +140,8 @@ type batch struct {
 	// rejected counts every rejected record, and refused the events among
 	// them that the insert turned away.
 	rejected, refused int
+	// codes counts the rejections by code.
+	codes map[string]int
 	// reported is the first maxReported rejections, in request order.
 	reported []gen.IngestRejection
 }
@@ -130,10 +152,20 @@ func (b *batch) add(index int, ev store.NewEventParams) {
 }
 
 func (b *batch) reject(index int, err error) {
-	b.rejected++
-	if len(b.reported) < maxReported {
-		b.reported = append(b.reported, rejection(index, err))
+	if r := b.count(index, err); len(b.reported) < maxReported {
+		b.reported = append(b.reported, r)
 	}
+}
+
+// count adds a rejection to the totals and returns its report.
+func (b *batch) count(index int, err error) gen.IngestRejection {
+	r := rejection(index, err)
+	b.rejected++
+	if b.codes == nil {
+		b.codes = map[string]int{}
+	}
+	b.codes[r.Code]++
+	return r
 }
 
 // merge adds the insert's rejections, keeping the report in request order.
@@ -145,10 +177,9 @@ func (b *batch) merge(refused []error) {
 		if err == nil {
 			continue
 		}
-		b.rejected++
 		b.refused++
-		if len(late) < maxReported {
-			late = append(late, rejection(b.lines[i], err))
+		if r := b.count(b.lines[i], err); len(late) < maxReported {
+			late = append(late, r)
 		}
 	}
 	if len(late) == 0 {

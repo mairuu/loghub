@@ -69,5 +69,32 @@ services:
       retries: 6
       start_period: 5s
 
+  # Syslog on 514 and NDJSON files dropped into inbox/, forwarded to the
+  # backend. See ingest/README.md.
+  vector:
+    image: timberio/vector:0.58.0-alpine
+    restart: unless-stopped
+    command: ["--config", "/etc/vector/vector.yaml"]
+    environment:
+      # Read by the syslog transform at runtime.
+      SYSLOG_DEFAULT_TENANT: ${SYSLOG_DEFAULT_TENANT:-demoA}
+    ports:
+      - "514:5514/udp"
+      - "514:5514/tcp"
+    volumes:
+      - ./ingest/vector.yaml:/etc/vector/vector.yaml:ro
+      # Writable: Vector deletes each file once it has read it.
+      - ./inbox:/inbox
+      - vector_data:/var/lib/vector
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8686/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
 volumes:
   postgres_data:
+  vector_data:

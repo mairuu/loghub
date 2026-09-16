@@ -184,10 +184,15 @@ paths:
 
         A malformed or unmappable line does not fail the request: the response
         reports `accepted` and `rejected` counts with per-line detail. This is
-        deliberate — the collector retries any non-2xx response from its disk
-        buffer, so rejecting a whole batch for one poison line would retry it
-        forever and stall the buffer behind it. A non-2xx status here means the
-        request was unusable as a whole, not that some records were bad.
+        deliberate. The collector retries a 5xx, 408 or 429 from its disk
+        buffer until it succeeds, and drops the whole batch on any other
+        status. Failing a batch for one poison line would either stall the
+        buffer behind it forever or throw away every good record with it. A
+        non-2xx status here means the request was unusable as a whole, not that
+        some records were bad.
+
+        The collector does not read the response, so the server also logs
+        each request that had rejected records, with counts by code.
 
         Blank lines are skipped and are not records. A line may be at most
         1 MiB, and the body at most 32 MiB.

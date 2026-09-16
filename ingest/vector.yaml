@@ -1,0 +1,115 @@
+# Vector is transport only (docs/adr/0004-vector-transport-only.md): it
+# receives syslog and inbox files, keeps them in a disk buffer, and forwards
+# them to the backend as NDJSON. Every bit of parsing happens in the backend.
+#
+# `make check-vector` validates this file and runs vector.test.yaml.
+
+data_dir: /var/lib/vector
+
+# For the ingest token once authentication lands
+# (docs/adr/0009-auth-jwt-rbac.md). Vector 0.58 doesn't expand environment
+# variables in config files, so secrets arrive as files.
+secret:
+  compose:
+    type: directory
+    path: /run/secrets
+
+# Serves /health for the container healthcheck.
+api:
+  enabled: true
+  address: 127.0.0.1:8686
+
+sources:
+  syslog_udp:
+    type: socket
+    mode: udp
+    address: 0.0.0.0:5514
+
+  syslog_tcp:
+    type: socket
+    mode: tcp
+    address: 0.0.0.0:5514
+    # Takes both RFC 6587 framings: octet counting, and one message per line.
+    framing:
+      method: octet_counting
+      octet_counting:
+        max_length: 65536
+
+  # A drop folder rather than a tail: each file is read from the start and
+  # deleted once its lines are in the buffer. Vector tells files apart by a
+  # checksum of the first line, so its checkpoints would skip a file that
+  # repeats one already read, or start a different file with the same first
+  # line part-way through. Ignoring them means every dropped file is read in
+  # full, and one still present when Vector restarts is read again.
+  inbox:
+    type: file
+    include:
+      - /inbox/*.ndjson
+    read_from: beginning
+    ignore_checkpoints: true
+    remove_after_secs: 10
+    # The backend's limit for one record.
+    max_line_bytes: 1048576
+
+transforms:
+  # Wraps each line in the shape the backend reads syslog in. The tenant
+  # comes from the environment at runtime, since the config can't expand it.
+  # TCP framing already drops the line ending; a UDP datagram keeps it.
+  syslog_envelope:
+    type: remap
+    inputs: [syslog_udp, syslog_tcp]
+    source: |
+      line = replace(string(.message) ?? "", r'[\r\n]+$', "")
+      if strip_whitespace(line) == "" { abort }
+      . = {"message": encode_json({
+        "tenant": get_env_var("SYSLOG_DEFAULT_TENANT") ?? "",
+        "message": line,
+        "received_at": .timestamp,
+        "peer_ip": .host,
+        "input": "syslog",
+      })}
+
+  # Forwards each line byte for byte, so the backend reads an inbox file
+  # exactly as it reads one posted to /api/v1/ingest/file. Decoding it here
+  # would round large integers and refuse strings the backend can repair.
+  inbox_lines:
+    type: remap
+    inputs: [inbox]
+    source: |
+      if strip_whitespace(string(.message) ?? "") == "" { abort }
+      . = {"message": .message}
+
+sinks:
+  backend:
+    type: http
+    inputs: [syslog_envelope, inbox_lines]
+    uri: http://backend:8080/api/v1/ingest/batch
+    method: post
+    # Each event is already one line of NDJSON, which text writes unchanged.
+    encoding:
+      codec: text
+    framing:
+      method: newline_delimited
+    request:
+      headers:
+        # The text codec would otherwise send text/plain.
+        Content-Type: application/x-ndjson
+    healthcheck:
+      uri: http://backend:8080/api/healthz
+    batch:
+      max_events: 500
+      # Well under the backend's 32 MiB body limit.
+      max_bytes: 10000000
+      timeout_secs: 1
+    # Vector retries 408, 429 and any 5xx without limit, and drops the batch
+    # on any other status. The backend answers 200 unless the whole request
+    # is unusable, so an outage waits in this buffer and a bad line doesn't.
+    buffer:
+      type: disk
+      # The smallest disk buffer Vector accepts.
+      max_size: 268435488
+      when_full: block
+    # An inbox file is only deleted once all its lines are in the buffer. The
+    # socket sources can't acknowledge, which Vector warns about at startup.
+    acknowledgements:
+      enabled: true

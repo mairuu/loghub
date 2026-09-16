@@ -31,7 +31,7 @@ flowchart LR
 | Component | Role | Why |
 |---|---|---|
 | Caddy | The only public HTTP entry point. Terminates TLS, serves the SPA, proxies `/api/*`. | [ADR 0005](adr/0005-caddy-edge.md) |
-| Vector | Receives syslog and inbox files, buffers on disk, forwards NDJSON to the backend. | [ADR 0004](adr/0004-vector-transport-only.md) |
+| Vector | Receives syslog, reads and deletes files dropped in the inbox, buffers on disk, forwards NDJSON to the backend. | [ADR 0004](adr/0004-vector-transport-only.md) |
 | Backend (Go) | Parses and normalizes events, stores them, serves the API, runs retention. | [ADR 0001](adr/0001-go-backend.md) |
 | PostgreSQL | Event store with daily partitions and row-level security. | [ADR 0002](adr/0002-postgres-event-store.md), [ADR 0003](adr/0003-tenant-isolation-rls.md) |
 | Frontend | React SPA, built into the Caddy image. | [ADR 0006](adr/0006-react-vite-frontend.md) |
@@ -51,7 +51,7 @@ flowchart LR
   N -->|rejected| RES["errors[] in the response"]
 ```
 
-Every path hands the normalizer one JSON object per event. Vector wraps a syslog line as `{"tenant": "...", "message": "<line>"}` and adds its receipt metadata. The HTTP paths pass the sender's JSON through unchanged. A batch always answers 200 with accepted and rejected counts, so one bad line never makes Vector retry the whole batch.
+Every path hands the normalizer one JSON object per event. Vector wraps a syslog line as `{"tenant": "...", "message": "<line>"}` and adds its receipt metadata. It forwards inbox lines byte for byte, and the HTTP paths pass the sender's JSON through unchanged too. A batch always answers 200 with accepted and rejected counts, because Vector retries a 5xx until it succeeds and drops the whole batch on most 4xx: failing a batch over one bad line would either stall the collector or lose every good record with it. Vector never reads the counts, so the backend also logs each request that had rejections. [`ingest/README.md`](../ingest/README.md) covers sending to the collector.
 
 The handlers are in `backend/internal/api`. A record may be at most 1 MiB, and an NDJSON body at most 32 MiB. The body is read one line at a time, but every normalized event is held until the single insert at the end, so the body limit also bounds what one request holds in memory.
 

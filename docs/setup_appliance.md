@@ -40,3 +40,18 @@ Check that it's running:
 make ps                                  # services healthy; migrate exited with 0
 curl -k https://localhost/api/healthz
 ```
+
+## Send some events
+
+```sh
+make send-samples
+```
+
+This sends the syslog samples to port 514, over UDP and TCP, and drops the JSON samples into `inbox/`. They are searchable within a few seconds. To send your own:
+
+```sh
+logger -n 127.0.0.1 -P 514 -t myapp "user=alice action=deny"        # syslog, UDP
+jq -c . samples/json/m365_audit.json > inbox/.m365.tmp && mv inbox/.m365.tmp inbox/m365.ndjson
+```
+
+Syslog is stored under the tenant `SYSLOG_DEFAULT_TENANT` in `.env`, and each inbox file is deleted once it has been read. [`ingest/README.md`](../ingest/README.md) covers the collector in full, including how to tell whether events arrived.

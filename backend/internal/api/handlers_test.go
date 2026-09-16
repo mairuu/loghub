@@ -235,20 +235,63 @@ func TestIngestInternalErrorStaysInLog(t *testing.T) {
 		t.Errorf("response leaks the cause: %s", got)
 	}
 	var found bool
-	for line := range strings.Lines(log.String()) {
-		var entry map[string]any
-		if err := json.Unmarshal([]byte(line), &entry); err != nil {
-			t.Fatalf("log line is not JSON: %s", line)
-		}
+	for _, entry := range logEntries(t, &log) {
 		if entry["level"] == "ERROR" && entry["request_id"] == res.requestID {
 			found = true
 			if msg, _ := entry["error"].(string); !strings.Contains(msg, "relation is on fire") {
-				t.Errorf("logged error lacks the cause: %s", line)
+				t.Errorf("logged error lacks the cause: %v", entry)
 			}
 		}
 	}
 	if !found {
 		t.Errorf("no error logged for request %s:\n%s", res.requestID, log.String())
+	}
+}
+
+func logEntries(t *testing.T, log *bytes.Buffer) []map[string]any {
+	t.Helper()
+	var out []map[string]any
+	for line := range strings.Lines(log.String()) {
+		var entry map[string]any
+		if err := json.Unmarshal([]byte(line), &entry); err != nil {
+			t.Fatalf("log line is not JSON: %s", line)
+		}
+		out = append(out, entry)
+	}
+	return out
+}
+
+// A collector never reads the response, so rejections must reach the log.
+func TestIngestRejectionsLogged(t *testing.T) {
+	var log bytes.Buffer
+	events := fakeEvents{refuse: refuseTenant("gone")}
+	h := newHandlerLogging(t, &events, &log)
+	body := strings.Join([]string{apiEvent, `not json`, `{"tenant":"gone","source":"api"}`, `[]`}, "\n")
+	res := call(t, h, "POST", "/api/v1/ingest/batch", "application/x-ndjson", strings.NewReader(body))
+
+	var got []map[string]any
+	for _, entry := range logEntries(t, &log) {
+		if entry["msg"] == "records rejected" {
+			delete(entry, "time")
+			got = append(got, entry)
+		}
+	}
+	want := map[string]any{
+		"level": "WARN", "msg": "records rejected", "request_id": res.requestID,
+		"path": "/api/v1/ingest/batch", "accepted": 1.0, "rejected": 3.0,
+		"codes": map[string]any{"invalid_json": 2.0, "unknown_tenant": 1.0},
+		"first": map[string]any{"index": 1.0, "code": "invalid_json", "message": "record is not a JSON object"},
+	}
+	if len(got) != 1 || !reflect.DeepEqual(got[0], want) {
+		t.Errorf("logged %v\nwant %v", got, want)
+	}
+
+	log.Reset()
+	call(t, h, "POST", "/api/v1/ingest/batch", "application/x-ndjson", strings.NewReader(apiEvent))
+	for _, entry := range logEntries(t, &log) {
+		if entry["msg"] == "records rejected" {
+			t.Errorf("a clean batch logged %v", entry)
+		}
 	}
 }
 

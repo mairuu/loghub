@@ -3,6 +3,8 @@
 COMPOSE     := docker compose
 DEV_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.dev.yml
 SQLC_IMAGE  := sqlc/sqlc:1.31.1
+# Keep in step with docker-compose.yml.
+VECTOR_IMAGE := timberio/vector:0.58.0-alpine
 NODE_IMAGE  := node:24-alpine
 OAPI_SPEC   := api/openapi.yaml
 P2C_VERSION := 5.0.0
@@ -19,8 +21,8 @@ export
 DEV_DATABASE_URL         = postgres://loghub_app:$(APP_DB_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 DEV_MIGRATE_DATABASE_URL = postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 
-.PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api \
-        test test-db gen-sql check-sql gen-api check-api lint-api postman lint
+.PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api send-samples \
+        test test-db gen-sql check-sql gen-api check-api lint-api check-vector postman lint
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -64,6 +66,18 @@ dev-api: ## Run the API on the host
 	cd backend && MIGRATE_DATABASE_URL='$(DEV_MIGRATE_DATABASE_URL)' go run ./cmd/loghub migrate
 	cd backend && DATABASE_URL='$(DEV_DATABASE_URL)' go run ./cmd/loghub serve
 
+# The firewall lines go over UDP and the router lines over TCP, so both
+# listeners are used. The JSON records are tagged with the run, which also
+# keeps two runs' files from looking identical to Vector, and are written under
+# a temporary name first so Vector never reads a half-written file.
+send-samples: ## Send samples/ through the collector: syslog to port 514, JSON via inbox/
+	@samples/send_syslog.sh --udp samples/syslog/firewall.log
+	@samples/send_syslog.sh --tcp samples/syslog/network.log
+	@run=samples-$$(date +%Y%m%d-%H%M%S); \
+	  jq -c --arg run "$$run" '._tags = ((._tags // []) + [$$run])' samples/json/*.json > inbox/.$$run.tmp && \
+	  mv inbox/.$$run.tmp inbox/$$run.ndjson && \
+	  echo "Sent samples/syslog to port 514, and samples/json to inbox/ tagged $$run"
+
 test: ## Run the Go tests; database tests are skipped
 	cd backend && go test ./...
 
@@ -104,6 +118,12 @@ postman: ## Convert the spec into docs/postman_collection.json
 lint-api: ## Validate api/openapi.yaml itself
 	$(NPX) @redocly/cli@$(REDOCLY_VER) lint $(OAPI_SPEC)
 
-lint: check-sql check-api lint-api ## gofmt, go vet, sqlc drift, api drift, spec lint
+check-vector: ## Validate ingest/vector.yaml and run its unit tests
+	docker run --rm -e SYSLOG_DEFAULT_TENANT=t_test -v "$(CURDIR)/ingest:/etc/vector:ro" $(VECTOR_IMAGE) \
+	  validate --no-environment /etc/vector/vector.yaml
+	docker run --rm -e SYSLOG_DEFAULT_TENANT=t_test -v "$(CURDIR)/ingest:/etc/vector:ro" $(VECTOR_IMAGE) \
+	  test /etc/vector/vector.yaml /etc/vector/vector.test.yaml
+
+lint: check-sql check-api lint-api check-vector ## gofmt, go vet, sqlc drift, api drift, spec lint, collector config
 	@out=$$(gofmt -l backend); if [ -n "$$out" ]; then echo "Files need gofmt:"; echo "$$out"; exit 1; fi
 	cd backend && go vet ./...

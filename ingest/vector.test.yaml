@@ -1,0 +1,86 @@
+# Unit tests for the transforms in vector.yaml, run by `make check-vector`
+# with SYSLOG_DEFAULT_TENANT=t_test.
+
+tests:
+  - name: a syslog line is wrapped with the collector's metadata
+    inputs:
+      - insert_at: syslog_envelope
+        type: vrl
+        source: |
+          .message = "<134>Aug 20 12:44:56 fw01 msg=\"DNS blocked\" path=C:\\temp"
+          .host = "192.0.2.10"
+          .port = 50514
+          .source_type = "socket"
+          .timestamp = t'2026-09-16T12:00:00.123456789Z'
+    outputs:
+      - extract_from: syslog_envelope
+        conditions:
+          - type: vrl
+            source: |
+              assert_eq!(keys(.), ["message"])
+              assert_eq!(parse_json!(.message), {
+                "tenant": "t_test",
+                "message": "<134>Aug 20 12:44:56 fw01 msg=\"DNS blocked\" path=C:\\temp",
+                "received_at": "2026-09-16T12:00:00.123456789Z",
+                "peer_ip": "192.0.2.10",
+                "input": "syslog",
+              })
+
+  - name: a datagram's line ending is dropped, and nothing else
+    inputs:
+      - insert_at: syslog_envelope
+        type: vrl
+        source: |
+          .message = " <134>Aug 20 12:44:56 fw01 first\n second \r\n"
+          .host = "192.0.2.10"
+          .timestamp = t'2026-09-16T12:00:00Z'
+    outputs:
+      - extract_from: syslog_envelope
+        conditions:
+          - type: vrl
+            source: |
+              assert_eq!(parse_json!(.message).message, " <134>Aug 20 12:44:56 fw01 first\n second ")
+
+  - name: a blank syslog line is dropped
+    inputs:
+      - insert_at: syslog_envelope
+        type: log
+        log_fields:
+          message: " \r"
+          host: 192.0.2.10
+    no_outputs_from: [syslog_envelope]
+
+  - name: an inbox line is forwarded byte for byte
+    inputs:
+      - insert_at: inbox_lines
+        type: vrl
+        source: |
+          .message = "{\"tenant\":\"demoA\",\"n\":18446744073709551615,\"f\":1.10,\"s\":\"\\ud800\"}\r"
+          .file = "/inbox/export.ndjson"
+          .host = "vector"
+    outputs:
+      - extract_from: inbox_lines
+        conditions:
+          - type: vrl
+            source: |
+              assert_eq!(., {"message": "{\"tenant\":\"demoA\",\"n\":18446744073709551615,\"f\":1.10,\"s\":\"\\ud800\"}\r"})
+
+  - name: a line that isn't JSON is still forwarded, for the backend to reject
+    inputs:
+      - insert_at: inbox_lines
+        type: log
+        log_fields:
+          message: not json
+    outputs:
+      - extract_from: inbox_lines
+        conditions:
+          - type: vrl
+            source: assert_eq!(.message, "not json")
+
+  - name: a blank inbox line is dropped
+    inputs:
+      - insert_at: inbox_lines
+        type: log
+        log_fields:
+          message: "  "
+    no_outputs_from: [inbox_lines]
