@@ -284,8 +284,13 @@ paths:
         absence means there are no more results.
 
         A cursor is tied to the filters it was produced with. Re-using one with
-        different filters is rejected rather than silently paging through a
-        different result set.
+        different filters is rejected with `invalid_cursor` rather than
+        silently paging through a different result set. `from` and `to` may be
+        left out after the first page; the cursor remembers the window.
+
+        Any other unusable parameter is rejected with `invalid_parameter`. A
+        search still running after 10 seconds, usually a free-text one over a
+        wide window, is cancelled with 503 `search_timeout`.
       tags: [Search]
       parameters:
         - $ref: '#/components/parameters/TenantFilter'
@@ -359,7 +364,10 @@ components:
       name: to
       in: query
       required: false
-      description: Only events strictly before this time. Defaults to now.
+      description: |
+        Only events strictly before this time. Defaults to an hour from now,
+        the furthest ahead an event time is accepted, so an event from a
+        sender whose clock runs fast still shows up.
       schema:
         type: string
         format: date-time
@@ -452,8 +460,10 @@ components:
       in: query
       required: false
       description: |
-        Free-text match against the original payload. Matches substrings, and
-        is the slowest filter available — narrow the time range with it.
+        Free-text match against the original payload: any string or number
+        value in `raw` that contains this text, ignoring case. Keys don't
+        match. This is the slowest filter available, so narrow the time range
+        with it.
       schema:
         type: string
 
@@ -585,7 +595,9 @@ components:
             request_id: 01J9Z3K2QW8XM4P7
 
     ServiceUnavailable:
-      description: A dependency, normally the database, is unreachable.
+      description: |
+        A dependency, normally the database, is unreachable, or a search ran
+        past its time limit. Retrying later may succeed.
       headers:
         X-Request-Id:
           $ref: '#/components/headers/XRequestId'

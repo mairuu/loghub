@@ -5,7 +5,7 @@
             "description": "Liveness and readiness.",
             "item": [
                 {
-                    "id": "eea6da64-7684-4135-882c-83a29d12515e",
+                    "id": "8457d612-fb8e-41a7-947b-6f19f13ad8d9",
                     "name": "Readiness probe",
                     "request": {
                         "name": "Readiness probe",
@@ -36,7 +36,7 @@
                     },
                     "response": [
                         {
-                            "id": "c1080207-3c78-4c10-b60f-81db1c90b55b",
+                            "id": "050fdd71-4944-40e0-8466-a0aeedbbc0a0",
                             "name": "Service is ready.",
                             "originalRequest": {
                                 "url": {
@@ -67,13 +67,13 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"status\": \"ok\"\n}",
+                            "body": "{\n  \"status\": \"unavailable\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "b4ffdd14-2999-4e14-a40e-a958c1417784",
-                            "name": "A dependency, normally the database, is unreachable.",
+                            "id": "49a8394f-c060-48da-8d8e-43a0bc3432c4",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
                                     "path": [
@@ -129,7 +129,7 @@
             "description": "Getting events in. Three paths, one normalizer: a single JSON event, an\nNDJSON batch from the collector, and a whole vendor export file.\n",
             "item": [
                 {
-                    "id": "6046383f-3bc5-412a-8cee-94c49cdd1c58",
+                    "id": "cfe31594-dfc8-467f-b861-fe0d298df35e",
                     "name": "Ingest a single event",
                     "request": {
                         "name": "Ingest a single event",
@@ -162,7 +162,7 @@
                         "method": "POST",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                            "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                             "options": {
                                 "raw": {
                                     "headerFamily": "json",
@@ -174,7 +174,7 @@
                     },
                     "response": [
                         {
-                            "id": "d0c2ae01-c5c2-4bcd-816f-a1f6e4515b91",
+                            "id": "88922570-bb85-4eac-a1a3-ab0fb8a27c4f",
                             "name": "Processed. `accepted` is 1 when the event was stored; a rejected\nevent reports why in `errors[0]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -202,7 +202,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -224,7 +224,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "934c63dd-f299-4924-a558-bb207cfab409",
+                            "id": "293f694f-02f9-4c64-9f0b-7d5d1b60de8f",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -252,7 +252,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -283,7 +283,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "602ab708-cb6a-4eea-94fa-e3e662fd8d47",
+                            "id": "0232eb71-88e9-432c-8cc1-54aacf74ebb9",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -311,7 +311,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -342,7 +342,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a3a3e76c-c5a0-466a-824a-3a6432ca6f4a",
+                            "id": "5dd78285-bd7f-499f-ba69-3395f2127393",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -370,7 +370,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -401,7 +401,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "058d4d01-b874-4824-924b-17ea6c7db4a3",
+                            "id": "d00f7bbb-da30-4070-bb90-31416d1f0cf7",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -429,7 +429,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -460,7 +460,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "1e7d88b2-01b1-4937-be36-1ff23009e98d",
+                            "id": "a0f20be0-ad70-4a0f-b687-9969734f36b8",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -488,7 +488,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -519,8 +519,8 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "fd728729-dc4f-4da4-84f4-ccc870fdbcbb",
-                            "name": "A dependency, normally the database, is unreachable.",
+                            "id": "b7973f87-334d-4e4f-b372-649d01dfccda",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
                                     "path": [
@@ -547,7 +547,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"nostrud__8\": \"eu\",\n    \"laboris_99\": 38024524,\n    \"qui_b\": -68475717,\n    \"qui_a01\": 26901691.17960468\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"reprehenderit_5\": -79116655.06020813\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -584,7 +584,7 @@
                     }
                 },
                 {
-                    "id": "ae77a535-ce9d-4bc6-b85d-f84c8f34a0e4",
+                    "id": "8dbcf116-f126-4115-b8ff-fe89eb6ee585",
                     "name": "Ingest a batch of events as NDJSON",
                     "request": {
                         "name": "Ingest a batch of events as NDJSON",
@@ -624,7 +624,7 @@
                     },
                     "response": [
                         {
-                            "id": "a5322966-adbb-46a9-8426-b8acab382072",
+                            "id": "cd89af7c-f9bf-4dd5-aceb-d4446bedd8cb",
                             "name": "Batch processed; counts report how many records stored.",
                             "originalRequest": {
                                 "url": {
@@ -669,7 +669,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "3e5f9698-90a4-44c2-89dc-252e71a3787d",
+                            "id": "6e66b47a-da3d-44ae-a9a5-e4998e5bdd49",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -723,7 +723,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "4fcd357a-32d8-4bc8-b51e-538ac0f5ab73",
+                            "id": "c3849403-995e-44b1-b8d5-687d3e03b852",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -777,7 +777,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a3c4ad9d-10ce-4aaf-873a-e0c974a54a7b",
+                            "id": "e138a7f8-be7b-4397-99ad-8248fe0ab7fe",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -831,7 +831,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "425ccdb2-8abd-418c-9114-f65612e06a4e",
+                            "id": "b43ca236-7c06-4d35-88ce-31762d6b7395",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -885,8 +885,8 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "d0d43f38-232d-4abf-937f-e98ca8d33008",
-                            "name": "A dependency, normally the database, is unreachable.",
+                            "id": "b6ac3dc1-aef3-44f2-93e5-0c191e186c3a",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
                                     "path": [
@@ -945,7 +945,7 @@
                     }
                 },
                 {
-                    "id": "9544e3e1-2589-4c57-a5fc-c9a995533032",
+                    "id": "35784733-6875-4e17-aef9-474ac6eb4bce",
                     "name": "Ingest a whole export file as NDJSON",
                     "request": {
                         "name": "Ingest a whole export file as NDJSON",
@@ -971,7 +971,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                    "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                 },
                                 {
                                     "disabled": false,
@@ -1004,7 +1004,7 @@
                     },
                     "response": [
                         {
-                            "id": "83f7f987-3573-4daa-98d2-50bc4b5b1e43",
+                            "id": "88570913-13c5-452b-bbc1-c68659f206b9",
                             "name": "File processed; counts report how many records stored.",
                             "originalRequest": {
                                 "url": {
@@ -1025,7 +1025,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1068,7 +1068,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "250d29b8-60f5-4bc6-93f1-1fca6b7cb180",
+                            "id": "940f29ac-85e1-4dd8-bcb2-6d3414168f75",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -1089,7 +1089,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1141,7 +1141,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "e549fbac-8bf6-4ae9-ba95-65130ce39676",
+                            "id": "2583e9b1-6c56-4467-9fbf-189134470550",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -1162,7 +1162,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1214,7 +1214,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "182f753d-3f4b-409e-93de-4c080c3cf2eb",
+                            "id": "e0f344b9-e1e2-4b2f-8fb3-850815544de0",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -1235,7 +1235,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1287,7 +1287,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "2dd8b9f8-7934-43d7-aee7-f1e2c4c048bb",
+                            "id": "a0afaaeb-ce96-4170-9882-510177c78caf",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -1308,7 +1308,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1360,7 +1360,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "8265bf4b-a2f1-4890-8fe0-26df39c45ae9",
+                            "id": "b2f7077f-aac3-471c-b941-17cdaf786a97",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -1381,7 +1381,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1433,8 +1433,8 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "033c8041-e92e-487f-b0bd-710fa29474e6",
-                            "name": "A dependency, normally the database, is unreachable.",
+                            "id": "4fe0cec8-16ab-4ab8-acac-666d37a1a33f",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
                                     "path": [
@@ -1454,7 +1454,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1518,12 +1518,12 @@
             "description": "Querying stored events.",
             "item": [
                 {
-                    "id": "cac5a6aa-beef-49d3-8dac-893141d91b96",
+                    "id": "2672c9c6-961f-448d-b8af-ea0c576bd16c",
                     "name": "Search events",
                     "request": {
                         "name": "Search events",
                         "description": {
-                            "content": "Filtered, time-ordered list of normalized events.\n\nResults are paged with an opaque cursor rather than an offset. Events\narrive continuously, so an offset would shift under the reader between\npages, showing duplicates and silently skipping rows. Pass the\n`next_cursor` from one response as `cursor` on the next request; its\nabsence means there are no more results.\n\nA cursor is tied to the filters it was produced with. Re-using one with\ndifferent filters is rejected rather than silently paging through a\ndifferent result set.\n",
+                            "content": "Filtered, time-ordered list of normalized events.\n\nResults are paged with an opaque cursor rather than an offset. Events\narrive continuously, so an offset would shift under the reader between\npages, showing duplicates and silently skipping rows. Pass the\n`next_cursor` from one response as `cursor` on the next request; its\nabsence means there are no more results.\n\nA cursor is tied to the filters it was produced with. Re-using one with\ndifferent filters is rejected with `invalid_cursor` rather than\nsilently paging through a different result set. `from` and `to` may be\nleft out after the first page; the cursor remembers the window.\n\nAny other unusable parameter is rejected with `invalid_parameter`. A\nsearch still running after 10 seconds, usually a free-text one over a\nwide window, is cancelled with 503 `search_timeout`.\n",
                             "type": "text/plain"
                         },
                         "url": {
@@ -1543,7 +1543,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                    "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                 },
                                 {
                                     "disabled": false,
@@ -1557,7 +1557,7 @@
                                 {
                                     "disabled": false,
                                     "description": {
-                                        "content": "Only events strictly before this time. Defaults to now.",
+                                        "content": "Only events strictly before this time. Defaults to an hour from now,\nthe furthest ahead an event time is accepted, so an event from a\nsender whose clock runs fast still shows up.\n",
                                         "type": "text/plain"
                                     },
                                     "key": "to",
@@ -1570,7 +1570,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "api"
+                                    "value": "ad"
                                 },
                                 {
                                     "disabled": false,
@@ -1579,7 +1579,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "m365"
+                                    "value": "crowdstrike"
                                 },
                                 {
                                     "disabled": false,
@@ -1665,7 +1665,7 @@
                                 {
                                     "disabled": false,
                                     "description": {
-                                        "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                        "content": "Free-text match against the original payload: any string or number\nvalue in `raw` that contains this text, ignoring case. Keys don't\nmatch. This is the slowest filter available, so narrow the time range\nwith it.\n",
                                         "type": "text/plain"
                                     },
                                     "key": "q",
@@ -1713,7 +1713,7 @@
                     },
                     "response": [
                         {
-                            "id": "3d6375a7-e4f5-4e2c-a628-4cbd62f230bd",
+                            "id": "4dfaef7a-493e-4fcc-a533-6f4f021236cb",
                             "name": "Matching events, newest first unless `order=asc`.",
                             "originalRequest": {
                                 "url": {
@@ -1733,7 +1733,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1747,7 +1747,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "content": "Only events strictly before this time. Defaults to an hour from now,\nthe furthest ahead an event time is accepted, so an event from a\nsender whose clock runs fast still shows up.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "to",
@@ -1760,7 +1760,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "crowdstrike"
                                         },
                                         {
                                             "disabled": false,
@@ -1837,7 +1837,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "content": "Free-text match against the original payload: any string or number\nvalue in `raw` that contains this text, ignoring case. Keys don't\nmatch. This is the slowest filter available, so narrow the time range\nwith it.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "q",
@@ -1890,12 +1890,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"items\": [\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"firewall\",\n      \"raw\": {\n        \"nisi_c8\": 80103329.26955101\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    },\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"api\",\n      \"raw\": {\n        \"consectetur_df4\": \"Duis labore cupidatat\",\n        \"in25\": -12678024.120133817,\n        \"eiusmod9d8\": -33351718.886161774\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    }\n  ],\n  \"next_cursor\": \"<string>\"\n}",
+                            "body": "{\n  \"items\": [\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"firewall\",\n      \"raw\": {\n        \"est4\": \"cupidatat est incididunt fu\"\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    },\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"network\",\n      \"raw\": {\n        \"veniam_1\": 62001543.402131915,\n        \"dolor_3\": -99936776\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    }\n  ],\n  \"next_cursor\": \"<string>\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "51d65dcb-fc3d-4e38-8153-30ab2edb2ab1",
+                            "id": "d94ec64c-f3a0-4256-b4b2-42aaa85696f3",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -1915,7 +1915,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -1929,7 +1929,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "content": "Only events strictly before this time. Defaults to an hour from now,\nthe furthest ahead an event time is accepted, so an event from a\nsender whose clock runs fast still shows up.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "to",
@@ -1942,7 +1942,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "crowdstrike"
                                         },
                                         {
                                             "disabled": false,
@@ -2019,7 +2019,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "content": "Free-text match against the original payload: any string or number\nvalue in `raw` that contains this text, ignoring case. Keys don't\nmatch. This is the slowest filter available, so narrow the time range\nwith it.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "q",
@@ -2086,7 +2086,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "6d72964f-4681-41ab-8ac5-80ca40512dac",
+                            "id": "32fdb2c0-c9f3-4af8-a7aa-ec3fa6d3eb8e",
                             "name": "The caller may not read what was asked for.",
                             "originalRequest": {
                                 "url": {
@@ -2106,7 +2106,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -2120,7 +2120,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "content": "Only events strictly before this time. Defaults to an hour from now,\nthe furthest ahead an event time is accepted, so an event from a\nsender whose clock runs fast still shows up.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "to",
@@ -2133,7 +2133,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "crowdstrike"
                                         },
                                         {
                                             "disabled": false,
@@ -2210,7 +2210,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "content": "Free-text match against the original payload: any string or number\nvalue in `raw` that contains this text, ignoring case. Keys don't\nmatch. This is the slowest filter available, so narrow the time range\nwith it.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "q",
@@ -2277,7 +2277,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a82c513f-8e83-41ee-9733-1c07a0831a5c",
+                            "id": "6d94e6e2-69ee-4f3c-ab33-5bfd61ccaed5",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -2297,7 +2297,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -2311,7 +2311,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "content": "Only events strictly before this time. Defaults to an hour from now,\nthe furthest ahead an event time is accepted, so an event from a\nsender whose clock runs fast still shows up.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "to",
@@ -2324,7 +2324,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "crowdstrike"
                                         },
                                         {
                                             "disabled": false,
@@ -2401,7 +2401,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "content": "Free-text match against the original payload: any string or number\nvalue in `raw` that contains this text, ignoring case. Keys don't\nmatch. This is the slowest filter available, so narrow the time range\nwith it.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "q",
@@ -2468,7 +2468,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "30345f76-9c89-4ef6-9e2e-cb9b6330703e",
+                            "id": "d2145f69-24cd-4d97-9dc0-edf31fbc99af",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -2488,7 +2488,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -2502,7 +2502,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "content": "Only events strictly before this time. Defaults to an hour from now,\nthe furthest ahead an event time is accepted, so an event from a\nsender whose clock runs fast still shows up.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "to",
@@ -2515,7 +2515,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "crowdstrike"
                                         },
                                         {
                                             "disabled": false,
@@ -2592,7 +2592,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "content": "Free-text match against the original payload: any string or number\nvalue in `raw` that contains this text, ignoring case. Keys don't\nmatch. This is the slowest filter available, so narrow the time range\nwith it.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "q",
@@ -2659,8 +2659,8 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "19539140-1d50-4144-80c3-c7e2473eb6db",
-                            "name": "A dependency, normally the database, is unreachable.",
+                            "id": "f8cab20a-00d6-48ff-9674-298e4e33a3b0",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
                                     "path": [
@@ -2679,7 +2679,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "Htdd7joccXCn-dqmGT3mHFjPL-GETtNCrNS9ya7mMLTt3MU3SaFz20D5VSlait"
+                                            "value": "IEE_wOaeyEjJeHa0GCOtGn_57AxvDo1Bjx-rrIimcoQ2QLr-xTNo"
                                         },
                                         {
                                             "disabled": false,
@@ -2693,7 +2693,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Only events strictly before this time. Defaults to now.",
+                                                "content": "Only events strictly before this time. Defaults to an hour from now,\nthe furthest ahead an event time is accepted, so an event from a\nsender whose clock runs fast still shows up.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "to",
@@ -2706,7 +2706,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "crowdstrike"
                                         },
                                         {
                                             "disabled": false,
@@ -2783,7 +2783,7 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Free-text match against the original payload. Matches substrings, and\nis the slowest filter available — narrow the time range with it.\n",
+                                                "content": "Free-text match against the original payload: any string or number\nvalue in `raw` that contains this text, ignoring case. Keys don't\nmatch. This is the slowest filter available, so narrow the time range\nwith it.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "q",
@@ -2866,7 +2866,7 @@
         }
     ],
     "info": {
-        "_postman_id": "365dcf2d-d1ba-4fb5-8d0f-849564bd1831",
+        "_postman_id": "fd4a851d-6a87-4a5f-b569-543de0efd0f7",
         "name": "loghub API",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": {

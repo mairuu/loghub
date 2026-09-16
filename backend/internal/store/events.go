@@ -95,8 +95,8 @@ func (r *EventRepo) Insert(ctx context.Context, events []NewEventParams) ([]erro
 		for _, tenant := range tenants {
 			// RLS checks every row against this, so a row for any other
 			// tenant fails instead of landing in the wrong place.
-			if err := s.q.SetTenantContext(ctx, gen.SetTenantContextParams{TenantID: tenant}); err != nil {
-				return pg.Wrap(err, "cannot set tenant context")
+			if err := s.setScope(ctx, Scope{TenantID: tenant}); err != nil {
+				return err
 			}
 			for chunk := range slices.Chunk(byTenant[tenant], insertChunk) {
 				if err := insertEvents(ctx, s, events, chunk, rejected); err != nil {

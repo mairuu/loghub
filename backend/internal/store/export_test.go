@@ -8,3 +8,4 @@ func SetInsertChunk(n int) (restore func()) {
 }
 
 var Refusal = refusal
+var SearchError = searchError

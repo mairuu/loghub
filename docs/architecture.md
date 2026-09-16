@@ -93,4 +93,15 @@ All events from one request are stored in one transaction. If the database fails
 - Inserts go to Postgres in batches of 1000, one round trip each. `COPY` would be faster, but Postgres doesn't allow it on a table with row-level security.
 - If Postgres refuses a value anyway, the batch is rolled back to a savepoint and retried one event at a time. Only the refused event is rejected, with `unstorable_event`; failing the whole batch would make Vector retry it forever. The normalizer is meant to make this impossible, so the tests store every sample and a set of hostile records and expect no rejections.
 
+### Search
+
+`GET /api/v1/events` runs a single query, built at request time in `backend/internal/store/search.go` ([ADR 0008](adr/0008-sqlc-queries.md)). Every filter value is a bind parameter.
+- **Scope:** the query runs in a transaction whose row-level security context is the caller. A viewer's search is also given their tenant as an explicit filter. That changes nothing about what they can see, but it lets Postgres use the `(tenant_id, ts)` index, which the security policy's OR condition can't.
+- **Window:** the time window picks the daily partitions to read. It defaults to the last 24 hours, and reaches an hour into the future, because the normalizer accepts event times up to an hour ahead.
+- **Free text:** `q` matches any string or number value in `raw`, ignoring case. When the text contains nothing JSON would escape, a match against `raw`'s text form discards most rows first.
+- **Paging:** pages are ordered by `(ts, id)` and resume after the last row of the previous page, so events that arrive in between don't shift them. The cursor also carries the time window and a hash of the other filters, so a cursor reused with different filters is rejected.
+- **Timeout:** a search still running after 10 seconds is cancelled.
+
+With a million events loaded, about 95,000 per tenant in a 24-hour window, a tenant's newest page takes under a millisecond, all tenants about 35 ms, and a free-text search 300–400 ms.
+
 The code is `EventRepo` in `backend/internal/store`. `make test-db` runs its tests against the dev Postgres, as the `loghub_app` role, so they exercise the real policies.
