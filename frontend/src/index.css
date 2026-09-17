@@ -1,0 +1,71 @@
+@import 'tailwindcss';
+
+/* Colours are named for their role, and each role is a variable that the
+   dark scheme redefines, so components never need dark: variants. */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+}
+
+:root {
+  color-scheme: light;
+  --canvas: #f4f5f8;
+  --surface: #ffffff;
+  --sunken: #f0f2f6;
+  --line: #dfe3ea;
+  --fg: #151a23;
+  --muted: #5d6676;
+  --accent: #4f46e5;
+  --accent-soft: #eceafe;
+  --on-accent: #ffffff;
+  --danger: #c81e3a;
+  --danger-soft: #fdecef;
+  --warn: #a15c07;
+  --warn-soft: #fdf3e1;
+  --ok: #117a4c;
+  --ok-soft: #e4f6ed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --canvas: #0c0f15;
+    --surface: #141922;
+    --sunken: #10141c;
+    --line: #262d3a;
+    --fg: #e6e9ef;
+    --muted: #9aa3b3;
+    --accent: #8f95ff;
+    --accent-soft: #23264a;
+    --on-accent: #0c0f15;
+    --danger: #ff6b81;
+    --danger-soft: #3a1720;
+    --warn: #f2b154;
+    --warn-soft: #36270f;
+    --ok: #4cd394;
+    --ok-soft: #10301f;
+  }
+}
+
+body {
+  @apply bg-canvas text-fg antialiased;
+}
+
+/* Recharts draws its own focus outline on the chart surface. */
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none;
+}
