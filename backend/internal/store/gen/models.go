@@ -9,6 +9,34 @@ import (
 	"time"
 )
 
+type Alert struct {
+	ID          int64
+	RuleID      int64
+	TenantID    string
+	GroupKey    string
+	WindowStart time.Time
+	WindowEnd   time.Time
+	Matched     int64
+	CreatedAt   time.Time
+}
+
+type AlertRule struct {
+	ID              int64
+	TenantID        string
+	Name            string
+	Source          *string
+	EventType       *string
+	Action          *string
+	SeverityMin     *int16
+	Tags            []string
+	GroupBy         string
+	Threshold       int32
+	WindowMinutes   int32
+	CooldownMinutes int32
+	WebhookURL      *string
+	CreatedAt       time.Time
+}
+
 type Event struct {
 	ID             int64
 	Ts             time.Time
