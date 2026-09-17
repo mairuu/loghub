@@ -165,6 +165,18 @@ func invalidParam(message string) *errors.Error {
 // Scalar loads from a CDN, so /api/docs needs outbound network access. An
 // appliance that is firewalled off renders a blank page; vendoring the bundle
 // into the frontend assets is the fix if that becomes a problem.
+//
+// The page shares an origin with the UI, which keeps its token there
+// (ADR 0009), so the script is pinned to one release and checked against its
+// hash. To upgrade, change both:
+//
+//	curl -s https://cdn.jsdelivr.net/npm/@scalar/api-reference@$VERSION/dist/browser/standalone.js |
+//	  openssl dgst -sha384 -binary | openssl base64 -A
+const (
+	scalarVersion   = "1.69.0"
+	scalarIntegrity = "sha384-UL+pt9bcR3hCuzEybA1bAyu6yv9qkzJuYCP5N+HZPOo9ZkUXcMflxqBjC1vfDzfe"
+)
+
 const docsPage = `<!doctype html>
 <html>
   <head>
@@ -174,7 +186,10 @@ const docsPage = `<!doctype html>
   </head>
   <body>
     <div id="app"></div>
-    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@` + scalarVersion + `/dist/browser/standalone.js"
+      integrity="` + scalarIntegrity + `"
+      crossorigin="anonymous"></script>
     <script>
       Scalar.createApiReference('#app', { url: '/api/openapi.json' })
     </script>

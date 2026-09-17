@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"net/netip"
 	"reflect"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -724,6 +725,11 @@ func TestSpecServed(t *testing.T) {
 	newHandler(t, &fakeEvents{}).ServeHTTP(rec, httptest.NewRequest("GET", "/api/docs", nil))
 	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "/api/openapi.json") {
 		t.Errorf("docs page: %d %s", rec.Code, rec.Body)
+	}
+	// The script runs on the UI's origin, so it must be exactly the one
+	// reviewed.
+	if !regexp.MustCompile(`<script\s+src="https://cdn\.jsdelivr\.net/npm/@scalar/api-reference@\d+\.\d+\.\d+/[^"]+"\s+integrity="sha384-[A-Za-z0-9+/]{64}"\s+crossorigin="anonymous">`).MatchString(rec.Body.String()) {
+		t.Errorf("docs page loads Scalar unpinned:\n%s", rec.Body)
 	}
 }
 
