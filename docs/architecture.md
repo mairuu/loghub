@@ -138,14 +138,14 @@ With a million events spread over 24 hours, 100,000 per tenant, either count tak
 
 Each handler then asks the enforcer in `backend/internal/authz` whether the caller may act. The policies are in `backend/internal/api/policies.go`:
 
-| Role | Health, sign-in | Events | Alert rules | Alerts |
-|---|---|---|---|---|
-| anonymous | yes | no | no | no |
-| admin | yes | read and create, any tenant | read and create, any tenant | read, any tenant |
-| viewer | yes | read, own tenant | read, own tenant | read, own tenant |
-| collector | yes | create, any tenant | no | no |
+| Role | Health, sign-in | Tenants | Events | Alert rules | Alerts |
+|---|---|---|---|---|---|
+| anonymous | yes | no | no | no | no |
+| admin | yes | list, all | read and create, any tenant | read and create, any tenant | read, any tenant |
+| viewer | yes | list, own | read, own tenant | read, own tenant | read, own tenant |
+| collector | yes | no | create, any tenant | no | no |
 
-A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search and the dashboard counts ask which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore still reads nothing it shouldn't. Ingest is the exception, because the insert runs as each record's tenant, so the per-record check is the only check on writes.
+A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search and the dashboard counts ask which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore still reads nothing it shouldn't. There are two exceptions. Ingest inserts as each record's tenant, so the per-record check is the only check on writes. `tenants` has no row-level security, since it is read before there is a tenant to scope by, so `GET /api/v1/tenants` narrows its list to the policy's answer itself. The list holds only IDs and names.
 
 Sign-in checks an unknown email against a fixed bcrypt hash, so it takes as long as a wrong password, and both are refused with 401 `invalid_credentials`. Tokens can't be revoked before they expire, and sign-in has no rate limit.
 
@@ -158,3 +158,24 @@ Sign-in checks an unknown email against a fixed bcrypt hash, so it takes as long
 - **Repeats:** an alert is unique on rule, group and window start, so the same window is never recorded twice. After an alert, its group stays quiet until the rule's cooldown has passed since the end of that alert's window. The cooldown defaults to the window length, so one burst raises one alert, and a burst that keeps going raises one per window.
 - **Delivery:** `GET /api/v1/alerts` lists alerts newest first, for the UI's alert page. When a rule has a webhook URL, each new alert is also POSTed to it as JSON, the same object the API lists. The request times out after 5 seconds and redirects aren't followed. A failed delivery is logged with the URL's host only, since the URL often holds a secret, and it isn't retried.
 - **Access:** admins create and read rules for any tenant. A viewer reads their own tenant's rules and alerts, and sees rules without their webhook URLs. Rules can't be changed or removed through the API. Both tables have the same row-level security policy as `events`, and `loghub_app` may only select from them and insert into them.
+
+## Edge and UI
+
+### Edge
+
+Caddy ([ADR 0005](adr/0005-caddy-edge.md)) is the only service with published HTTP ports. Its configuration, [`frontend/Caddyfile`](../frontend/Caddyfile), is built into its image along with the UI.
+- **Address:** Caddy answers to the one name or address in `SITE_ADDRESS`. `localhost` and private addresses get certificates from Caddy's own CA, and public names get them from Let's Encrypt. A client that connects by IP address sends no server name, so that address's certificate is the default. Any other host gets an empty response, and port 80 only redirects to HTTPS.
+- **Routes:** `/api/*` goes to the backend unchanged, and `/ingest` is rewritten to `/api/v1/ingest`. Everything else is the UI. Files under `/assets/` have a content hash in their names and are cached for a year. Any other path gets `index.html`, which is never cached, so a new build shows on the next load.
+- **Headers:** every response has `X-Content-Type-Options`, `X-Frame-Options` and `Referrer-Policy`. HSTS is added unless the site is `localhost`, where it would stick to every local port. The UI's pages also get a Content-Security-Policy that allows nothing but files and requests from their own origin: no inline scripts or styles, and no framing. The API reference at `/api/docs` loads Scalar from a CDN and runs an inline script, so it has no such policy.
+- **Privileges:** Caddy runs as an unprivileged user, with only the capability to bind ports 80 and 443. Its certificates and CA are kept in the `caddy_data` volume.
+
+### UI
+
+`frontend/` is a React single-page app ([ADR 0006](adr/0006-react-vite-frontend.md)). It calls the API on its own origin through a client typed from the spec ([ADR 0007](adr/0007-openapi-spec-first.md)), and `make gen-api` regenerates those types in `frontend/src/api/schema.d.ts`.
+- **Session:** the token from sign-in is kept in `sessionStorage` and sent as a bearer token. When it expires, or the API refuses it with 401, the UI drops it and everything it had fetched, and returns to sign-in. The UI's role checks only decide what to show. The API decides what is allowed.
+- **Filters:** the dashboard and search keep the time range, tenant, sources and other filters in the URL, under the API's parameter names, so a link carries them between the two pages. A preset range such as the last 24 hours is worked out for each request and ends at the start of the next minute. Every count on a screen therefore covers the same window.
+- **Freshness:** the UI polls. Counts refresh every 30 seconds. The first page of a search and the alerts refresh every 15 seconds. Nothing is pushed to the browser.
+- **Tenants:** an admin chooses from `GET /api/v1/tenants`, and a viewer sees their own tenant's name. A link that names another tenant shows a notice instead of sending requests the API would refuse.
+- **Loading:** each page is its own bundle, so the chart library loads only with the dashboard.
+
+`make test` runs the UI's tests with Vitest against a fake API, and `make lint` type-checks, lints and format-checks it. `make dev-web` serves the UI with hot reload, and passes `/api` to the backend on `127.0.0.1:8080`.

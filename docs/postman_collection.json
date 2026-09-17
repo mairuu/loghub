@@ -5,7 +5,7 @@
             "description": "Liveness and readiness.",
             "item": [
                 {
-                    "id": "56039659-126c-424c-b2a2-f85f5afb850f",
+                    "id": "a56c59b4-b052-4b10-b25a-638ce1f1f2c6",
                     "name": "Readiness probe",
                     "request": {
                         "name": "Readiness probe",
@@ -36,7 +36,7 @@
                     },
                     "response": [
                         {
-                            "id": "a4ef81d4-3fa0-4cd6-a10a-d2058eb96ccc",
+                            "id": "05815564-745a-4a8f-aa3a-af14cc83da7c",
                             "name": "Service is ready.",
                             "originalRequest": {
                                 "url": {
@@ -72,7 +72,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "cc21fe95-aa81-423f-bc23-f52ac0224561",
+                            "id": "3673eb08-c512-4bad-bc3f-1490d5704a1a",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -129,7 +129,7 @@
             "description": "Signing in.",
             "item": [
                 {
-                    "id": "cbec8504-75d6-4cb8-98bc-b99937333ddc",
+                    "id": "1036329b-1a1d-4655-9199-1cfa1ef845d2",
                     "name": "Sign in",
                     "request": {
                         "name": "Sign in",
@@ -175,7 +175,7 @@
                     },
                     "response": [
                         {
-                            "id": "b95320f2-a837-463b-b587-43f2a4879f39",
+                            "id": "4cbdd1b7-965c-4700-989d-fd6fb1df5938",
                             "name": "Signed in.",
                             "originalRequest": {
                                 "url": {
@@ -226,7 +226,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "721c3a28-0214-4fb0-8be2-f244faa7e4b6",
+                            "id": "bc2daa7a-f94e-4f23-ae5f-b385c8154a4f",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -286,7 +286,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a8cb7a3a-5472-4b9f-ad88-aaf60fc8d7fe",
+                            "id": "6352bdac-a51f-4a85-8bec-5f029b8ec243",
                             "name": "The email and password don't match an account.",
                             "originalRequest": {
                                 "url": {
@@ -346,7 +346,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "73f1eca0-9935-4a1d-bb15-a4cc59d3b3b7",
+                            "id": "5316b21a-5bbd-4a7b-9d7b-c204b8672f7e",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -406,7 +406,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "46628ce0-564d-4bc4-8664-a1349f752f80",
+                            "id": "44288126-bf19-4f19-b5fc-449e4e5da395",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -466,7 +466,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "2d037875-7eb3-4da8-965c-b407398cd465",
+                            "id": "7ea7c08c-fad9-498f-a248-51ddeb926845",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -526,7 +526,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "0a261387-1c2d-4d12-ad4e-07f0f6cb5c67",
+                            "id": "d4ec97fd-87ff-4631-82fe-83d1cd5a9b2f",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -586,7 +586,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "1c27dbb3-df90-49e3-9763-c123d0050ca5",
+                            "id": "af8c9948-1a2f-4658-a7f1-6435acf262a5",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -667,11 +667,324 @@
             ]
         },
         {
+            "name": "Tenants",
+            "description": "The tenants a caller may read, for choosing between them.",
+            "item": [
+                {
+                    "id": "193fe583-a205-46a3-a6c2-4e56609795e6",
+                    "name": "List tenants",
+                    "request": {
+                        "name": "List tenants",
+                        "description": {
+                            "content": "The tenants the caller may read, ordered by ID: every tenant for an\nadmin, and a viewer's own tenant for a viewer. These are the values\nthe `tenant` filters accept.\n",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "tenants"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "GET",
+                        "body": {},
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{bearerToken}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [
+                        {
+                            "id": "4ab92ea6-32b3-4c2a-a00c-12dbd17d21b4",
+                            "name": "The tenants.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "tenants"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"items\": [\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "34f7722e-9b3a-42de-ba4c-326d750c7046",
+                            "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "tenants"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Unauthorized",
+                            "code": 401,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "5b5c71f1-9486-469a-b279-41174389dff7",
+                            "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "tenants"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Forbidden",
+                            "code": 403,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "cb00f3cf-e409-4a15-936d-b7eabde21372",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "tenants"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "cae79e1c-c641-4034-97f7-5e0d85c5c0cf",
+                            "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "tenants"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
+        },
+        {
             "name": "Ingest",
             "description": "Getting events in. Three paths, one normalizer: a single JSON event, an\nNDJSON batch from the collector, and a whole vendor export file.\n",
             "item": [
                 {
-                    "id": "8999ef22-087c-4e87-9a3d-5148abcdf226",
+                    "id": "99cc6ba8-9d5a-41c5-9e62-98520145b54e",
                     "name": "Ingest a single event",
                     "request": {
                         "name": "Ingest a single event",
@@ -704,7 +1017,7 @@
                         "method": "POST",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                            "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                             "options": {
                                 "raw": {
                                     "headerFamily": "json",
@@ -724,7 +1037,7 @@
                     },
                     "response": [
                         {
-                            "id": "a99fa3ba-ad8a-44d5-a309-4d1eb789c662",
+                            "id": "4d4c40d1-9476-4d9e-b897-b5e315e7fd6e",
                             "name": "Processed. `accepted` is 1 when the event was stored; a rejected\nevent reports why in `errors[0]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -760,7 +1073,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -782,7 +1095,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "1f1ddd3c-9574-4efd-ae20-1e0888399401",
+                            "id": "8ce12e47-14a0-4f2c-847a-4d2c23c084bf",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -818,7 +1131,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -849,7 +1162,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "32928684-3e72-4f44-ba8a-ca75770539d4",
+                            "id": "e0c9ed53-063c-488c-9d74-7e72bbfab9b4",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -885,7 +1198,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -916,7 +1229,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "e9b90e23-8c08-45d8-8e8c-3753e6b996d7",
+                            "id": "bd49d2ad-6bd7-4159-8ca5-275188404717",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -952,7 +1265,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -983,7 +1296,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7f82eee0-677a-4bd9-bc68-d3cba25424a3",
+                            "id": "3b51dee2-c15f-4bdf-bfa4-fa8ffc70ffbc",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -1019,7 +1332,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1050,7 +1363,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "1b253c43-db2f-47a7-957a-afb1ab4df0d5",
+                            "id": "97f25d9d-eeb6-4b96-b615-1c0e6c415f39",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -1086,7 +1399,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1117,7 +1430,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "e88c2bd3-5f02-429d-b885-9c6c94701702",
+                            "id": "836f8cde-fcca-4734-9b6a-23dc06eb24b4",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -1153,7 +1466,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1184,7 +1497,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "4aeb32c0-280e-4486-9a9b-0d067a8b7581",
+                            "id": "8295c162-9ae7-4ebc-b976-f02fa606e9ba",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -1220,7 +1533,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1251,7 +1564,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "ea4f6828-64a2-4591-beb4-fb7e9b84def5",
+                            "id": "0e3ea106-219d-432a-a015-8d40e6e48fcb",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -1287,7 +1600,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"ipsum__0e\": true,\n    \"veniam_69\": 48014046\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"esse_a\": \"aliquip elit irure\",\n    \"ind3d\": -22561104.728973925\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1324,7 +1637,7 @@
                     }
                 },
                 {
-                    "id": "1b98c418-9840-40d3-8902-2f029f1da81a",
+                    "id": "58bd0d49-0ea4-43a6-a272-e966bf497198",
                     "name": "Ingest a batch of events as NDJSON",
                     "request": {
                         "name": "Ingest a batch of events as NDJSON",
@@ -1372,7 +1685,7 @@
                     },
                     "response": [
                         {
-                            "id": "4ec20c02-4f65-42ff-9108-3c6693cb046f",
+                            "id": "ddb2e351-19f3-481e-8b4a-a60b9f310bf2",
                             "name": "Batch processed; counts report how many records stored.",
                             "originalRequest": {
                                 "url": {
@@ -1425,7 +1738,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7892d28c-a7a6-4fe8-a188-5c80eef60d8e",
+                            "id": "dc4474c4-61a8-4e63-9823-279ffb1d5cee",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -1487,7 +1800,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "97437b54-dfe5-45bf-abb2-8a22f47aef90",
+                            "id": "75e41ef5-c24a-4cd1-96c0-c790a219bc5e",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -1549,7 +1862,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "80062bdb-af8d-4dec-9c22-22b3e559e7ed",
+                            "id": "6c51747c-36d9-4742-b077-9d7dd9262caf",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -1611,7 +1924,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "3b4ec281-b16a-4b13-b665-097209f22205",
+                            "id": "ab348f82-27dd-4eab-b7b0-789f8f6eccab",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -1673,7 +1986,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "d7e342a7-1c5e-4487-ad61-c81a97a11440",
+                            "id": "90e973c4-e5a5-49af-a9bf-dbc40969aeaa",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -1735,7 +2048,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "486dc1ee-247c-4714-a307-b4a63caf932c",
+                            "id": "9ceb5ab3-df9a-489b-bb1c-02f855a6ccf7",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -1797,7 +2110,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7a3816b5-8eab-4059-9918-46cb247dcc46",
+                            "id": "b7e29a37-b8e8-4731-b29f-98f819b60d75",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -1865,7 +2178,7 @@
                     }
                 },
                 {
-                    "id": "3f1eaec0-12fe-4b6c-80bf-ec22611b0542",
+                    "id": "b7dd8d01-d3c4-46cc-96ae-9479c90783e1",
                     "name": "Ingest a whole export file as NDJSON",
                     "request": {
                         "name": "Ingest a whole export file as NDJSON",
@@ -1891,7 +2204,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                    "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                 },
                                 {
                                     "disabled": true,
@@ -1900,7 +2213,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "network"
+                                    "value": "ad"
                                 }
                             ],
                             "variable": []
@@ -1932,7 +2245,7 @@
                     },
                     "response": [
                         {
-                            "id": "7e836562-4e09-4a20-be5b-a5e2a9dfbd25",
+                            "id": "cf1ec9a5-b31d-4293-b29d-bdaa756605cd",
                             "name": "File processed; counts report how many records stored.",
                             "originalRequest": {
                                 "url": {
@@ -1953,7 +2266,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -1962,7 +2275,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2004,7 +2317,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "486a92c9-8316-46c4-abbc-8561f3a1d582",
+                            "id": "f85c8646-98ac-41b3-950b-63f4960b274c",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -2025,7 +2338,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2034,7 +2347,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2085,7 +2398,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "194f7f56-da6d-4324-abb9-3f8f96e90425",
+                            "id": "be7b03eb-a0b3-4951-a453-683aae903c54",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -2106,7 +2419,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2115,7 +2428,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2166,7 +2479,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "6b234df9-e9ac-4f28-ba72-3e4e5184f847",
+                            "id": "7656419c-42df-4a5e-bc3c-537c6340f3d6",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -2187,7 +2500,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2196,7 +2509,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2247,7 +2560,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "f5b3c08a-d8ed-4693-a69b-cb9a0888ae4b",
+                            "id": "10f569c7-b46c-4d56-b6b6-1227c304918b",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -2268,7 +2581,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2277,7 +2590,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2328,7 +2641,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "f6379396-66c5-4960-8c72-bd7b45909053",
+                            "id": "16f86699-18d5-4fe7-9d25-42ffc39cfbe9",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -2349,7 +2662,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2358,7 +2671,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2409,7 +2722,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "1cdb3d80-8a18-402c-85c8-301059c68586",
+                            "id": "24dec30d-355f-4a53-95a5-364fdfbff428",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -2430,7 +2743,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2439,7 +2752,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2490,7 +2803,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "c783166f-e5f1-45c5-aeb2-0d2f73b0602b",
+                            "id": "43819828-e4bf-4eaf-9fa3-c11aac461307",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -2511,7 +2824,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2520,7 +2833,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2571,7 +2884,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7c28cdbb-a1ed-431c-9723-bcdba25bf3a9",
+                            "id": "431b201a-67c1-4020-9d65-8d6a870bd5bb",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -2592,7 +2905,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2601,7 +2914,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "ad"
                                         }
                                     ],
                                     "variable": []
@@ -2664,7 +2977,7 @@
             "description": "Querying stored events.",
             "item": [
                 {
-                    "id": "16fd64ff-3af8-4ac2-9968-27137ef70c94",
+                    "id": "1b5bdacf-955d-4dd0-b4ab-73ed072c72d8",
                     "name": "Search events",
                     "request": {
                         "name": "Search events",
@@ -2689,7 +3002,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                    "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                 },
                                 {
                                     "disabled": true,
@@ -2716,7 +3029,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "m365"
+                                    "value": "crowdstrike"
                                 },
                                 {
                                     "disabled": true,
@@ -2725,7 +3038,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "network"
+                                    "value": "m365"
                                 },
                                 {
                                     "disabled": true,
@@ -2842,7 +3155,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "order",
-                                    "value": "desc"
+                                    "value": "asc"
                                 }
                             ],
                             "variable": []
@@ -2867,7 +3180,7 @@
                     },
                     "response": [
                         {
-                            "id": "7bb1c497-ebb0-4b4c-8fa3-d3b8df480d72",
+                            "id": "b57d601a-0a66-4718-bddc-32eb9ea68492",
                             "name": "Matching events, newest first unless `order=asc`.",
                             "originalRequest": {
                                 "url": {
@@ -2887,7 +3200,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -2914,7 +3227,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -3022,7 +3335,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "order",
-                                            "value": "desc"
+                                            "value": "asc"
                                         }
                                     ],
                                     "variable": []
@@ -3052,12 +3365,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"items\": [\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"crowdstrike\",\n      \"raw\": {\n        \"ullamco_69d\": -8541319\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    },\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"network\",\n      \"raw\": {\n        \"consectetur02\": -82359405.45492855\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    }\n  ],\n  \"next_cursor\": \"<string>\"\n}",
+                            "body": "{\n  \"items\": [\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"firewall\",\n      \"raw\": {\n        \"consequatc\": \"consequat ut qui\",\n        \"laborisb\": -19866586.45266834\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    },\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"ad\",\n      \"raw\": {\n        \"occaecat04\": 90404226.16242853,\n        \"in_370\": \"in\"\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    }\n  ],\n  \"next_cursor\": \"<string>\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "bf18b529-2809-464f-9dca-79ef7261f60a",
+                            "id": "5a00e282-2498-4140-899e-7945ba8fd259",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -3077,7 +3390,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -3104,7 +3417,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -3212,7 +3525,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "order",
-                                            "value": "desc"
+                                            "value": "asc"
                                         }
                                     ],
                                     "variable": []
@@ -3256,7 +3569,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "dab03f89-819e-4483-82c4-25dd9a9334c4",
+                            "id": "6e0b73f5-0dd2-48e1-9848-4e8ec2b81bbd",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -3276,7 +3589,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -3303,7 +3616,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -3411,7 +3724,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "order",
-                                            "value": "desc"
+                                            "value": "asc"
                                         }
                                     ],
                                     "variable": []
@@ -3455,7 +3768,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "9731f931-3e79-4d97-883f-46ce74e4fd33",
+                            "id": "8a0510de-9d5d-4a6e-b11b-48b06ab64ad8",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -3475,7 +3788,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -3502,7 +3815,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -3610,7 +3923,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "order",
-                                            "value": "desc"
+                                            "value": "asc"
                                         }
                                     ],
                                     "variable": []
@@ -3654,7 +3967,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "ff4fd404-eaae-426d-b242-0399740b5fbb",
+                            "id": "47f88201-bb1b-4604-8364-2c3b0016a1d6",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -3674,7 +3987,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -3701,7 +4014,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -3809,7 +4122,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "order",
-                                            "value": "desc"
+                                            "value": "asc"
                                         }
                                     ],
                                     "variable": []
@@ -3853,7 +4166,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "60b8b604-0a76-4812-92cd-42a852962fc8",
+                            "id": "200b349e-ec3f-47d9-ac56-cd7239758b55",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -3873,7 +4186,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -3900,7 +4213,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -4008,7 +4321,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "order",
-                                            "value": "desc"
+                                            "value": "asc"
                                         }
                                     ],
                                     "variable": []
@@ -4052,7 +4365,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "6c1923b8-422f-4d38-b522-db8651b01098",
+                            "id": "33aea127-bff1-4ce8-a43f-8af0927702f8",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -4072,7 +4385,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -4099,7 +4412,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -4207,7 +4520,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "order",
-                                            "value": "desc"
+                                            "value": "asc"
                                         }
                                     ],
                                     "variable": []
@@ -4263,7 +4576,7 @@
             "description": "Counting stored events for charts. Each count takes the same filters as\nsearch, and counts the events a search with those filters would return.\n",
             "item": [
                 {
-                    "id": "9ca9b394-0bb3-4bb7-ae4e-1cf902960452",
+                    "id": "e0a3bfbb-58ed-447c-9208-7c9a2dcd584a",
                     "name": "Most frequent values",
                     "request": {
                         "name": "Most frequent values",
@@ -4289,7 +4602,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "field",
-                                    "value": "host"
+                                    "value": "src_ip"
                                 },
                                 {
                                     "disabled": true,
@@ -4307,7 +4620,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                    "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                 },
                                 {
                                     "disabled": true,
@@ -4334,7 +4647,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "m365"
+                                    "value": "crowdstrike"
                                 },
                                 {
                                     "disabled": true,
@@ -4343,7 +4656,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "network"
+                                    "value": "m365"
                                 },
                                 {
                                     "disabled": true,
@@ -4458,7 +4771,7 @@
                     },
                     "response": [
                         {
-                            "id": "fd3ea014-9a14-425d-ba21-4f7fb59c68f6",
+                            "id": "7fdff0d6-301e-4a71-a019-66f07a08a8d2",
                             "name": "The most frequent values, most frequent first.",
                             "originalRequest": {
                                 "url": {
@@ -4479,7 +4792,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "field",
-                                            "value": "host"
+                                            "value": "src_ip"
                                         },
                                         {
                                             "disabled": true,
@@ -4497,7 +4810,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -4524,7 +4837,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -4635,12 +4948,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"field\": \"src_ip\",\n  \"from\": \"<dateTime>\",\n  \"to\": \"<dateTime>\",\n  \"items\": [\n    {\n      \"value\": \"<string>\",\n      \"count\": \"<long>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"count\": \"<long>\"\n    }\n  ]\n}",
+                            "body": "{\n  \"field\": \"user\",\n  \"from\": \"<dateTime>\",\n  \"to\": \"<dateTime>\",\n  \"items\": [\n    {\n      \"value\": \"<string>\",\n      \"count\": \"<long>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"count\": \"<long>\"\n    }\n  ]\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "0bd0c78f-11e1-4aa2-a14a-5c3812d245ca",
+                            "id": "172df43c-f5aa-4a72-accc-029f181ae41d",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -4661,7 +4974,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "field",
-                                            "value": "host"
+                                            "value": "src_ip"
                                         },
                                         {
                                             "disabled": true,
@@ -4679,7 +4992,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -4706,7 +5019,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -4831,7 +5144,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "1b9b647b-1c59-49c5-bc4a-7eff6c02b585",
+                            "id": "65300f0c-0de1-4a14-af9e-d55c8dfab82a",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -4852,7 +5165,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "field",
-                                            "value": "host"
+                                            "value": "src_ip"
                                         },
                                         {
                                             "disabled": true,
@@ -4870,7 +5183,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -4897,7 +5210,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -5022,7 +5335,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "d9cb7d60-1ef5-424b-9eeb-88a239a234ab",
+                            "id": "1e0fb8ac-cede-4093-aa4c-118f3b503a1f",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -5043,7 +5356,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "field",
-                                            "value": "host"
+                                            "value": "src_ip"
                                         },
                                         {
                                             "disabled": true,
@@ -5061,7 +5374,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -5088,7 +5401,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -5213,7 +5526,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "d2a69984-c274-4131-abd1-48b8c005e35d",
+                            "id": "366bb17e-fdd0-4212-a954-2bf8a6906d78",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -5234,7 +5547,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "field",
-                                            "value": "host"
+                                            "value": "src_ip"
                                         },
                                         {
                                             "disabled": true,
@@ -5252,7 +5565,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -5279,7 +5592,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -5404,7 +5717,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a9ac5c5b-6001-41cc-b8d2-896bf503f59b",
+                            "id": "a5a39f89-7ddf-495f-90ae-f8c53e8b10c2",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -5425,7 +5738,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "field",
-                                            "value": "host"
+                                            "value": "src_ip"
                                         },
                                         {
                                             "disabled": true,
@@ -5443,7 +5756,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -5470,7 +5783,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -5601,7 +5914,7 @@
                     }
                 },
                 {
-                    "id": "58b57257-a9ed-4ed2-9423-9b5e632da2f2",
+                    "id": "15db1f56-b8a7-4aa0-ae24-65de0dd31928",
                     "name": "Events over time",
                     "request": {
                         "name": "Events over time",
@@ -5627,7 +5940,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "interval",
-                                    "value": "12h"
+                                    "value": "1h"
                                 },
                                 {
                                     "disabled": true,
@@ -5636,7 +5949,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                    "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                 },
                                 {
                                     "disabled": true,
@@ -5663,7 +5976,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "m365"
+                                    "value": "crowdstrike"
                                 },
                                 {
                                     "disabled": true,
@@ -5672,7 +5985,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "network"
+                                    "value": "m365"
                                 },
                                 {
                                     "disabled": true,
@@ -5787,7 +6100,7 @@
                     },
                     "response": [
                         {
-                            "id": "0f147cfc-07c2-4237-8a0a-f807a4e176f1",
+                            "id": "79cb4224-987c-421e-9870-de2dc544b9ca",
                             "name": "Every bucket in the window, oldest first.",
                             "originalRequest": {
                                 "url": {
@@ -5808,7 +6121,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "interval",
-                                            "value": "12h"
+                                            "value": "1h"
                                         },
                                         {
                                             "disabled": true,
@@ -5817,7 +6130,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -5844,7 +6157,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -5955,12 +6268,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"from\": \"<dateTime>\",\n  \"to\": \"<dateTime>\",\n  \"interval\": \"6h\",\n  \"buckets\": [\n    {\n      \"start\": \"<dateTime>\",\n      \"count\": \"<long>\"\n    },\n    {\n      \"start\": \"<dateTime>\",\n      \"count\": \"<long>\"\n    }\n  ]\n}",
+                            "body": "{\n  \"from\": \"<dateTime>\",\n  \"to\": \"<dateTime>\",\n  \"interval\": \"1m\",\n  \"buckets\": [\n    {\n      \"start\": \"<dateTime>\",\n      \"count\": \"<long>\"\n    },\n    {\n      \"start\": \"<dateTime>\",\n      \"count\": \"<long>\"\n    }\n  ]\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "23376dc1-2231-4aa5-8a2e-b78ac2d4341a",
+                            "id": "1366c4f9-3394-43bb-a993-0ea9cd1793bd",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -5981,7 +6294,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "interval",
-                                            "value": "12h"
+                                            "value": "1h"
                                         },
                                         {
                                             "disabled": true,
@@ -5990,7 +6303,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -6017,7 +6330,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -6142,7 +6455,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "e075cfc7-a3c9-4ca9-8740-085d7587070e",
+                            "id": "da9fe1d2-8a0a-40bd-853c-298896745ae0",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -6163,7 +6476,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "interval",
-                                            "value": "12h"
+                                            "value": "1h"
                                         },
                                         {
                                             "disabled": true,
@@ -6172,7 +6485,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -6199,7 +6512,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -6324,7 +6637,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "8e24323a-f2be-4606-9876-96607da7a868",
+                            "id": "c62b7cd0-b943-48b1-9a47-3f574e84d48d",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -6345,7 +6658,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "interval",
-                                            "value": "12h"
+                                            "value": "1h"
                                         },
                                         {
                                             "disabled": true,
@@ -6354,7 +6667,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -6381,7 +6694,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -6506,7 +6819,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7fb51979-429b-4076-a626-282dc6018fbd",
+                            "id": "88944c79-02b6-4018-bc8f-6836e4524907",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -6527,7 +6840,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "interval",
-                                            "value": "12h"
+                                            "value": "1h"
                                         },
                                         {
                                             "disabled": true,
@@ -6536,7 +6849,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -6563,7 +6876,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -6688,7 +7001,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "ec4142db-5d86-4d6f-81e3-0d35b9537664",
+                            "id": "b3f21e3c-598b-4f9d-af20-a5506615e3b1",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -6709,7 +7022,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "interval",
-                                            "value": "12h"
+                                            "value": "1h"
                                         },
                                         {
                                             "disabled": true,
@@ -6718,7 +7031,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -6745,7 +7058,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "network"
+                                            "value": "m365"
                                         },
                                         {
                                             "disabled": true,
@@ -6882,7 +7195,7 @@
             "description": "Rules that count matching events over a time window, and the alerts they\nraise. A rule is evaluated every minute, over a window that ends on the\nlast whole minute at least 30 seconds ago, so an alert appears up to\nabout two and a half minutes after the event that completes it.\n",
             "item": [
                 {
-                    "id": "e140dcba-0fdf-4e5d-a52d-cc36cad48f45",
+                    "id": "58642351-d803-44c1-9cb8-8917d4707736",
                     "name": "List alert rules",
                     "request": {
                         "name": "List alert rules",
@@ -6907,7 +7220,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                    "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                 }
                             ],
                             "variable": []
@@ -6932,7 +7245,7 @@
                     },
                     "response": [
                         {
-                            "id": "3f5273ef-cf6f-4800-817c-1f7d3ced67c5",
+                            "id": "a2399f2b-0d52-4939-9cc9-d7638876b135",
                             "name": "The rules.",
                             "originalRequest": {
                                 "url": {
@@ -6952,7 +7265,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         }
                                     ],
                                     "variable": []
@@ -6982,12 +7295,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"items\": [\n    {\n      \"id\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"name\": \"<string>\",\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"group_by\": \"dst_ip\",\n      \"threshold\": \"<integer>\",\n      \"window_minutes\": \"<integer>\",\n      \"cooldown_minutes\": \"<integer>\",\n      \"created_at\": \"<dateTime>\",\n      \"source\": \"m365\",\n      \"event_type\": \"<string>\",\n      \"action\": \"<string>\",\n      \"severity_min\": \"<integer>\",\n      \"webhook_url\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"name\": \"<string>\",\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"group_by\": \"host\",\n      \"threshold\": \"<integer>\",\n      \"window_minutes\": \"<integer>\",\n      \"cooldown_minutes\": \"<integer>\",\n      \"created_at\": \"<dateTime>\",\n      \"source\": \"aws\",\n      \"event_type\": \"<string>\",\n      \"action\": \"<string>\",\n      \"severity_min\": \"<integer>\",\n      \"webhook_url\": \"<string>\"\n    }\n  ]\n}",
+                            "body": "{\n  \"items\": [\n    {\n      \"id\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"name\": \"<string>\",\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"group_by\": \"user\",\n      \"threshold\": \"<integer>\",\n      \"window_minutes\": \"<integer>\",\n      \"cooldown_minutes\": \"<integer>\",\n      \"created_at\": \"<dateTime>\",\n      \"source\": \"ad\",\n      \"event_type\": \"<string>\",\n      \"action\": \"<string>\",\n      \"severity_min\": \"<integer>\",\n      \"webhook_url\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"name\": \"<string>\",\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"group_by\": \"user\",\n      \"threshold\": \"<integer>\",\n      \"window_minutes\": \"<integer>\",\n      \"cooldown_minutes\": \"<integer>\",\n      \"created_at\": \"<dateTime>\",\n      \"source\": \"m365\",\n      \"event_type\": \"<string>\",\n      \"action\": \"<string>\",\n      \"severity_min\": \"<integer>\",\n      \"webhook_url\": \"<string>\"\n    }\n  ]\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "c89017b8-13fb-47f1-ae90-72febc994274",
+                            "id": "9f8396d1-10bb-45e9-aeb0-5837257fc25c",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -7007,7 +7320,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         }
                                     ],
                                     "variable": []
@@ -7051,7 +7364,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "69933563-e1be-4900-a7fc-863f575de25f",
+                            "id": "5da9367d-22c6-43ad-890d-195a203548df",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -7071,7 +7384,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         }
                                     ],
                                     "variable": []
@@ -7115,7 +7428,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a5eb9a44-e80f-46f7-85f9-1bb0e2f160b2",
+                            "id": "df3913c3-ba60-4d2f-b0a6-516e3e1c11bc",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -7135,7 +7448,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         }
                                     ],
                                     "variable": []
@@ -7179,7 +7492,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "e388a864-556c-45c7-9ba2-3d9b2dbc1d05",
+                            "id": "9ef35501-b66c-4efd-9991-9c270e3298cf",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -7199,7 +7512,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         }
                                     ],
                                     "variable": []
@@ -7243,7 +7556,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "71580d2e-4f31-40a8-994d-5063a7e4ec74",
+                            "id": "46109f72-c409-4429-8b52-24b4305a33f1",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -7263,7 +7576,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         }
                                     ],
                                     "variable": []
@@ -7313,7 +7626,7 @@
                     }
                 },
                 {
-                    "id": "a54179f3-8063-40e8-b3db-2a1ce0d82907",
+                    "id": "bfc125a7-5c31-42e8-811d-a646347b27c3",
                     "name": "Create an alert rule",
                     "request": {
                         "name": "Create an alert rule",
@@ -7346,7 +7659,7 @@
                         "method": "POST",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                            "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                             "options": {
                                 "raw": {
                                     "headerFamily": "json",
@@ -7366,7 +7679,7 @@
                     },
                     "response": [
                         {
-                            "id": "e7afe772-4a8f-4b0f-ae26-0d7f5521753e",
+                            "id": "ce42e841-32b5-425a-b92e-2a7d6cdbc1ef",
                             "name": "The rule as stored.",
                             "originalRequest": {
                                 "url": {
@@ -7402,7 +7715,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7419,12 +7732,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"id\": \"<string>\",\n  \"tenant\": \"<string>\",\n  \"name\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"group_by\": \"src_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"cooldown_minutes\": \"<integer>\",\n  \"created_at\": \"<dateTime>\",\n  \"source\": \"ad\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"webhook_url\": \"<string>\"\n}",
+                            "body": "{\n  \"id\": \"<string>\",\n  \"tenant\": \"<string>\",\n  \"name\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"cooldown_minutes\": \"<integer>\",\n  \"created_at\": \"<dateTime>\",\n  \"source\": \"firewall\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"webhook_url\": \"<string>\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7059863a-d76a-4218-a4df-7a49a888aed5",
+                            "id": "f5cd1eff-114c-4481-b543-7fa6d9de947d",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -7460,7 +7773,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7491,7 +7804,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "64827b01-c56b-45fa-99b4-0724ab4cd04f",
+                            "id": "3aa424af-910c-4c5a-aad5-9562ebd339f8",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -7527,7 +7840,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7558,7 +7871,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "06c0184f-98cd-4778-a662-dea5e5ab218f",
+                            "id": "1591c36a-2c03-4ff0-8148-434bced0dfb1",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -7594,7 +7907,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7625,7 +7938,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "c659ded7-1c02-4c41-8664-cee79af3ba0a",
+                            "id": "66decd11-1fdb-476a-bb10-d91ff498eab2",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -7661,7 +7974,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7692,7 +8005,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "2ac4ef17-b928-45ac-81a8-8d5d55840ba5",
+                            "id": "f88d102e-9a76-4a3a-b50c-75ec25ddaf76",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -7728,7 +8041,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7759,7 +8072,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "f01b4ccb-74ea-42b1-94b6-ecc3830dfb57",
+                            "id": "d9f2121d-d9ea-420f-97f6-a58d716952fd",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -7795,7 +8108,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7826,7 +8139,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "35453981-a116-4878-9c62-4edee878cfb1",
+                            "id": "381e849c-b6ca-4bfb-934d-01f87ca9e242",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -7862,7 +8175,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7893,7 +8206,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "61291863-67e2-4f23-9965-9718c4119915",
+                            "id": "7825418e-bc2b-4aa2-992a-3f9ab810456e",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -7929,7 +8242,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"HmnHvrQB8GyqBpdWiwkTMSvQtPZyOwzsx4wXfsfw8V6WR0_xuAKtS56E_aypZ\",\n  \"name\": \"<string>\",\n  \"group_by\": \"host\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"crowdstrike\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "raw": "{\n  \"tenant\": \"o8UhGcVKHLE5_9e1BZKJnzNvZyAeWoo38pPiNfP4QM1STxay6rsejooawxBEX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"dst_ip\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"m365\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -7966,7 +8279,7 @@
                     }
                 },
                 {
-                    "id": "6a56181c-94ae-4b24-b37c-fdc9271cd127",
+                    "id": "54bcac2a-e88e-4439-a843-cc65fb73c3cd",
                     "name": "List alerts",
                     "request": {
                         "name": "List alerts",
@@ -7991,7 +8304,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                    "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                 },
                                 {
                                     "disabled": true,
@@ -8025,7 +8338,7 @@
                     },
                     "response": [
                         {
-                            "id": "b031eb90-834f-451f-9f79-c045629a29f7",
+                            "id": "a2f7d0d2-de50-4721-96ce-dfb6d811eb80",
                             "name": "The alerts.",
                             "originalRequest": {
                                 "url": {
@@ -8045,7 +8358,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -8084,12 +8397,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"items\": [\n    {\n      \"id\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"rule_name\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"group_by\": \"src_ip\",\n      \"group_key\": \"<string>\",\n      \"count\": \"<long>\",\n      \"window_start\": \"<dateTime>\",\n      \"window_end\": \"<dateTime>\",\n      \"created_at\": \"<dateTime>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"rule_name\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"group_by\": \"host\",\n      \"group_key\": \"<string>\",\n      \"count\": \"<long>\",\n      \"window_start\": \"<dateTime>\",\n      \"window_end\": \"<dateTime>\",\n      \"created_at\": \"<dateTime>\"\n    }\n  ]\n}",
+                            "body": "{\n  \"items\": [\n    {\n      \"id\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"rule_name\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"group_by\": \"dst_ip\",\n      \"group_key\": \"<string>\",\n      \"count\": \"<long>\",\n      \"window_start\": \"<dateTime>\",\n      \"window_end\": \"<dateTime>\",\n      \"created_at\": \"<dateTime>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"rule_name\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"group_by\": \"user\",\n      \"group_key\": \"<string>\",\n      \"count\": \"<long>\",\n      \"window_start\": \"<dateTime>\",\n      \"window_end\": \"<dateTime>\",\n      \"created_at\": \"<dateTime>\"\n    }\n  ]\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "92db4d86-c199-439d-9254-9c9a43103c40",
+                            "id": "aee8482e-33d6-4ec6-92e4-2cdce23f19e5",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -8109,7 +8422,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -8162,7 +8475,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "77de9ef5-dcd1-4fc7-bf2c-99f9d1f73a33",
+                            "id": "f951547a-d1f1-4636-85b6-05887d77ed50",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -8182,7 +8495,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -8235,7 +8548,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a8b58ae7-63f4-4dd9-a10f-459f5d3ae3df",
+                            "id": "0e23c0c1-3910-454d-ad1b-f4228cca705b",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -8255,7 +8568,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -8308,7 +8621,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "fc8b8c00-2e34-4aff-84e5-37e8e3ee74ac",
+                            "id": "4fc4d3bc-0ce0-4af5-b014-3dac4910ae1d",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -8328,7 +8641,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -8381,7 +8694,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7d3c9ff6-4417-41e9-9db1-60670d198a5a",
+                            "id": "33b60baa-003a-4758-921a-2e28f2ed5f97",
                             "name": "A dependency, normally the database, is unreachable, or a search or\ncount ran past its time limit (`search_timeout`). Retrying later may\nsucceed.\n",
                             "originalRequest": {
                                 "url": {
@@ -8401,7 +8714,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "NNwWyyRuwanWQFRrSzSKq88QHkZSkt-sVoBpen7VoilnBENy6Yume"
+                                            "value": "QDelkAJbk0HSzXbQ6YpMwoMEakTTBCEQKAoa5OqUbLKp02TavV8gqU5_"
                                         },
                                         {
                                             "disabled": true,
@@ -8485,7 +8798,7 @@
         }
     ],
     "info": {
-        "_postman_id": "16ef70fb-84dc-4d1c-b629-0fb5e074de00",
+        "_postman_id": "fe5dbf28-8821-4770-9aaa-fbfe69b80e3e",
         "name": "loghub API",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": {
