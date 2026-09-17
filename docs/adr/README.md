@@ -12,7 +12,7 @@ Short records of the decisions that shape loghub.
 | [0006](0006-react-vite-frontend.md) | React + Vite + TypeScript frontend | Accepted |
 | [0007](0007-openapi-spec-first.md) | Spec-first OpenAPI with code generation | Accepted |
 | [0008](0008-sqlc-queries.md) | sqlc for fixed queries, hand-written SQL for search | Accepted |
-| [0009](0009-auth-jwt-rbac.md) | JWT sessions and a policy-set RBAC enforcer | Draft |
+| [0009](0009-auth-jwt-rbac.md) | JWT sessions and a policy-set RBAC enforcer | Accepted |
 | [0010](0010-alerting.md) | Threshold alert rules evaluated on a schedule | Draft |
 | [0011](0011-deployment-compose.md) | One Compose file for both deployment modes | Draft |
 
