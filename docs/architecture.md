@@ -117,6 +117,14 @@ With a million events loaded, about 95,000 per tenant in a 24-hour window, a ten
 
 The code is `EventRepo` in `backend/internal/store`. `make test-db` runs its tests against the dev Postgres, as the `loghub_app` role, so they exercise the real policies.
 
+### Dashboard counts
+
+`GET /api/v1/events/top` and `GET /api/v1/events/timeline` count the events a search with the same filters would return. They reuse search's filter code in `backend/internal/store` rather than sqlc ([ADR 0008](adr/0008-sqlc-queries.md)), so a filter means the same thing in a chart and in the search beside it. Scope, the default window and the 10-second timeout are also search's.
+- **Top values:** events are counted by `src_ip`, `dst_ip`, `user`, `host` or `event_type`, and the 10 most frequent values are returned, or up to 100. Events without a value aren't counted. Values with equal counts are in byte order, so the answer doesn't depend on the database's locale.
+- **Timeline:** events are counted in buckets from 1 minute to 1 day wide. Buckets start on whole multiples of the interval in UTC, so they line up the same way whatever the window, and empty buckets are filled in so a chart has no gaps. Without an interval, the shortest that divides the window into at most 200 parts is used: 1 minute for an hour, 15 minutes for a day, an hour for a week. A window more than 1440 intervals long is refused, which still lets a day be counted by the minute. The limit is on the window's length rather than the number of buckets, because a window that doesn't start on a bucket boundary overlaps one more bucket than it has intervals.
+
+With a million events spread over 24 hours, 100,000 per tenant, either count takes 50–70 ms for one tenant, 200–300 ms for all tenants, and about 350 ms with free text. Unlike a search, which stops at a page, a count reads every matching event in the window.
+
 ## Authentication and authorization
 
 [ADR 0009](adr/0009-auth-jwt-rbac.md) has the reasoning. Every request passes through the middleware in `backend/internal/auth` before it is routed, which establishes who is calling:
@@ -137,7 +145,7 @@ Each handler then asks the enforcer in `backend/internal/authz` whether the call
 | viewer | yes | read, own tenant | read, own tenant | read, own tenant |
 | collector | yes | create, any tenant | no | no |
 
-A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search asks which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore still reads nothing it shouldn't. Ingest is the exception, because the insert runs as each record's tenant, so the per-record check is the only check on writes.
+A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search and the dashboard counts ask which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore still reads nothing it shouldn't. Ingest is the exception, because the insert runs as each record's tenant, so the per-record check is the only check on writes.
 
 Sign-in checks an unknown email against a fixed bcrypt hash, so it takes as long as a wrong password, and both are refused with 401 `invalid_credentials`. Tokens can't be revoked before they expire, and sign-in has no rate limit.
 

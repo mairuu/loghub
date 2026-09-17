@@ -89,6 +89,17 @@ curl -sk https://localhost/api/v1/ingest -H "Authorization: Bearer $INGEST_TOKEN
   -H 'Content-Type: application/json' -d '{"tenant":"demoA","source":"api","event_type":"hello"}'
 ```
 
+## Count events
+
+The dashboard's charts come from two endpoints, which take the same filters as search and count only what the caller may read. With `TOKEN` from Sign in:
+
+```sh
+curl -sk 'https://localhost/api/v1/events/top?field=src_ip' -H "Authorization: Bearer $TOKEN" | jq '.items'
+curl -sk 'https://localhost/api/v1/events/timeline?interval=1h' -H "Authorization: Bearer $TOKEN" | jq '.buckets[] | select(.count > 0)'
+```
+
+`field` may be `src_ip`, `dst_ip`, `user`, `host` or `event_type`. Like search, both cover the last 24 hours unless `from` and `to` say otherwise. Without `interval`, the timeline picks the shortest one that divides the window into at most 200 parts.
+
 ## Raise an alert
 
 Alert rules count matching events over a time window, and only an admin can create one. [`samples/alert_rule.json`](../samples/alert_rule.json) raises an alert when five failed logins come from one address in demoA within five minutes:

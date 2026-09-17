@@ -1,6 +1,10 @@
 # Applied to the converted collection by `make postman`. The converter sends
 # {{bearerToken}} on every request that needs a credential but doesn't
 # declare it; this declares it, and has Sign in set it.
+#
+# The converter also fills every query parameter with a value, often a
+# placeholder such as <dateTime> that the API refuses, or a random tenant.
+# Optional ones start unticked instead, to be ticked and filled in as needed.
 .variable += [
   {
     key: "email",
@@ -33,3 +37,6 @@
         }
       }]
   )
+| (.. | objects | select(.query? | type == "array") | .query[]
+    | select(.description.content? // "" | startswith("(Required)") | not)
+  ).disabled = true
