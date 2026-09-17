@@ -30,10 +30,19 @@ type Users interface {
 	FindByEmail(ctx context.Context, email string) (store.User, error)
 }
 
+// Alerts is where alert rules and the alerts they raise are kept.
+// *store.AlertRepo is the implementation.
+type Alerts interface {
+	CreateRule(ctx context.Context, scope store.Scope, p store.NewAlertRule) (store.AlertRule, error)
+	ListRules(ctx context.Context, scope store.Scope, tenant string) ([]store.AlertRule, error)
+	ListAlerts(ctx context.Context, scope store.Scope, tenant string, limit int) ([]store.Alert, error)
+}
+
 type Config struct {
 	Logger *slog.Logger
 	Events Events
 	Users  Users
+	Alerts Alerts
 	// Tokens issues the tokens Login answers with, and Authenticator
 	// accepts them along with the ingest key.
 	Tokens        *auth.Tokens
@@ -49,6 +58,7 @@ type Server struct {
 	logger     *slog.Logger
 	events     Events
 	users      Users
+	alerts     Alerts
 	tokens     *auth.Tokens
 	authn      *auth.Authenticator
 	authz      *authz.Enforcer
@@ -68,6 +78,7 @@ func New(cfg Config) (*Server, error) {
 		logger:     cfg.Logger,
 		events:     cfg.Events,
 		users:      cfg.Users,
+		alerts:     cfg.Alerts,
 		tokens:     cfg.Tokens,
 		authn:      cfg.Authenticator,
 		authz:      enforcer,

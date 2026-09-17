@@ -20,4 +20,11 @@ var policies = []authz.Set{
 		authz.Grant(authz.Viewer).As(authz.OwnTenant).On(authz.Events).Can(authz.Read),
 		authz.Grant(authz.Collector).As(authz.AnyTenant).On(authz.Events).Can(authz.Create),
 	),
+	// Only the evaluator writes alerts, and it isn't a caller (ADR 0010).
+	authz.NewSet("alerts",
+		authz.Grant(authz.Admin).As(authz.AnyTenant).On(authz.AlertRules).Can(authz.Read, authz.Create),
+		authz.Grant(authz.Viewer).As(authz.OwnTenant).On(authz.AlertRules).Can(authz.Read),
+		authz.Grant(authz.Admin).As(authz.AnyTenant).On(authz.Alerts).Can(authz.Read),
+		authz.Grant(authz.Viewer).As(authz.OwnTenant).On(authz.Alerts).Can(authz.Read),
+	),
 }

@@ -4,17 +4,22 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/mairuu/loghub/backend/internal/alerting"
 	"github.com/mairuu/loghub/backend/internal/api"
+	"github.com/mairuu/loghub/backend/internal/authz"
 	"github.com/mairuu/loghub/backend/internal/platform/pg"
 	"github.com/mairuu/loghub/backend/internal/store"
 	"github.com/mairuu/loghub/backend/internal/store/storetest"
@@ -155,6 +160,105 @@ func TestSamplesEndToEnd(t *testing.T) {
 		q.Set("order", "desc")
 		call(t, h, "GET", "/api/v1/events?"+q.Encode(), "", nil).
 			check(t, 400, errorBody("invalid_cursor", "cursor was issued for different parameters; start again without it"))
+	})
+}
+
+// The alerting acceptance check, against the real store as loghub_app: an
+// admin creates the failed-login rule, the collector sends failed logins, and
+// after one evaluation the tenant's viewer sees the alert and the rule's
+// webhook has received it.
+func TestAlertingEndToEnd(t *testing.T) {
+	db := storetest.Open(t)
+	a, b := db.Tenant(t), db.Tenant(t)
+	appStore := store.New(db.App)
+	alerts := store.NewAlertRepo(appStore)
+	h := newServer(t, api.Config{
+		Events: store.NewEventRepo(appStore),
+		Users:  store.NewUserRepo(appStore),
+		Alerts: alerts,
+		Ready:  func(ctx context.Context) error { return pg.Check(ctx, db.App) },
+	})
+	admin := tokenFor(t, adminCaller)
+	viewerA := tokenFor(t, authz.Caller{Role: authz.Viewer, Tenant: a, UserID: 2})
+	viewerB := tokenFor(t, authz.Caller{Role: authz.Viewer, Tenant: b, UserID: 3})
+
+	received := make(chan []byte, 10)
+	hook := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		received <- body
+	}))
+	defer hook.Close()
+
+	rule := `{"tenant":"` + a + `","name":"failed logins","tags":["auth_failure"],"group_by":"src_ip",
+		"threshold":3,"window_minutes":5,"webhook_url":"` + hook.URL + `/loghub"}`
+	callAs(t, h, viewerA, "POST", "/api/v1/alert-rules", "application/json", strings.NewReader(rule)).
+		check(t, 403, errorBody("permission_denied", "you may not do this"))
+	if res := callAs(t, h, admin, "POST", "/api/v1/alert-rules", "application/json", strings.NewReader(rule)); res.status != 201 {
+		t.Fatalf("create rule: %d %v", res.status, res.body)
+	}
+
+	// Three failed logins from one address in each tenant, and only a has a
+	// rule. The sample's 2025 time is replaced with the time of receipt.
+	var lines []string
+	for _, tenant := range []string{a, b, a, b, a, b} {
+		var record map[string]any
+		if err := json.Unmarshal(readSample(t, "../../../samples/json/ad_4625.json"), &record); err != nil {
+			t.Fatal(err)
+		}
+		record["tenant"] = tenant
+		line, _ := json.Marshal(record)
+		lines = append(lines, string(line))
+	}
+	callAs(t, h, testIngestKey, "POST", "/api/v1/ingest/batch", "application/x-ndjson", strings.NewReader(strings.Join(lines, "\n"))).
+		check(t, 200, `{"accepted":6,"rejected":0}`)
+
+	// A minute on, the window holds all three.
+	evaluator := alerting.New(alerting.Config{
+		Tenants: store.NewTenantRepo(appStore),
+		Rules:   alerts,
+		Logger:  slog.New(slog.NewJSONHandler(t.Output(), nil)),
+		Now:     func() time.Time { return time.Now().Add(alerting.Lag + time.Minute) },
+	})
+	if err := evaluator.Run(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+
+	listed := callAs(t, h, viewerA, "GET", "/api/v1/alerts", "", nil)
+	items, _ := listed.body["items"].([]any)
+	if listed.status != 200 || len(items) != 1 {
+		t.Fatalf("viewer of a lists %d %v, want one alert", listed.status, listed.body)
+	}
+	got := items[0].(map[string]any)
+	if got["tenant"] != a || got["rule_name"] != "failed logins" || got["group_by"] != "src_ip" ||
+		got["group_key"] != "203.0.113.77" || got["count"] != 3.0 {
+		t.Errorf("alert %v", got)
+	}
+
+	if len(received) != 1 {
+		t.Fatalf("webhook received %d requests, want 1", len(received))
+	}
+	var delivered map[string]any
+	if err := json.Unmarshal(<-received, &delivered); err != nil || !reflect.DeepEqual(delivered, got) {
+		t.Errorf("webhook received %v (%v), want what the API lists, %v", delivered, err, got)
+	}
+
+	callAs(t, h, viewerB, "GET", "/api/v1/alerts", "", nil).check(t, 200, `{"items":[]}`)
+	rules := callAs(t, h, viewerA, "GET", "/api/v1/alert-rules", "", nil)
+	if items, _ := rules.body["items"].([]any); len(items) != 1 || items[0].(map[string]any)["webhook_url"] != nil {
+		t.Errorf("viewer of a lists rules %v, want one without its webhook", rules.body)
+	}
+
+	t.Run("evaluated again", func(t *testing.T) {
+		if err := evaluator.Run(t.Context()); err != nil {
+			t.Fatal(err)
+		}
+		res := callAs(t, h, admin, "GET", "/api/v1/alerts?tenant="+a, "", nil)
+		if items, _ := res.body["items"].([]any); len(items) != 1 {
+			t.Errorf("admin lists %v, want the one alert", res.body)
+		}
+		if len(received) != 0 {
+			t.Errorf("webhook received %d more requests", len(received))
+		}
 	})
 }
 

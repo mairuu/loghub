@@ -57,10 +57,13 @@ const (
 	// Sessions are sign-ins.
 	Sessions
 	Events
+	AlertRules
+	// Alerts are alert rules' firings.
+	Alerts
 	resourceEnd
 )
 
-var resourceNames = [...]string{"", "health", "sessions", "events"}
+var resourceNames = [...]string{"", "health", "sessions", "events", "alert_rules", "alerts"}
 
 func (r Resource) String() string { return name(resourceNames[:], r) }
 

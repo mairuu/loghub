@@ -5,7 +5,7 @@ info:
   version: 0.1.0
   description: |
     Multi-tenant log management: ingest events from many sources, normalize them
-    into one schema, and search them.
+    into one schema, search them, and raise alerts when they repeat.
 
     ## Shape of this API
 
@@ -34,9 +34,10 @@ info:
     use the ingest key instead: `INGEST_TOKEN` from the appliance's `.env`,
     sent the same way. It may send events for any tenant and do nothing else.
 
-    There are two roles. An `admin` reads every tenant and may ingest for any
-    of them. A `viewer` belongs to one tenant, reads only that tenant, and
-    may not ingest. Each endpoint lists the credentials it accepts.
+    There are two roles. An `admin` reads every tenant, may ingest for any of
+    them, and creates alert rules. A `viewer` belongs to one tenant, reads only
+    that tenant, and may not ingest or create alert rules. Each endpoint lists
+    the credentials it accepts.
 
     A request is refused in one of two ways:
 
@@ -65,6 +66,12 @@ tags:
       NDJSON batch from the collector, and a whole vendor export file.
   - name: Search
     description: Querying stored events.
+  - name: Alerts
+    description: |
+      Rules that count matching events over a time window, and the alerts they
+      raise. A rule is evaluated every minute, over a window that ends on the
+      last whole minute at least 30 seconds ago, so an alert appears up to
+      about two and a half minutes after the event that completes it.
 
 paths:
   /api/healthz:
@@ -451,6 +458,112 @@ paths:
         '503':
           $ref: '#/components/responses/ServiceUnavailable'
 
+  /api/v1/alert-rules:
+    get:
+      operationId: listAlertRules
+      summary: List alert rules
+      description: Every rule the caller may read, oldest first.
+      tags: [Alerts]
+      security:
+        - sessionToken: []
+      parameters:
+        - $ref: '#/components/parameters/TenantFilter'
+      responses:
+        '200':
+          description: The rules.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertRuleList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    post:
+      operationId: createAlertRule
+      summary: Create an alert rule
+      description: |
+        Adds a rule, which is evaluated from the next minute on. Only an admin
+        may create one. Rules can't be changed or removed through the API.
+
+        A field the schema doesn't list is refused with `unknown_field` rather
+        than ignored, since a misspelt filter would otherwise match more than
+        intended. The body may be at most 64 KiB.
+      tags: [Alerts]
+      security:
+        - sessionToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAlertRule'
+            example:
+              tenant: demoA
+              name: Repeated failed logins from one address
+              tags: [auth_failure]
+              group_by: src_ip
+              threshold: 5
+              window_minutes: 5
+      responses:
+        '201':
+          description: The rule as stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertRule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/alerts:
+    get:
+      operationId: listAlerts
+      summary: List alerts
+      description: The newest alerts the caller may read, newest first.
+      tags: [Alerts]
+      security:
+        - sessionToken: []
+      parameters:
+        - $ref: '#/components/parameters/TenantFilter'
+        - $ref: '#/components/parameters/AlertLimit'
+      responses:
+        '200':
+          description: The alerts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
 components:
 
   parameters:
@@ -463,7 +576,7 @@ components:
         Narrows results to one tenant the caller may read. An admin may read
         every tenant, and a viewer only their own. Naming a tenant outside
         that set is 403 `tenant_not_permitted`, not an empty page; a tenant
-        within it that doesn't exist returns no events.
+        within it that doesn't exist returns nothing.
 
         Omitting it is always safe and is the common case — it returns
         everything the caller may see.
@@ -618,6 +731,17 @@ components:
       schema:
         type: string
         enum: [asc, desc]
+
+    AlertLimit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum alerts to return. Defaults to 50.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 1000
 
   responses:
 
@@ -1158,6 +1282,203 @@ components:
           description: |
             Pass as `cursor` to get the following page. Absent when this is the
             last page.
+
+    AlertGroupBy:
+      type: string
+      description: |
+        The event field a rule counts by: `src_ip`, `dst_ip`, `user` or
+        `host`. Events without a value for it are not counted.
+      enum: [src_ip, dst_ip, user, host]
+
+    NewAlertRule:
+      type: object
+      additionalProperties: false
+      required: [tenant, name, group_by, threshold, window_minutes]
+      description: |
+        Fires when at least `threshold` events matching the filter, with the
+        same value of `group_by`, fall within `window_minutes`. Every filter
+        field that is set must match; `tags` must all be present on the event.
+        Text is matched exactly, except `action`, which is matched ignoring
+        case as it is stored lowercase.
+      properties:
+        tenant:
+          type: string
+          pattern: '^[A-Za-z0-9_-]{1,64}$'
+          description: The tenant whose events the rule watches.
+          example: demoA
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Repeated failed logins from one address
+        source:
+          $ref: '#/components/schemas/Source'
+        event_type:
+          type: string
+        action:
+          type: string
+          example: login
+        severity_min:
+          type: integer
+          minimum: 0
+          maximum: 10
+          description: Only events with severity at or above this. Excludes events with no severity.
+        tags:
+          type: array
+          items:
+            type: string
+          description: |
+            Tags the event must all carry. `auth_failure` marks a failed login
+            from any source.
+          example: [auth_failure]
+        group_by:
+          $ref: '#/components/schemas/AlertGroupBy'
+        threshold:
+          type: integer
+          format: int32
+          minimum: 1
+          description: How many matching events in one group make an alert.
+          example: 5
+        window_minutes:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1440
+          example: 5
+        cooldown_minutes:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 10080
+          description: |
+            After an alert, how long the same group stays quiet, counted from
+            the end of the alert's window. Defaults to `window_minutes`, so one
+            burst raises one alert, and a burst that keeps going raises another
+            once per window.
+        webhook_url:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: |
+            An `http` or `https` URL that each of the rule's alerts is POSTed
+            to, as an `Alert` JSON object. Delivery is best effort: a request
+            that fails or takes longer than 5 seconds is logged and not
+            retried, and the alert is listed either way.
+          example: https://hooks.example.com/loghub
+
+    AlertRule:
+      type: object
+      additionalProperties: false
+      required: [id, tenant, name, tags, group_by, threshold, window_minutes, cooldown_minutes, created_at]
+      description: A stored rule. Filter fields that aren't set are omitted.
+      properties:
+        id:
+          type: string
+          description: Opaque identifier, a string for the same reason as an event's.
+          example: '12'
+        tenant:
+          type: string
+          example: demoA
+        name:
+          type: string
+        source:
+          $ref: '#/components/schemas/Source'
+        event_type:
+          type: string
+        action:
+          type: string
+        severity_min:
+          type: integer
+          minimum: 0
+          maximum: 10
+        tags:
+          type: array
+          items:
+            type: string
+        group_by:
+          $ref: '#/components/schemas/AlertGroupBy'
+        threshold:
+          type: integer
+          format: int32
+        window_minutes:
+          type: integer
+          format: int32
+        cooldown_minutes:
+          type: integer
+          format: int32
+        webhook_url:
+          type: string
+          description: |
+            Listed only to callers who may create rules for the tenant, since
+            a webhook URL often carries a secret.
+        created_at:
+          type: string
+          format: date-time
+
+    AlertRuleList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertRule'
+
+    Alert:
+      type: object
+      additionalProperties: false
+      required: [id, rule_id, rule_name, tenant, group_by, group_key, count, window_start, window_end, created_at]
+      description: |
+        One firing of a rule: `count` matching events whose `group_by` field
+        was `group_key` fell between `window_start` and `window_end`. This is
+        also the body a rule's webhook receives.
+      properties:
+        id:
+          type: string
+          example: '301'
+        rule_id:
+          type: string
+          example: '12'
+        rule_name:
+          type: string
+          example: Repeated failed logins from one address
+        tenant:
+          type: string
+          example: demoA
+        group_by:
+          $ref: '#/components/schemas/AlertGroupBy'
+        group_key:
+          type: string
+          description: The value the matching events shared, such as an address.
+          example: 203.0.113.77
+        count:
+          type: integer
+          format: int64
+          description: How many matching events the window held.
+          example: 5
+        window_start:
+          type: string
+          format: date-time
+          description: Start of the window, inclusive.
+        window_end:
+          type: string
+          format: date-time
+          description: End of the window, exclusive.
+        created_at:
+          type: string
+          format: date-time
+          description: When the alert was raised.
+
+    AlertList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alert'
 
     ErrorResponse:
       type: object

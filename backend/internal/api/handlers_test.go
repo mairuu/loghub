@@ -103,6 +103,9 @@ func newServer(t *testing.T, cfg api.Config) http.Handler {
 	if cfg.Users == nil {
 		cfg.Users = fakeUsers{}
 	}
+	if cfg.Alerts == nil {
+		cfg.Alerts = &fakeAlerts{}
+	}
 	if cfg.Ready == nil {
 		cfg.Ready = func(context.Context) error { return nil }
 	}

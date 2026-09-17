@@ -192,6 +192,7 @@ func TestAccess(t *testing.T) {
 	}
 	const (
 		ok        = "200"
+		created   = "201"
 		needed    = "401 authentication_required"
 		invalid   = "401 invalid_token"
 		forbidden = "403 permission_denied"
@@ -215,20 +216,34 @@ func TestAccess(t *testing.T) {
 			"anonymous": needed, "garbage": invalid, "expired": invalid,
 			"collector": forbidden, "admin": ok, "viewer": ok,
 		}},
+		{"POST", "/api/v1/alert-rules", "application/json", failedLoginRule, map[string]string{
+			"anonymous": needed, "garbage": invalid, "expired": invalid,
+			"collector": forbidden, "admin": created, "viewer": forbidden,
+		}},
+		{"GET", "/api/v1/alert-rules", "", "", map[string]string{
+			"anonymous": needed, "garbage": invalid, "expired": invalid,
+			"collector": forbidden, "admin": ok, "viewer": ok,
+		}},
+		{"GET", "/api/v1/alerts", "", "", map[string]string{
+			"anonymous": needed, "garbage": invalid, "expired": invalid,
+			"collector": forbidden, "admin": ok, "viewer": ok,
+		}},
 	} {
 		for who, credential := range credentials {
 			t.Run(tc.method+" "+tc.target+" as "+who, func(t *testing.T) {
 				var events fakeEvents
-				h := newServer(t, api.Config{Events: &events})
+				var alerts fakeAlerts
+				h := newServer(t, api.Config{Events: &events, Alerts: &alerts})
 				// A refusal comes before the body is read, so a wrong content
 				// type doesn't hide it.
+				refused := !strings.HasPrefix(tc.want[who], "2")
 				contentType := tc.contentType
-				if tc.want[who] != ok && contentType != "" {
+				if refused && contentType != "" {
 					contentType = "text/plain"
 				}
 				res := callAs(t, h, credential, tc.method, tc.target, contentType, strings.NewReader(tc.body))
 				got := fmt.Sprint(res.status)
-				if res.status != 200 {
+				if res.status >= 300 {
 					got += fmt.Sprint(" ", res.body["code"])
 				}
 				if got != tc.want[who] {
@@ -240,7 +255,7 @@ func TestAccess(t *testing.T) {
 						t.Errorf("WWW-Authenticate = %q", challenge)
 					}
 				}
-				if res.status != 200 && (len(events.inserted) > 0 || len(events.searched) > 0) {
+				if refused && (len(events.inserted) > 0 || len(events.searched) > 0 || alerts.called()) {
 					t.Error("a refused request reached the store")
 				}
 			})

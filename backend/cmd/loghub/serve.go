@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mairuu/loghub/backend/internal/alerting"
 	"github.com/mairuu/loghub/backend/internal/api"
 	"github.com/mairuu/loghub/backend/internal/auth"
 	"github.com/mairuu/loghub/backend/internal/ingest"
@@ -53,20 +54,27 @@ func serve(ctx context.Context) error {
 
 	db := store.New(pool)
 	events := store.NewEventRepo(db)
+	alerts := store.NewAlertRepo(db)
 
+	evaluator := alerting.New(alerting.Config{
+		Tenants: store.NewTenantRepo(db),
+		Rules:   alerts,
+		Logger:  logger,
+	})
 	stopJobs := jobs.Start(ctx, logger, jobs.Job{
 		Name:  "maintain_partitions",
 		Every: time.Hour,
 		Run: func(ctx context.Context) error {
 			return events.MaintainPartitions(ctx, ingest.DefaultRetention)
 		},
-	})
+	}, evaluator.Job())
 	defer stopJobs()
 
 	server, err := api.New(api.Config{
 		Logger:        logger,
 		Events:        events,
 		Users:         store.NewUserRepo(db),
+		Alerts:        alerts,
 		Tokens:        tokens,
 		Authenticator: authenticator,
 		Ready:         func(ctx context.Context) error { return pg.Check(ctx, pool) },
