@@ -5,7 +5,7 @@ info:
   version: 0.1.0
   description: |
     Multi-tenant log management: ingest events from many sources, normalize them
-    into one schema, search them, and raise alerts when they repeat.
+    into one schema, search and count them, and raise alerts when they repeat.
 
     ## Shape of this API
 
@@ -66,6 +66,10 @@ tags:
       NDJSON batch from the collector, and a whole vendor export file.
   - name: Search
     description: Querying stored events.
+  - name: Dashboard
+    description: |
+      Counting stored events for charts. Each count takes the same filters as
+      search, and counts the events a search with those filters would return.
   - name: Alerts
     description: |
       Rules that count matching events over a time window, and the alerts they
@@ -458,6 +462,105 @@ paths:
         '503':
           $ref: '#/components/responses/ServiceUnavailable'
 
+  /api/v1/events/top:
+    get:
+      operationId: topValues
+      summary: Most frequent values
+      description: |
+        Counts matching events by the value of one field, and returns the most
+        frequent values. Events with no value for the field aren't counted.
+        Values with the same count are in byte order.
+
+        Unusable parameters and timeouts are answered as search answers them.
+      tags: [Dashboard]
+      security:
+        - sessionToken: []
+      parameters:
+        - $ref: '#/components/parameters/TopField'
+        - $ref: '#/components/parameters/TopLimit'
+        - $ref: '#/components/parameters/TenantFilter'
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/SourceFilter'
+        - $ref: '#/components/parameters/EventTypeFilter'
+        - $ref: '#/components/parameters/ActionFilter'
+        - $ref: '#/components/parameters/SeverityMin'
+        - $ref: '#/components/parameters/SeverityMax'
+        - $ref: '#/components/parameters/SrcIpFilter'
+        - $ref: '#/components/parameters/UserFilter'
+        - $ref: '#/components/parameters/HostFilter'
+        - $ref: '#/components/parameters/TagFilter'
+        - $ref: '#/components/parameters/Query'
+      responses:
+        '200':
+          description: The most frequent values, most frequent first.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopValueList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/events/timeline:
+    get:
+      operationId: timeline
+      summary: Events over time
+      description: |
+        Counts matching events in buckets of equal width, for a chart of the
+        window.
+
+        Without `interval`, the shortest interval that divides the window
+        into at most 200 parts is used: one minute for an hour, 15 minutes for
+        a day, an hour for a week. A window more than 1440 intervals long is
+        refused with `invalid_parameter`, so a day can be counted by the
+        minute but not two.
+
+        Other unusable parameters and timeouts are answered as search answers
+        them.
+      tags: [Dashboard]
+      security:
+        - sessionToken: []
+      parameters:
+        - $ref: '#/components/parameters/TimelineInterval'
+        - $ref: '#/components/parameters/TenantFilter'
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/SourceFilter'
+        - $ref: '#/components/parameters/EventTypeFilter'
+        - $ref: '#/components/parameters/ActionFilter'
+        - $ref: '#/components/parameters/SeverityMin'
+        - $ref: '#/components/parameters/SeverityMax'
+        - $ref: '#/components/parameters/SrcIpFilter'
+        - $ref: '#/components/parameters/UserFilter'
+        - $ref: '#/components/parameters/HostFilter'
+        - $ref: '#/components/parameters/TagFilter'
+        - $ref: '#/components/parameters/Query'
+      responses:
+        '200':
+          description: Every bucket in the window, oldest first.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timeline'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
   /api/v1/alert-rules:
     get:
       operationId: listAlertRules
@@ -732,6 +835,35 @@ components:
         type: string
         enum: [asc, desc]
 
+    TopField:
+      name: field
+      in: query
+      required: true
+      description: The field to count events by.
+      schema:
+        $ref: '#/components/schemas/TopField'
+
+    TopLimit:
+      name: limit
+      in: query
+      required: false
+      description: Maximum values to return. Defaults to 10.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+
+    TimelineInterval:
+      name: interval
+      in: query
+      required: false
+      description: |
+        The width of each bucket. Defaults to the shortest that divides the
+        window into at most 200 parts.
+      schema:
+        $ref: '#/components/schemas/TimelineInterval'
+
     AlertLimit:
       name: limit
       in: query
@@ -860,8 +992,9 @@ components:
 
     ServiceUnavailable:
       description: |
-        A dependency, normally the database, is unreachable, or a search ran
-        past its time limit. Retrying later may succeed.
+        A dependency, normally the database, is unreachable, or a search or
+        count ran past its time limit (`search_timeout`). Retrying later may
+        succeed.
       headers:
         X-Request-Id:
           $ref: '#/components/headers/XRequestId'
@@ -1282,6 +1415,100 @@ components:
           description: |
             Pass as `cursor` to get the following page. Absent when this is the
             last page.
+
+    TopField:
+      type: string
+      description: |
+        An event field to count by: `src_ip`, `dst_ip`, `user`, `host` or
+        `event_type`.
+      enum: [src_ip, dst_ip, user, host, event_type]
+      example: src_ip
+
+    TopValueList:
+      type: object
+      additionalProperties: false
+      required: [field, from, to, items]
+      properties:
+        field:
+          $ref: '#/components/schemas/TopField'
+        from:
+          type: string
+          format: date-time
+          description: Start of the window counted, inclusive.
+        to:
+          type: string
+          format: date-time
+          description: End of the window counted, exclusive.
+        items:
+          type: array
+          description: The most frequent values, most frequent first.
+          items:
+            $ref: '#/components/schemas/TopValue'
+
+    TopValue:
+      type: object
+      additionalProperties: false
+      required: [value, count]
+      properties:
+        value:
+          type: string
+          description: A value of the field, as search returns it.
+          example: 203.0.113.77
+        count:
+          type: integer
+          format: int64
+          description: How many matching events had this value.
+          example: 42
+
+    TimelineInterval:
+      type: string
+      description: |
+        A bucket width: minutes (`m`), hours (`h`) or a day (`d`). Buckets
+        start on whole multiples of the width in UTC, so days start at
+        midnight UTC.
+      enum: [1m, 5m, 15m, 30m, 1h, 3h, 6h, 12h, 1d]
+      example: 15m
+
+    Timeline:
+      type: object
+      additionalProperties: false
+      required: [from, to, interval, buckets]
+      properties:
+        from:
+          type: string
+          format: date-time
+          description: Start of the window counted, inclusive.
+        to:
+          type: string
+          format: date-time
+          description: End of the window counted, exclusive.
+        interval:
+          $ref: '#/components/schemas/TimelineInterval'
+        buckets:
+          type: array
+          description: |
+            Every bucket that overlaps the window, oldest first, empty ones
+            included. The first may start before `from` and the last may end
+            after `to`, but only events within the window are counted. So
+            there may be one more bucket than the window has intervals.
+          items:
+            $ref: '#/components/schemas/TimelineBucket'
+
+    TimelineBucket:
+      type: object
+      additionalProperties: false
+      required: [start, count]
+      properties:
+        start:
+          type: string
+          format: date-time
+          description: |
+            Start of the bucket, inclusive. It ends where the next one starts.
+        count:
+          type: integer
+          format: int64
+          description: How many matching events fell in the bucket.
+          example: 17
 
     AlertGroupBy:
       type: string

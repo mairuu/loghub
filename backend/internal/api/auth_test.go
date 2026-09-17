@@ -201,6 +201,10 @@ func TestAccess(t *testing.T) {
 		"anonymous": needed, "garbage": invalid, "expired": invalid,
 		"collector": ok, "admin": ok, "viewer": forbidden,
 	}
+	readEvents := map[string]string{
+		"anonymous": needed, "garbage": invalid, "expired": invalid,
+		"collector": forbidden, "admin": ok, "viewer": ok,
+	}
 	for _, tc := range []struct {
 		method, target, contentType, body string
 		want                              map[string]string
@@ -212,10 +216,9 @@ func TestAccess(t *testing.T) {
 		{"POST", "/api/v1/ingest", "application/json", apiEvent, ingest},
 		{"POST", "/api/v1/ingest/batch", "application/x-ndjson", apiEvent, ingest},
 		{"POST", "/api/v1/ingest/file?tenant=demoA", "application/x-ndjson", apiEvent, ingest},
-		{"GET", "/api/v1/events", "", "", map[string]string{
-			"anonymous": needed, "garbage": invalid, "expired": invalid,
-			"collector": forbidden, "admin": ok, "viewer": ok,
-		}},
+		{"GET", "/api/v1/events", "", "", readEvents},
+		{"GET", "/api/v1/events/top?field=src_ip", "", "", readEvents},
+		{"GET", "/api/v1/events/timeline", "", "", readEvents},
 		{"POST", "/api/v1/alert-rules", "application/json", failedLoginRule, map[string]string{
 			"anonymous": needed, "garbage": invalid, "expired": invalid,
 			"collector": forbidden, "admin": created, "viewer": forbidden,
@@ -255,7 +258,7 @@ func TestAccess(t *testing.T) {
 						t.Errorf("WWW-Authenticate = %q", challenge)
 					}
 				}
-				if refused && (len(events.inserted) > 0 || len(events.searched) > 0 || alerts.called()) {
+				if refused && (len(events.inserted) > 0 || events.read() || alerts.called()) {
 					t.Error("a refused request reached the store")
 				}
 			})
@@ -309,12 +312,13 @@ func TestIngestTenantNotPermitted(t *testing.T) {
 	})
 }
 
-func TestSearchScope(t *testing.T) {
+// Searches and counts read what the caller may read, as the caller.
+func TestEventsScope(t *testing.T) {
 	viewer, admin := tokenFor(t, viewerCaller), tokenFor(t, adminCaller)
 	viewerScope := store.Scope{TenantID: "demoA"}
 	for _, tc := range []struct {
 		name, credential, query string
-		// wantTenant is the tenant filter searched with.
+		// wantTenant is the tenant filter read with.
 		wantTenant string
 		wantScope  store.Scope
 		refused    string
@@ -327,27 +331,32 @@ func TestSearchScope(t *testing.T) {
 		{name: "admin, no tenant", credential: admin, wantScope: store.AdminScope},
 		{name: "admin, any tenant", credential: admin, query: "tenant=demoB", wantTenant: "demoB", wantScope: store.AdminScope},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
-			var events fakeEvents
-			res := callAs(t, newServer(t, api.Config{Events: &events}), tc.credential, "GET", "/api/v1/events?"+tc.query, "", nil)
-			if tc.refused != "" {
-				res.check(t, 403, `{"code":"tenant_not_permitted","message":"`+tc.refused+`"}`)
-				if len(events.searched) > 0 {
-					t.Error("a refused search reached the store")
+		for _, path := range []string{"/api/v1/events?", "/api/v1/events/top?field=user&", "/api/v1/events/timeline?"} {
+			t.Run(tc.name+" "+path, func(t *testing.T) {
+				var events fakeEvents
+				res := callAs(t, newServer(t, api.Config{Events: &events}), tc.credential, "GET", path+tc.query, "", nil)
+				if tc.refused != "" {
+					res.check(t, 403, `{"code":"tenant_not_permitted","message":"`+tc.refused+`"}`)
+					if events.read() {
+						t.Error("a refused request reached the store")
+					}
+					return
 				}
-				return
-			}
-			res.check(t, 200, `{"items":[]}`)
-			if len(events.searched) != 1 {
-				t.Fatalf("%d searches", len(events.searched))
-			}
-			if got := events.searched[0].Tenant; got != tc.wantTenant {
-				t.Errorf("tenant filter %q, want %q", got, tc.wantTenant)
-			}
-			if got := events.scopes[0]; got != tc.wantScope {
-				t.Errorf("scope %+v, want %+v", got, tc.wantScope)
-			}
-		})
+				if res.status != 200 {
+					t.Fatalf("got %d %v", res.status, res.body)
+				}
+				filters := events.filters()
+				if len(filters) != 1 {
+					t.Fatalf("%d reads", len(filters))
+				}
+				if got := filters[0].Tenant; got != tc.wantTenant {
+					t.Errorf("tenant filter %q, want %q", got, tc.wantTenant)
+				}
+				if got := events.scopes[0]; got != tc.wantScope {
+					t.Errorf("scope %+v, want %+v", got, tc.wantScope)
+				}
+			})
+		}
 	}
 }
 

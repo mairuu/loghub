@@ -18,11 +18,13 @@ import (
 	"github.com/mairuu/loghub/backend/internal/store"
 )
 
-// Events is where ingested events go and searches read from.
+// Events is where ingested events go, and what searches and counts read.
 // *store.EventRepo is the implementation.
 type Events interface {
 	Insert(ctx context.Context, events []store.NewEventParams) ([]error, error)
 	Search(ctx context.Context, scope store.Scope, p store.SearchParams) (store.EventPage, error)
+	Top(ctx context.Context, scope store.Scope, p store.TopParams) (store.Top, error)
+	Timeline(ctx context.Context, scope store.Scope, p store.TimelineParams) (store.Timeline, error)
 }
 
 // Users is who may sign in. *store.UserRepo is the implementation.
@@ -156,15 +158,30 @@ var paramFormats = map[string]string{
 	"severity_max": "an integer between 0 and 10",
 }
 
+// pathParamFormats replace paramFormats on the paths where a parameter
+// differs.
+var pathParamFormats = map[string]map[string]string{
+	"/api/v1/events/top": {"limit": topLimitFormat},
+}
+
 // paramError answers a query parameter the generated code could not bind.
 func (s *Server) paramError(w http.ResponseWriter, r *http.Request, err error) {
 	message := "a query parameter is not in the expected format"
 	var formatErr *gen.InvalidParamFormatError
-	if errors.As(err, &formatErr) {
-		message = formatErr.ParamName + " is not in the expected format"
-		if format, ok := paramFormats[formatErr.ParamName]; ok {
-			message = fmt.Sprintf("%s must be %s", formatErr.ParamName, format)
+	var requiredErr *gen.RequiredParamError
+	switch {
+	case errors.As(err, &formatErr):
+		name := formatErr.ParamName
+		message = name + " is not in the expected format"
+		format, ok := pathParamFormats[r.URL.Path][name]
+		if !ok {
+			format, ok = paramFormats[name]
 		}
+		if ok {
+			message = fmt.Sprintf("%s must be %s", name, format)
+		}
+	case errors.As(err, &requiredErr):
+		message = requiredErr.ParamName + " is required"
 	}
 	s.fail(w, r, invalidParam(message).Wrapping(err))
 }

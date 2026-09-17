@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io"
 	"log/slog"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -392,9 +393,60 @@ func TestRBACEndToEnd(t *testing.T) {
 		})
 	}
 
+	// counted is how many events a dashboard count reports, and the values
+	// it reports them for.
+	counted := func(credential, path string, q url.Values) (n int, values []string) {
+		t.Helper()
+		q.Set("event_type", "rbac")
+		res := callAs(t, h, credential, "GET", path+"?"+q.Encode(), "", nil)
+		if res.status != 200 {
+			t.Fatalf("%s %s: %d %v", path, q.Encode(), res.status, res.body)
+		}
+		for _, key := range []string{"items", "buckets"} {
+			list, _ := res.body[key].([]any)
+			for _, item := range list {
+				item := item.(map[string]any)
+				n += int(item["count"].(float64))
+				if v, ok := item["value"].(string); ok {
+					values = append(values, v)
+				}
+			}
+		}
+		return n, values
+	}
+	for _, tc := range []struct {
+		name       string
+		credential string
+		query      url.Values
+		want       int
+	}{
+		{"viewer counts their own tenant", viewerA, url.Values{}, 2},
+		{"admin counts every tenant", admin, url.Values{}, 4},
+		{"admin counts one", admin, url.Values{"tenant": {b}}, 2},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			top := url.Values{"field": {"event_type"}}
+			maps.Copy(top, tc.query)
+			if n, values := counted(tc.credential, "/api/v1/events/top", top); n != tc.want || !slices.Equal(values, []string{"rbac"}) {
+				t.Errorf("top counts %d of %q, want %d of rbac", n, values, tc.want)
+			}
+			if n, _ := counted(tc.credential, "/api/v1/events/timeline", maps.Clone(tc.query)); n != tc.want {
+				t.Errorf("timeline counts %d, want %d", n, tc.want)
+			}
+		})
+	}
+
 	t.Run("viewer asks for another tenant", func(t *testing.T) {
-		callAs(t, h, viewerA, "GET", "/api/v1/events?tenant="+b, "", nil).
-			check(t, 403, errorBody("tenant_not_permitted", `you may not access tenant "`+b+`"`))
+		for _, path := range []string{"/api/v1/events?", "/api/v1/events/top?field=user&", "/api/v1/events/timeline?"} {
+			callAs(t, h, viewerA, "GET", path+"tenant="+b, "", nil).
+				check(t, 403, errorBody("tenant_not_permitted", `you may not access tenant "`+b+`"`))
+		}
+	})
+	t.Run("store checks count parameters", func(t *testing.T) {
+		callAs(t, h, viewerA, "GET", "/api/v1/events/top?field=", "", nil).
+			check(t, 400, errorBody("invalid_parameter", "field must be one of src_ip, dst_ip, user, host, event_type"))
+		callAs(t, h, viewerA, "GET", "/api/v1/events/timeline?interval=1w", "", nil).
+			check(t, 400, errorBody("invalid_parameter", "interval must be one of 1m, 5m, 15m, 30m, 1h, 3h, 6h, 12h, 1d"))
 	})
 	t.Run("viewer can't ingest", func(t *testing.T) {
 		callAs(t, h, viewerA, "POST", "/api/v1/ingest", "application/json", strings.NewReader(lines[0])).

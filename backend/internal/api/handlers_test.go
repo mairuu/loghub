@@ -39,7 +39,14 @@ type fakeEvents struct {
 	searchErr error
 	search    func() // runs inside Search, for panics
 	searched  []store.SearchParams
-	scopes    []store.Scope
+	// scopes are the scopes of every search and count, in order.
+	scopes []store.Scope
+
+	top       store.Top
+	timeline  store.Timeline
+	countErr  error
+	tops      []store.TopParams
+	timelines []store.TimelineParams
 }
 
 func (f *fakeEvents) Insert(_ context.Context, events []store.NewEventParams) ([]error, error) {
@@ -63,6 +70,38 @@ func (f *fakeEvents) Search(_ context.Context, scope store.Scope, p store.Search
 		f.search()
 	}
 	return f.page, f.searchErr
+}
+
+func (f *fakeEvents) Top(_ context.Context, scope store.Scope, p store.TopParams) (store.Top, error) {
+	f.tops = append(f.tops, p)
+	f.scopes = append(f.scopes, scope)
+	return f.top, f.countErr
+}
+
+func (f *fakeEvents) Timeline(_ context.Context, scope store.Scope, p store.TimelineParams) (store.Timeline, error) {
+	f.timelines = append(f.timelines, p)
+	f.scopes = append(f.scopes, scope)
+	return f.timeline, f.countErr
+}
+
+// read reports whether anything was searched or counted.
+func (f *fakeEvents) read() bool {
+	return len(f.searched)+len(f.tops)+len(f.timelines) > 0
+}
+
+// filters are the filters of every search and count, in order of kind.
+func (f *fakeEvents) filters() []store.EventFilter {
+	var out []store.EventFilter
+	for _, p := range f.searched {
+		out = append(out, p.EventFilter)
+	}
+	for _, p := range f.tops {
+		out = append(out, p.EventFilter)
+	}
+	for _, p := range f.timelines {
+		out = append(out, p.EventFilter)
+	}
+	return out
 }
 
 func refuseTenant(tenant string) func(store.NewEventParams) error {

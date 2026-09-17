@@ -15,37 +15,29 @@ import (
 
 func (s *Server) SearchEvents(w http.ResponseWriter, r *http.Request, p gen.SearchEventsParams) {
 	caller := auth.CallerFrom(r.Context())
-	readable := s.authz.Scopes(caller, authz.Events, authz.Read)
-	if readable.Empty() {
-		s.fail(w, r, authz.Deny(caller))
+	f, err := s.eventFilter(caller, p.Source, store.EventFilter{
+		Tenant:      deref(p.Tenant),
+		From:        p.From,
+		To:          p.To,
+		EventType:   deref(p.EventType),
+		Action:      deref(p.Action),
+		SeverityMin: p.SeverityMin,
+		SeverityMax: p.SeverityMax,
+		SrcIP:       deref(p.SrcIP),
+		User:        deref(p.User),
+		Host:        deref(p.Host),
+		Tags:        deref(p.Tag),
+		Query:       deref(p.Q),
+	})
+	if err != nil {
+		s.fail(w, r, err)
 		return
 	}
 
 	q := store.SearchParams{
-		EventFilter: store.EventFilter{
-			Tenant:      deref(p.Tenant),
-			From:        p.From,
-			To:          p.To,
-			EventType:   deref(p.EventType),
-			Action:      deref(p.Action),
-			SeverityMin: p.SeverityMin,
-			SeverityMax: p.SeverityMax,
-			SrcIP:       deref(p.SrcIP),
-			User:        deref(p.User),
-			Host:        deref(p.Host),
-			Tags:        deref(p.Tag),
-			Query:       deref(p.Q),
-		},
-		Order:  store.Order(deref(p.Order)),
-		Cursor: deref(p.Cursor),
-	}
-	for _, source := range deref(p.Source) {
-		// Blank means no filter, as it does for every other parameter.
-		if v := strings.ToLower(strings.TrimSpace(string(source))); v != "" && !gen.Source(v).Valid() {
-			s.fail(w, r, invalidParam(fmt.Sprintf("source %q is not a known source category", source)))
-			return
-		}
-		q.Sources = append(q.Sources, string(source))
+		EventFilter: f,
+		Order:       store.Order(deref(p.Order)),
+		Cursor:      deref(p.Cursor),
 	}
 	if p.Limit != nil {
 		// The store reads zero as the default page size.
@@ -54,18 +46,6 @@ func (s *Server) SearchEvents(w http.ResponseWriter, r *http.Request, p gen.Sear
 			return
 		}
 		q.Limit = int(*p.Limit)
-	}
-
-	// The tenant filter narrows within what the caller may read, and is that
-	// tenant when it is the only one.
-	tenant := strings.TrimSpace(q.Tenant)
-	only, one := readable.Only()
-	switch {
-	case tenant != "" && !readable.Contains(tenant):
-		s.fail(w, r, authz.TenantNotPermitted(tenant))
-		return
-	case tenant == "" && one:
-		q.Tenant = only
 	}
 
 	page, err := s.events.Search(r.Context(), scopeOf(caller), q)
@@ -82,6 +62,36 @@ func (s *Server) SearchEvents(w http.ResponseWriter, r *http.Request, p gen.Sear
 		out.NextCursor = &page.NextCursor
 	}
 	s.respond(w, r, http.StatusOK, out)
+}
+
+// eventFilter completes the filter a request for events names, or refuses
+// it: the caller must be allowed to read some tenant's events, the sources
+// must be known ones, and the tenant is narrowed within what the caller may
+// read.
+func (s *Server) eventFilter(caller authz.Caller, sources *[]gen.Source, f store.EventFilter) (store.EventFilter, error) {
+	readable := s.authz.Scopes(caller, authz.Events, authz.Read)
+	if readable.Empty() {
+		return store.EventFilter{}, authz.Deny(caller)
+	}
+	for _, source := range deref(sources) {
+		// Blank means no filter, as it does for every other parameter.
+		if v := strings.ToLower(strings.TrimSpace(string(source))); v != "" && !gen.Source(v).Valid() {
+			return store.EventFilter{}, invalidParam(fmt.Sprintf("source %q is not a known source category", source))
+		}
+		f.Sources = append(f.Sources, string(source))
+	}
+
+	// The tenant filter narrows within what the caller may read, and is that
+	// tenant when it is the only one.
+	tenant := strings.TrimSpace(f.Tenant)
+	only, one := readable.Only()
+	switch {
+	case tenant != "" && !readable.Contains(tenant):
+		return store.EventFilter{}, authz.TenantNotPermitted(tenant)
+	case tenant == "" && one:
+		f.Tenant = only
+	}
+	return f, nil
 }
 
 // scopeOf is the row-level security context for the caller's queries. It
