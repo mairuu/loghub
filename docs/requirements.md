@@ -479,7 +479,7 @@ Up to **+10 points** for: true multi-tenancy, enrichment, CI/CD, Infrastructure 
 
 ## 13. Requirement Status
 
-Status as of 2026-09-18, on branch `feat/dashboard`. `frontend/` and the tenants API are in the working tree but not yet committed.
+Status as of 2026-09-18.
 
 ### Must have
 
@@ -508,7 +508,7 @@ Status as of 2026-09-18, on branch `feat/dashboard`. `frontend/` and the tenants
 - [x] Docker Compose and/or Helm — Compose only
 - [x] Sample data and sender scripts — `samples/send_syslog.sh`, `samples/post_logs.py`, `make send-samples`
 - [x] Initialization/seed scripts, `.env.example`, Makefile — `loghub seed`, `make env`
-- [x] Backend/frontend/ingest source code — `frontend/` not yet committed
+- [x] Backend/frontend/ingest source code — `backend/`, `frontend/`, `ingest/`
 - [x] 2–3 example tests — Go and Vitest tests sit next to the code rather than in `/tests/`
 - [ ] 30-minute demo video
 - [x] API collection — `docs/postman_collection.json`, generated from `api/openapi.yaml`
