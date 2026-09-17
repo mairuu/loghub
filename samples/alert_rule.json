@@ -1,0 +1,8 @@
+{
+  "tenant": "demoA",
+  "name": "Repeated failed logins from one address",
+  "tags": ["auth_failure"],
+  "group_by": "src_ip",
+  "threshold": 5,
+  "window_minutes": 5
+}

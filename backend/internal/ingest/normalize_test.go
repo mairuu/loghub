@@ -22,8 +22,8 @@ import (
 // falls outside the retention window.
 var sampleNow = ts("2025-08-20T13:00:00Z")
 
-// wantSamples is what every file in samples/ must normalize to. A nil Raw
-// means the whole record.
+// wantSamples is what every file in samples/json and samples/syslog must
+// normalize to. A nil Raw means the whole record.
 var wantSamples = map[string]store.NewEventParams{
 	"json/ad_4625.json": {
 		Ts: ts("2025-08-20T11:11:11Z"), TenantID: "demoA", Source: "ad",

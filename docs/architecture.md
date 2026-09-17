@@ -15,7 +15,7 @@ flowchart LR
   subgraph Stack["Docker Compose: appliance or cloud VM"]
     VEC["Vector<br/>transport only"]
     CADDY["Caddy<br/>TLS, SPA, /api proxy"]
-    BE["Go backend<br/>normalize, API, retention"]
+    BE["Go backend<br/>normalize, API, retention, alerts"]
     PG[("PostgreSQL 18<br/>partitioned events, RLS")]
   end
 
@@ -26,13 +26,14 @@ flowchart LR
   VEC -->|"NDJSON batches, bearer token"| BE
   CADDY -->|"/api/*"| BE
   BE -->|"loghub_app role"| PG
+  BE -->|"alert webhooks"| HOOK["Webhook receivers"]
 ```
 
 | Component | Role | Why |
 |---|---|---|
 | Caddy | The only public HTTP entry point. Terminates TLS, serves the SPA, proxies `/api/*`. | [ADR 0005](adr/0005-caddy-edge.md) |
 | Vector | Receives syslog, reads and deletes files dropped in the inbox, buffers on disk, forwards NDJSON to the backend. | [ADR 0004](adr/0004-vector-transport-only.md) |
-| Backend (Go) | Parses and normalizes events, stores them, serves the API, runs retention. | [ADR 0001](adr/0001-go-backend.md) |
+| Backend (Go) | Parses and normalizes events, stores them, serves the API, runs retention and evaluates alert rules. | [ADR 0001](adr/0001-go-backend.md), [ADR 0010](adr/0010-alerting.md) |
 | PostgreSQL | Event store with daily partitions and row-level security. | [ADR 0002](adr/0002-postgres-event-store.md), [ADR 0003](adr/0003-tenant-isolation-rls.md) |
 | Frontend | React SPA, built into the Caddy image. | [ADR 0006](adr/0006-react-vite-frontend.md) |
 
@@ -85,7 +86,7 @@ A record is rejected only when it can't be stored: it isn't a JSON object, or it
 
 **Time** is taken from `@timestamp`, then the RFC 5424 header, then the receipt time. A time older than the retention window, or more than an hour ahead, is replaced with the receipt time and tagged `rebased:timestamp`. Without this, sample data from 2025 would be purged on arrival and never appear in a search.
 
-The rules live in `backend/internal/ingest`, and every file in `samples/` is one of its test cases.
+The rules live in `backend/internal/ingest`, and every event in `samples/json` and `samples/syslog` is one of its test cases.
 
 ### Storage
 
@@ -129,13 +130,23 @@ The code is `EventRepo` in `backend/internal/store`. `make test-db` runs its tes
 
 Each handler then asks the enforcer in `backend/internal/authz` whether the caller may act. The policies are in `backend/internal/api/policies.go`:
 
-| Role | Health, sign-in | Events |
-|---|---|---|
-| anonymous | yes | no |
-| admin | yes | read and create, any tenant |
-| viewer | yes | read, own tenant |
-| collector | yes | create, any tenant |
+| Role | Health, sign-in | Events | Alert rules | Alerts |
+|---|---|---|---|---|
+| anonymous | yes | no | no | no |
+| admin | yes | read and create, any tenant | read and create, any tenant | read, any tenant |
+| viewer | yes | read, own tenant | read, own tenant | read, own tenant |
+| collector | yes | create, any tenant | no | no |
 
 A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search asks which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore still reads nothing it shouldn't. Ingest is the exception, because the insert runs as each record's tenant, so the per-record check is the only check on writes.
 
 Sign-in checks an unknown email against a fixed bcrypt hash, so it takes as long as a wrong password, and both are refused with 401 `invalid_credentials`. Tokens can't be revoked before they expire, and sign-in has no rate limit.
+
+## Alerting
+
+[ADR 0010](adr/0010-alerting.md) has the reasoning. A rule is a row in `alert_rules`: a tenant, an optional filter on `source`, `event_type`, `action`, `severity_min` and `tags`, a `group_by` of `src_ip`, `dst_ip`, `user` or `host`, a threshold, a window, a cooldown, and an optional webhook URL. [`samples/alert_rule.json`](../samples/alert_rule.json) is the failed-login example: five events tagged `auth_failure` from one `src_ip` within five minutes. The tag covers failed logins from every source that reports them, so the rule doesn't name vendor events.
+
+- **Evaluation:** every minute, `serve` lists the tenants, reads each tenant's rules as that tenant, and evaluates each rule in its own transaction as that tenant too. Neither step runs as an admin. The code is in `backend/internal/alerting`. A rule becomes one statement, `AlertRepo.Evaluate` in `backend/internal/store`, which counts the window's matching events by group and inserts a row into `alerts` for each group that reaches the threshold. Events with no value for `group_by` aren't counted. A rule's query is cancelled after 30 seconds, and a rule that fails is logged and skipped.
+- **Window:** it ends on the last whole minute at least 30 seconds ago. Events the collector delivers a little late are still counted, and every evaluation within one minute covers the same window. An alert appears up to about two and a half minutes after the event that completes it.
+- **Repeats:** an alert is unique on rule, group and window start, so the same window is never recorded twice. After an alert, its group stays quiet until the rule's cooldown has passed since the end of that alert's window. The cooldown defaults to the window length, so one burst raises one alert, and a burst that keeps going raises one per window.
+- **Delivery:** `GET /api/v1/alerts` lists alerts newest first, for the UI's alert page. When a rule has a webhook URL, each new alert is also POSTed to it as JSON, the same object the API lists. The request times out after 5 seconds and redirects aren't followed. A failed delivery is logged with the URL's host only, since the URL often holds a secret, and it isn't retried.
+- **Access:** admins create and read rules for any tenant. A viewer reads their own tenant's rules and alerts, and sees rules without their webhook URLs. Rules can't be changed or removed through the API. Both tables have the same row-level security policy as `events`, and `loghub_app` may only select from them and insert into them.

@@ -5,7 +5,7 @@
             "description": "Liveness and readiness.",
             "item": [
                 {
-                    "id": "86cb803a-fa9c-4346-a61f-a6d059b3ffa9",
+                    "id": "146bce22-d410-4dc5-911f-5ccc7702f89b",
                     "name": "Readiness probe",
                     "request": {
                         "name": "Readiness probe",
@@ -36,7 +36,7 @@
                     },
                     "response": [
                         {
-                            "id": "d273f260-01b3-4f10-a0f5-3976c0923153",
+                            "id": "4ec418a8-c55a-43dc-9319-f4f88e2e0967",
                             "name": "Service is ready.",
                             "originalRequest": {
                                 "url": {
@@ -67,12 +67,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"status\": \"unavailable\"\n}",
+                            "body": "{\n  \"status\": \"ok\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "e3c0d763-39a2-4a16-a0ad-8ea3d955c2b8",
+                            "id": "bf66ba8b-aa90-479b-8776-46851124acdd",
                             "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
@@ -129,7 +129,7 @@
             "description": "Signing in.",
             "item": [
                 {
-                    "id": "d9d37d55-8181-4803-b334-2f2f88348af7",
+                    "id": "c9406dd2-38a6-4f9e-92d0-b63989b012d7",
                     "name": "Sign in",
                     "request": {
                         "name": "Sign in",
@@ -175,7 +175,7 @@
                     },
                     "response": [
                         {
-                            "id": "cd51758e-0621-49aa-b19c-84c5614c4391",
+                            "id": "70f7f3d8-0098-4219-831d-b22a8d20d874",
                             "name": "Signed in.",
                             "originalRequest": {
                                 "url": {
@@ -221,12 +221,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"token\": \"<string>\",\n  \"expires_at\": \"<dateTime>\",\n  \"role\": \"admin\",\n  \"tenant\": \"<string>\"\n}",
+                            "body": "{\n  \"token\": \"<string>\",\n  \"expires_at\": \"<dateTime>\",\n  \"role\": \"viewer\",\n  \"tenant\": \"<string>\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "8e9eaeb7-f24b-49c4-b2ac-001cf465eb49",
+                            "id": "fcbe7ceb-500e-4a9e-baaf-a63aeb986709",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -286,7 +286,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "945cf1f4-72f9-4f5c-abff-d15d199109f1",
+                            "id": "704f9003-3678-416d-a451-8c51e7ef1393",
                             "name": "The email and password don't match an account.",
                             "originalRequest": {
                                 "url": {
@@ -346,7 +346,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "da3fa172-cb5b-4cb3-9067-c61f5708b5c7",
+                            "id": "5487df0c-5157-4564-b0aa-28b798c37412",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -406,7 +406,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "184bbc19-099e-4938-af48-608a1b4a39fd",
+                            "id": "eff478df-bf77-495a-af72-2f6230aa6986",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -466,7 +466,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "23a0571f-4e56-4741-830b-2b00ee8ff76b",
+                            "id": "a68290db-81ae-4d9b-ad21-9bf139b2fdde",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -526,7 +526,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "0e4fa993-4ac5-411d-a54e-bb324675d38b",
+                            "id": "12a446f1-fdd2-401d-a121-3a182e9fccd9",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -586,7 +586,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "48853f9c-6977-4f80-a091-3854e71b2b32",
+                            "id": "7e605b21-f6e1-48e4-aec6-fcf40f2e34f6",
                             "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
@@ -671,7 +671,7 @@
             "description": "Getting events in. Three paths, one normalizer: a single JSON event, an\nNDJSON batch from the collector, and a whole vendor export file.\n",
             "item": [
                 {
-                    "id": "ddbb65f0-8929-4c43-8f7d-23d40484ae89",
+                    "id": "eaef5ccd-b4d2-4e70-b7a2-c7e37ce40b87",
                     "name": "Ingest a single event",
                     "request": {
                         "name": "Ingest a single event",
@@ -704,7 +704,7 @@
                         "method": "POST",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                            "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                             "options": {
                                 "raw": {
                                     "headerFamily": "json",
@@ -724,7 +724,7 @@
                     },
                     "response": [
                         {
-                            "id": "945a95eb-e4fd-4bf1-b25a-e8e0eb17b0f9",
+                            "id": "b034267d-2658-4411-8fb2-6cb174ae0c83",
                             "name": "Processed. `accepted` is 1 when the event was stored; a rejected\nevent reports why in `errors[0]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -760,7 +760,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -782,7 +782,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "ee1c257f-d001-4b27-be6f-6a305039183d",
+                            "id": "4e4f2247-669a-45e0-867a-18e7a3dbe835",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -818,7 +818,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -849,7 +849,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "1cd4ea91-f63c-4192-aa7d-178ed599f2f4",
+                            "id": "fd7f44e3-cd23-4e94-a04e-4f3e5e29a8b8",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -885,7 +885,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -916,7 +916,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "39d9e9c5-3c74-49d8-8be1-8e1499a3f0db",
+                            "id": "b2d28349-40a0-45df-affe-e9e23a2aa745",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -952,7 +952,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -983,7 +983,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "690548df-a3cc-4ebf-937a-4cd758d2b005",
+                            "id": "4fce9fc7-0ece-45bd-a2c2-9ba7cf30c7cb",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -1019,7 +1019,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1050,7 +1050,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "82e9cca4-4bcd-4cf8-b44b-1b3c426dd08b",
+                            "id": "805ad47d-88c1-48ae-a486-9422cf9cfa0b",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -1086,7 +1086,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1117,7 +1117,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "699293b2-f645-4b99-83dd-3aa055e3c47d",
+                            "id": "9289290b-e330-4ca1-803e-0128303d5137",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -1153,7 +1153,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1184,7 +1184,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "2b862efa-9107-4072-ad69-512ff307bc23",
+                            "id": "fc21cb14-c008-45dc-ba3d-edad524d3e1c",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -1220,7 +1220,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1251,7 +1251,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "717ed208-f912-40aa-b7dd-3673e8d6ad57",
+                            "id": "8eae996a-444e-44f1-a4c4-9de28577145d",
                             "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
@@ -1287,7 +1287,7 @@
                                 "method": "POST",
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"laborum_2d\": false,\n    \"irure8b\": -42532678\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
+                                    "raw": "{\n  \"tenant\": \"<string>\",\n  \"source\": \"<string>\",\n  \"@timestamp\": \"<dateTime>\",\n  \"event_type\": \"<string>\",\n  \"event_subtype\": \"<string>\",\n  \"severity\": \"<integer>\",\n  \"action\": \"<string>\",\n  \"user\": \"<string>\",\n  \"ip\": \"<string>\",\n  \"src_ip\": \"<string>\",\n  \"dst_ip\": \"<string>\",\n  \"src_port\": \"<integer>\",\n  \"dst_port\": \"<integer>\",\n  \"protocol\": \"<string>\",\n  \"host\": \"<string>\",\n  \"process\": \"<string>\",\n  \"url\": \"<string>\",\n  \"http_method\": \"<string>\",\n  \"status_code\": \"<integer>\",\n  \"rule_name\": \"<string>\",\n  \"rule_id\": \"<string>\",\n  \"vendor\": \"<string>\",\n  \"product\": \"<string>\",\n  \"cloud\": {\n    \"account_id\": \"<string>\",\n    \"region\": \"<string>\",\n    \"service\": \"<string>\"\n  },\n  \"message\": \"<string>\",\n  \"raw\": {\n    \"culpa_b\": \"sit aliqua Lorem Duis\",\n    \"labore92e\": -34374749.19257923,\n    \"Duis_4\": true\n  },\n  \"_tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}",
                                     "options": {
                                         "raw": {
                                             "headerFamily": "json",
@@ -1324,7 +1324,7 @@
                     }
                 },
                 {
-                    "id": "88aafe07-d4d4-4a0b-8075-1de0c2d1a187",
+                    "id": "01a07ff7-ac1b-49d7-be5d-2d6d1d83221e",
                     "name": "Ingest a batch of events as NDJSON",
                     "request": {
                         "name": "Ingest a batch of events as NDJSON",
@@ -1372,7 +1372,7 @@
                     },
                     "response": [
                         {
-                            "id": "f2bece97-959d-4e77-bd14-413a2cb02d43",
+                            "id": "2c37acc5-f9c4-4014-a8d0-5ee5b4a044e7",
                             "name": "Batch processed; counts report how many records stored.",
                             "originalRequest": {
                                 "url": {
@@ -1425,7 +1425,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "c802ab71-fda8-4da9-b91f-e5aae746b3cb",
+                            "id": "feef9248-2063-469d-8a9b-a51a7d604c16",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -1487,7 +1487,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "5100f5d3-fd83-4fdb-a09e-e794d074fd77",
+                            "id": "f0566ccd-7ff4-4f39-9f7e-5a4e8ac920a1",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -1549,7 +1549,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "d618ebbf-8b75-4e77-b993-e452ece785ba",
+                            "id": "a751fe38-8895-46e9-85e1-2592e0a4e6e9",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -1611,7 +1611,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "04878c3f-ea92-45ce-add8-eb55e727b841",
+                            "id": "f9561ef5-50ba-4b03-9fee-d996abbbc9d3",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -1673,7 +1673,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "28e94e9f-68c6-4964-b29e-a7c2b8583505",
+                            "id": "462795b5-8023-44d6-94e5-2040250e381b",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -1735,7 +1735,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "a0f8e00c-d425-4260-8e73-167091f66868",
+                            "id": "738dd4a1-17ac-460e-a4db-a99c1bbb364c",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -1797,7 +1797,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "98d2387d-1687-400b-aff3-514b9d4fe96a",
+                            "id": "ca730c17-debd-4473-88b0-0ff6dfb89dab",
                             "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
@@ -1865,7 +1865,7 @@
                     }
                 },
                 {
-                    "id": "19e258c6-e071-42ec-b771-464332985735",
+                    "id": "42cb9581-35d6-441b-96e1-ccdb2a8dcf31",
                     "name": "Ingest a whole export file as NDJSON",
                     "request": {
                         "name": "Ingest a whole export file as NDJSON",
@@ -1891,7 +1891,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "h52fmwjo"
+                                    "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                 },
                                 {
                                     "disabled": false,
@@ -1900,7 +1900,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "m365"
+                                    "value": "network"
                                 }
                             ],
                             "variable": []
@@ -1932,7 +1932,7 @@
                     },
                     "response": [
                         {
-                            "id": "b9f8508e-b476-4c5d-bd01-d747d19ac2e0",
+                            "id": "b557bebc-2010-4a26-992b-0a07437306a4",
                             "name": "File processed; counts report how many records stored.",
                             "originalRequest": {
                                 "url": {
@@ -1953,7 +1953,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -1962,7 +1962,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2004,7 +2004,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "d1a49c8f-47d1-4507-ac32-4fbe364fea42",
+                            "id": "07d2f2df-137e-427e-ad1d-df758a17c39b",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -2025,7 +2025,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2034,7 +2034,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2085,7 +2085,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "9739e6f8-cf27-494d-80ba-7c804b02e6c8",
+                            "id": "b03ef348-2fd0-43f0-a91a-c0defe13923c",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -2106,7 +2106,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2115,7 +2115,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2166,7 +2166,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "28c2c1a3-6b0e-4c9a-8f83-9f4587e2601d",
+                            "id": "6d5ec808-bfd0-4c3f-8bf9-ae6b00d14cf4",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -2187,7 +2187,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2196,7 +2196,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2247,7 +2247,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "827e13ca-dd2d-4239-a8b0-85264e172cd6",
+                            "id": "8cf627cc-ac90-4cd8-82f2-4907695b6c45",
                             "name": "The request body exceeded the configured limit.",
                             "originalRequest": {
                                 "url": {
@@ -2268,7 +2268,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2277,7 +2277,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2328,7 +2328,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "7277a2fd-8d31-457d-adc4-84328bd95e0d",
+                            "id": "0f65ef0a-4d37-4349-9f75-347acf9bb203",
                             "name": "The Content-Type is not one this endpoint accepts.",
                             "originalRequest": {
                                 "url": {
@@ -2349,7 +2349,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2358,7 +2358,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2409,7 +2409,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "de77e869-ee47-44e3-983c-5de9e7082991",
+                            "id": "4af10bc0-4ec3-4da1-99dd-58debc20b6d4",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -2430,7 +2430,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2439,7 +2439,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2490,7 +2490,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "db62bc16-5cfa-4887-92f9-b49330039d3a",
+                            "id": "e663f6c7-3700-4fc8-9372-c0f09f05bc7f",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -2511,7 +2511,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2520,7 +2520,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2571,7 +2571,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "18153c41-0d3a-4d25-a834-9049a62c5bce",
+                            "id": "f957bae2-761c-432d-bc29-9e9febb7c3e1",
                             "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
@@ -2592,7 +2592,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2601,7 +2601,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "network"
                                         }
                                     ],
                                     "variable": []
@@ -2664,7 +2664,7 @@
             "description": "Querying stored events.",
             "item": [
                 {
-                    "id": "2f6dc91a-b464-4f1e-8c82-07847af41a4c",
+                    "id": "de8d09f7-ade5-4ce5-b9e5-620f23149400",
                     "name": "Search events",
                     "request": {
                         "name": "Search events",
@@ -2685,11 +2685,11 @@
                                 {
                                     "disabled": false,
                                     "description": {
-                                        "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                        "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                         "type": "text/plain"
                                     },
                                     "key": "tenant",
-                                    "value": "h52fmwjo"
+                                    "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                 },
                                 {
                                     "disabled": false,
@@ -2716,7 +2716,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "network"
+                                    "value": "aws"
                                 },
                                 {
                                     "disabled": false,
@@ -2725,7 +2725,7 @@
                                         "type": "text/plain"
                                     },
                                     "key": "source",
-                                    "value": "m365"
+                                    "value": "api"
                                 },
                                 {
                                     "disabled": false,
@@ -2867,7 +2867,7 @@
                     },
                     "response": [
                         {
-                            "id": "1a5fa832-0c3b-4632-b4f7-f2a86c3de975",
+                            "id": "c0b2cd03-cc6c-4648-abd1-fbdaa9650c47",
                             "name": "Matching events, newest first unless `order=asc`.",
                             "originalRequest": {
                                 "url": {
@@ -2883,11 +2883,11 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -2914,7 +2914,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "api"
                                         },
                                         {
                                             "disabled": false,
@@ -3052,12 +3052,12 @@
                                     "value": "application/json"
                                 }
                             ],
-                            "body": "{\n  \"items\": [\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"aws\",\n      \"raw\": {\n        \"sit_d65\": \"pariatur id mollit dolor ut\",\n        \"amet09f\": true,\n        \"deserunt83\": -20322480\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    },\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"network\",\n      \"raw\": {\n        \"Lorem_4\": \"minim Ut qui\",\n        \"dolore_e80\": true,\n        \"culpa_b\": false,\n        \"ind\": true\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    }\n  ],\n  \"next_cursor\": \"<string>\"\n}",
+                            "body": "{\n  \"items\": [\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"network\",\n      \"raw\": {\n        \"laboris9e\": \"tempor labore aute ut occaecat\"\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    },\n    {\n      \"@timestamp\": \"<dateTime>\",\n      \"received_at\": \"<dateTime>\",\n      \"tenant\": \"<string>\",\n      \"source\": \"firewall\",\n      \"raw\": {\n        \"labore_4\": -16912024,\n        \"consectetur_4c\": \"a\",\n        \"cupidatat_f\": \"et\"\n      },\n      \"_tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"id\": \"<string>\",\n      \"vendor\": \"<string>\",\n      \"product\": \"<string>\",\n      \"event_type\": \"<string>\",\n      \"event_subtype\": \"<string>\",\n      \"severity\": \"<integer>\",\n      \"action\": \"<string>\",\n      \"src_ip\": \"<string>\",\n      \"src_port\": \"<integer>\",\n      \"dst_ip\": \"<string>\",\n      \"dst_port\": \"<integer>\",\n      \"protocol\": \"<string>\",\n      \"user\": \"<string>\",\n      \"host\": \"<string>\",\n      \"process\": \"<string>\",\n      \"url\": \"<string>\",\n      \"http_method\": \"<string>\",\n      \"status_code\": \"<integer>\",\n      \"rule_name\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"cloud\": {\n        \"account_id\": \"<string>\",\n        \"region\": \"<string>\",\n        \"service\": \"<string>\"\n      }\n    }\n  ],\n  \"next_cursor\": \"<string>\"\n}",
                             "cookie": [],
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "ef9b9733-51aa-4a47-ac75-a4a4e079518b",
+                            "id": "1cae8098-a16e-4d0c-b498-3c6eedade1c7",
                             "name": "The request could not be parsed or a parameter was unusable.",
                             "originalRequest": {
                                 "url": {
@@ -3073,11 +3073,11 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -3104,7 +3104,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "api"
                                         },
                                         {
                                             "disabled": false,
@@ -3256,7 +3256,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "ce3f23ae-dfc2-4951-a260-2a031176d3f4",
+                            "id": "a65fa153-cc6b-423e-bd32-b4aa872c3384",
                             "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
                             "originalRequest": {
                                 "url": {
@@ -3272,11 +3272,11 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -3303,7 +3303,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "api"
                                         },
                                         {
                                             "disabled": false,
@@ -3455,7 +3455,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "6652c077-99d4-4f35-8780-c90fa4f9fed8",
+                            "id": "4395fc70-b148-4bd2-a728-db9134ece4c6",
                             "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
                             "originalRequest": {
                                 "url": {
@@ -3471,11 +3471,11 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -3502,7 +3502,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "api"
                                         },
                                         {
                                             "disabled": false,
@@ -3654,7 +3654,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "c35fcc35-102b-42b6-a0bc-b14247bcfee9",
+                            "id": "c751d8af-b7c6-48ae-9e45-b1d57ecf39fa",
                             "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
                             "originalRequest": {
                                 "url": {
@@ -3670,11 +3670,11 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -3701,7 +3701,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "api"
                                         },
                                         {
                                             "disabled": false,
@@ -3853,7 +3853,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "28d3a1e0-bd3f-4404-a427-ad0165ebf219",
+                            "id": "4f4b11c0-5739-49b4-be62-f6928de1114a",
                             "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
                             "originalRequest": {
                                 "url": {
@@ -3869,11 +3869,11 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -3900,7 +3900,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "api"
                                         },
                                         {
                                             "disabled": false,
@@ -4052,7 +4052,7 @@
                             "_postman_previewlanguage": "json"
                         },
                         {
-                            "id": "e4866e90-952b-47ec-94fe-55d9f23245c8",
+                            "id": "aae53c49-fba7-480c-8df6-d57cbed3825d",
                             "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
                             "originalRequest": {
                                 "url": {
@@ -4068,11 +4068,11 @@
                                         {
                                             "disabled": false,
                                             "description": {
-                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns no events.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
                                                 "type": "text/plain"
                                             },
                                             "key": "tenant",
-                                            "value": "h52fmwjo"
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
                                         },
                                         {
                                             "disabled": false,
@@ -4099,7 +4099,7 @@
                                                 "type": "text/plain"
                                             },
                                             "key": "source",
-                                            "value": "m365"
+                                            "value": "api"
                                         },
                                         {
                                             "disabled": false,
@@ -4257,6 +4257,1590 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "Alerts",
+            "description": "Rules that count matching events over a time window, and the alerts they\nraise. A rule is evaluated every minute, over a window that ends on the\nlast whole minute at least 30 seconds ago, so an alert appears up to\nabout two and a half minutes after the event that completes it.\n",
+            "item": [
+                {
+                    "id": "6259b099-4f25-4047-b434-7c4e8114e806",
+                    "name": "List alert rules",
+                    "request": {
+                        "name": "List alert rules",
+                        "description": {
+                            "content": "Every rule the caller may read, oldest first.",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "alert-rules"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "tenant",
+                                    "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                }
+                            ],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "GET",
+                        "body": {},
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{bearerToken}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [
+                        {
+                            "id": "c9d0fbc3-b596-4f07-b3d4-006aab891141",
+                            "name": "The rules.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"items\": [\n    {\n      \"id\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"name\": \"<string>\",\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"group_by\": \"host\",\n      \"threshold\": \"<integer>\",\n      \"window_minutes\": \"<integer>\",\n      \"cooldown_minutes\": \"<integer>\",\n      \"created_at\": \"<dateTime>\",\n      \"source\": \"network\",\n      \"event_type\": \"<string>\",\n      \"action\": \"<string>\",\n      \"severity_min\": \"<integer>\",\n      \"webhook_url\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"name\": \"<string>\",\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"group_by\": \"src_ip\",\n      \"threshold\": \"<integer>\",\n      \"window_minutes\": \"<integer>\",\n      \"cooldown_minutes\": \"<integer>\",\n      \"created_at\": \"<dateTime>\",\n      \"source\": \"firewall\",\n      \"event_type\": \"<string>\",\n      \"action\": \"<string>\",\n      \"severity_min\": \"<integer>\",\n      \"webhook_url\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "e929b8d9-9f4c-4e7c-ae96-6e99ad3802c2",
+                            "name": "The request could not be parsed or a parameter was unusable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "8344d720-348e-41e1-b42a-2ab6df221845",
+                            "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Unauthorized",
+                            "code": 401,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "3d982fd6-1685-4bbe-982b-47b35ac754bb",
+                            "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Forbidden",
+                            "code": 403,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "ca552ec8-9a1c-4e70-98ce-e150b65e33de",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "b103a0c5-ded7-4d8c-a196-d302ece3b7df",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "id": "02accd06-678f-400e-884c-f413262e3d9a",
+                    "name": "Create an alert rule",
+                    "request": {
+                        "name": "Create an alert rule",
+                        "description": {
+                            "content": "Adds a rule, which is evaluated from the next minute on. Only an admin\nmay create one. Rules can't be changed or removed through the API.\n\nA field the schema doesn't list is refused with `unknown_field` rather\nthan ignored, since a misspelt filter would otherwise match more than\nintended. The body may be at most 64 KiB.\n",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "alert-rules"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "POST",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                            "options": {
+                                "raw": {
+                                    "headerFamily": "json",
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{bearerToken}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [
+                        {
+                            "id": "2ea64c9e-a221-4e49-828f-d18b10423df3",
+                            "name": "The rule as stored.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Created",
+                            "code": 201,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"id\": \"<string>\",\n  \"tenant\": \"<string>\",\n  \"name\": \"<string>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"cooldown_minutes\": \"<integer>\",\n  \"created_at\": \"<dateTime>\",\n  \"source\": \"api\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"webhook_url\": \"<string>\"\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "06c166e6-0115-4b38-a696-e8bca57ccd07",
+                            "name": "The request could not be parsed or a parameter was unusable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "35d55673-9bd1-4092-ad49-363f42f45d0a",
+                            "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Unauthorized",
+                            "code": 401,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "7030d012-0ea8-43f9-97ff-c66cec3cd66e",
+                            "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Forbidden",
+                            "code": 403,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "35b76b43-17db-4a21-ba7c-0e3cc73a997f",
+                            "name": "The request body exceeded the configured limit.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Request Entity Too Large",
+                            "code": 413,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "82ad7c6f-b33e-4890-99d6-2828863f3d14",
+                            "name": "The Content-Type is not one this endpoint accepts.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Unsupported Media Type",
+                            "code": 415,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "6f2c0165-32dc-461c-9027-6c3c5dce7a36",
+                            "name": "The request parsed, but one or more fields are unusable. This is the\nonly status that carries `errors[]`.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+                            "code": 422,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "0b186bc3-2df6-491d-8355-5986eb3f7bac",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "05ca90fc-648b-47fd-94eb-883460eb73a3",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alert-rules"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tenant\": \"1s77i19LiEx1o9zsFm9yyDVOZDLX\",\n  \"name\": \"<string>\",\n  \"group_by\": \"user\",\n  \"threshold\": \"<integer>\",\n  \"window_minutes\": \"<integer>\",\n  \"source\": \"aws\",\n  \"event_type\": \"<string>\",\n  \"action\": \"<string>\",\n  \"severity_min\": \"<integer>\",\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"cooldown_minutes\": \"<integer>\",\n  \"webhook_url\": \"<uri>\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "headerFamily": "json",
+                                            "language": "json"
+                                        }
+                                    }
+                                }
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                },
+                {
+                    "id": "c83300d8-304e-4114-b83c-86e23ee70a26",
+                    "name": "List alerts",
+                    "request": {
+                        "name": "List alerts",
+                        "description": {
+                            "content": "The newest alerts the caller may read, newest first.",
+                            "type": "text/plain"
+                        },
+                        "url": {
+                            "path": [
+                                "api",
+                                "v1",
+                                "alerts"
+                            ],
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "query": [
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "tenant",
+                                    "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "Maximum alerts to return. Defaults to 50.",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "limit",
+                                    "value": "<integer>"
+                                }
+                            ],
+                            "variable": []
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "method": "GET",
+                        "body": {},
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{bearerToken}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": [
+                        {
+                            "id": "5f132a4c-9ce3-45e3-a61a-1fe020100f0e",
+                            "name": "The alerts.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alerts"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum alerts to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n  \"items\": [\n    {\n      \"id\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"rule_name\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"group_by\": \"host\",\n      \"group_key\": \"<string>\",\n      \"count\": \"<long>\",\n      \"window_start\": \"<dateTime>\",\n      \"window_end\": \"<dateTime>\",\n      \"created_at\": \"<dateTime>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"rule_id\": \"<string>\",\n      \"rule_name\": \"<string>\",\n      \"tenant\": \"<string>\",\n      \"group_by\": \"src_ip\",\n      \"group_key\": \"<string>\",\n      \"count\": \"<long>\",\n      \"window_start\": \"<dateTime>\",\n      \"window_end\": \"<dateTime>\",\n      \"created_at\": \"<dateTime>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "4f1e2808-3ce0-4b41-80cb-ba9ddb76eb42",
+                            "name": "The request could not be parsed or a parameter was unusable.",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alerts"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum alerts to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Bad Request",
+                            "code": 400,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "d9e1bf58-b2df-4077-be5e-f859ce22938e",
+                            "name": "No credential was sent (`authentication_required`), or the one sent is\nmalformed, expired or not recognised (`invalid_token`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alerts"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum alerts to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Unauthorized",
+                            "code": 401,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "fe46eb98-b905-4629-91b3-b48f583fdf5c",
+                            "name": "The caller is signed in but may not do this (`permission_denied`), or\nnamed a tenant it may not read (`tenant_not_permitted`).\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alerts"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum alerts to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Forbidden",
+                            "code": 403,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "232ea4ac-3b56-4089-b5a7-e5d998eff869",
+                            "name": "Something failed on the server. The detail is in the logs; quote\n`request_id` when reporting it.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alerts"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum alerts to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Internal Server Error",
+                            "code": 500,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        },
+                        {
+                            "id": "124646c3-de2e-4d50-bf4f-d5c84784d2ac",
+                            "name": "A dependency, normally the database, is unreachable, or a search ran\npast its time limit. Retrying later may succeed.\n",
+                            "originalRequest": {
+                                "url": {
+                                    "path": [
+                                        "api",
+                                        "v1",
+                                        "alerts"
+                                    ],
+                                    "host": [
+                                        "{{baseUrl}}"
+                                    ],
+                                    "query": [
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Narrows results to one tenant the caller may read. An admin may read\nevery tenant, and a viewer only their own. Naming a tenant outside\nthat set is 403 `tenant_not_permitted`, not an empty page; a tenant\nwithin it that doesn't exist returns nothing.\n\nOmitting it is always safe and is the common case — it returns\neverything the caller may see.\n",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "tenant",
+                                            "value": "kJNPDgk-ckOfknwj2A7_svjUo3IWGi"
+                                        },
+                                        {
+                                            "disabled": false,
+                                            "description": {
+                                                "content": "Maximum alerts to return. Defaults to 50.",
+                                                "type": "text/plain"
+                                            },
+                                            "key": "limit",
+                                            "value": "<integer>"
+                                        }
+                                    ],
+                                    "variable": []
+                                },
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "description": {
+                                            "content": "Added as a part of security scheme: bearer",
+                                            "type": "text/plain"
+                                        },
+                                        "key": "Authorization",
+                                        "value": "Bearer <token>"
+                                    }
+                                ],
+                                "method": "GET",
+                                "body": {}
+                            },
+                            "status": "Service Unavailable",
+                            "code": 503,
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                },
+                                {
+                                    "disabled": false,
+                                    "description": {
+                                        "content": "",
+                                        "type": "text/plain"
+                                    },
+                                    "key": "X-Request-Id",
+                                    "value": ""
+                                }
+                            ],
+                            "body": "{\n  \"code\": \"<string>\",\n  \"message\": \"<string>\",\n  \"request_id\": \"<string>\",\n  \"errors\": [\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    },\n    {\n      \"field\": \"<string>\",\n      \"code\": \"<string>\",\n      \"message\": \"<string>\"\n    }\n  ]\n}",
+                            "cookie": [],
+                            "_postman_previewlanguage": "json"
+                        }
+                    ],
+                    "event": [],
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    }
+                }
+            ]
         }
     ],
     "event": [],
@@ -4282,11 +5866,11 @@
         }
     ],
     "info": {
-        "_postman_id": "f864cf12-2904-4914-8e15-8d6929aae9a2",
+        "_postman_id": "875a0391-f8f2-41c8-a0c9-e042c122868d",
         "name": "loghub API",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "description": {
-            "content": "Multi-tenant log management: ingest events from many sources, normalize them\ninto one schema, and search them.\n\n## Shape of this API\n\nIngest is permissive and search is strict. A sender may post whatever its\nvendor emits; unknown fields are preserved verbatim in `raw` and stay\nsearchable. What comes back out of search is the normalized schema, with\nevery field named as in the common event schema.\n\n## Errors\n\nEvery error is the same JSON envelope: a stable `code` to match on, a\nhuman `message` that may change, and `request_id` correlating with the\nserver log. `422` additionally carries per-field failures in `errors[]`;\nno other status does.\n\nA `404` or `405` from an unrouted path is generated by the Go HTTP mux and\nis plain text rather than this envelope.\n\n## Authentication\n\nPeople sign in with `POST /api/v1/auth/login` and send the token it\nreturns as `Authorization: Bearer <token>`. A token lasts 12 hours and\ncannot be refreshed; sign in again when it expires.\n\nSenders that aren't people, such as the collector and the sample scripts,\nuse the ingest key instead: `INGEST_TOKEN` from the appliance's `.env`,\nsent the same way. It may send events for any tenant and do nothing else.\n\nThere are two roles. An `admin` reads every tenant and may ingest for any\nof them. A `viewer` belongs to one tenant, reads only that tenant, and\nmay not ingest. Each endpoint lists the credentials it accepts.\n\nA request is refused in one of two ways:\n\n- `401` when it didn't prove who is calling: `authentication_required`\n  when no credential was sent, `invalid_token` when the one sent is\n  malformed, expired or not recognised. A client holding a token should\n  discard it and sign in again.\n- `403` when the caller is known but may not do this:\n  `permission_denied`, or `tenant_not_permitted` when the request names a\n  tenant outside the caller's reach.\n",
+            "content": "Multi-tenant log management: ingest events from many sources, normalize them\ninto one schema, search them, and raise alerts when they repeat.\n\n## Shape of this API\n\nIngest is permissive and search is strict. A sender may post whatever its\nvendor emits; unknown fields are preserved verbatim in `raw` and stay\nsearchable. What comes back out of search is the normalized schema, with\nevery field named as in the common event schema.\n\n## Errors\n\nEvery error is the same JSON envelope: a stable `code` to match on, a\nhuman `message` that may change, and `request_id` correlating with the\nserver log. `422` additionally carries per-field failures in `errors[]`;\nno other status does.\n\nA `404` or `405` from an unrouted path is generated by the Go HTTP mux and\nis plain text rather than this envelope.\n\n## Authentication\n\nPeople sign in with `POST /api/v1/auth/login` and send the token it\nreturns as `Authorization: Bearer <token>`. A token lasts 12 hours and\ncannot be refreshed; sign in again when it expires.\n\nSenders that aren't people, such as the collector and the sample scripts,\nuse the ingest key instead: `INGEST_TOKEN` from the appliance's `.env`,\nsent the same way. It may send events for any tenant and do nothing else.\n\nThere are two roles. An `admin` reads every tenant, may ingest for any of\nthem, and creates alert rules. A `viewer` belongs to one tenant, reads only\nthat tenant, and may not ingest or create alert rules. Each endpoint lists\nthe credentials it accepts.\n\nA request is refused in one of two ways:\n\n- `401` when it didn't prove who is calling: `authentication_required`\n  when no credential was sent, `invalid_token` when the one sent is\n  malformed, expired or not recognised. A client holding a token should\n  discard it and sign in again.\n- `403` when the caller is known but may not do this:\n  `permission_denied`, or `tenant_not_permitted` when the request names a\n  tenant outside the caller's reach.\n",
             "type": "text/plain"
         }
     }

@@ -88,3 +88,40 @@ samples/post_logs.py --url https://localhost -k                     # samples/js
 curl -sk https://localhost/api/v1/ingest -H "Authorization: Bearer $INGEST_TOKEN" \
   -H 'Content-Type: application/json' -d '{"tenant":"demoA","source":"api","event_type":"hello"}'
 ```
+
+## Raise an alert
+
+Alert rules count matching events over a time window, and only an admin can create one. [`samples/alert_rule.json`](../samples/alert_rule.json) raises an alert when five failed logins come from one address in demoA within five minutes:
+
+```sh
+set -a; . ./.env; set +a
+ADMIN=$(curl -sk https://localhost/api/v1/auth/login -H 'Content-Type: application/json' \
+  -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}" | jq -r .token)
+curl -sk https://localhost/api/v1/alert-rules -H "Authorization: Bearer $ADMIN" \
+  -H 'Content-Type: application/json' -d @samples/alert_rule.json
+```
+
+To have each alert POSTed to a webhook as well, add its URL to the rule. For a quick test, get a URL from a service such as webhook.site:
+
+```sh
+jq '. + {webhook_url: "https://webhook.site/<your-id>"}' samples/alert_rule.json |
+  curl -sk https://localhost/api/v1/alert-rules -H "Authorization: Bearer $ADMIN" \
+    -H 'Content-Type: application/json' -d @-
+```
+
+Rules can't be changed or removed through the API, so each of these commands adds another rule, and every rule raises its own alert.
+
+Then send five failed logins. The sample's own time is from 2025, so each is stored with the time it arrives:
+
+```sh
+for i in 1 2 3 4 5; do jq -c . samples/json/ad_4625.json; done | samples/post_logs.py --url https://localhost -k -
+```
+
+Rules are evaluated once a minute, over a window that ends at least 30 seconds in the past, so the alert appears within about two and a half minutes. demoA's viewer sees it, and demoB's viewer doesn't:
+
+```sh
+curl -sk https://localhost/api/v1/alerts -H "Authorization: Bearer $TOKEN" | jq   # TOKEN from Sign in, as viewer@demoa.local
+make logs s=backend                                                              # "alert raised", then "webhook delivered"
+```
+
+After an alert, the same address stays quiet for the rule's cooldown, five minutes here, however many failed logins follow.
