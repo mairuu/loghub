@@ -3,10 +3,8 @@ extends:
   - recommended
 
 rules:
-  # Nothing requires a credential yet: authentication arrives with ADR 0009,
-  # and the spec says so in its description. Turn this back on when it does —
-  # it is the rule that catches an endpoint shipped without security.
-  security-defined: off
+  # security-defined stays on: it catches an endpoint shipped without
+  # declaring who may call it. Health and login opt out with `security: []`.
 
   # Servers are localhost and a loopback dev port by design (appliance and
   # docker-compose.dev.yml). The rule is aimed at placeholder hosts.

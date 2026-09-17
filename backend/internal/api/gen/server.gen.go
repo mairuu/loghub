@@ -18,6 +18,9 @@ type ServerInterface interface {
 	// GetHealth Readiness probe
 	// (GET /api/healthz)
 	GetHealth(w http.ResponseWriter, r *http.Request)
+	// Login Sign in
+	// (POST /api/v1/auth/login)
+	Login(w http.ResponseWriter, r *http.Request)
 	// SearchEvents Search events
 	// (GET /api/v1/events)
 	SearchEvents(w http.ResponseWriter, r *http.Request, params SearchEventsParams)
@@ -46,6 +49,20 @@ func (siw *ServerInterfaceWrapper) GetHealth(w http.ResponseWriter, r *http.Requ
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetHealth(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// Login operation middleware
+func (siw *ServerInterfaceWrapper) Login(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.Login(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -478,6 +495,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	}
 
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/healthz", wrapper.GetHealth)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/auth/login", wrapper.Login)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/ingest", wrapper.IngestEvent)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/ingest/batch", wrapper.IngestBatch)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/ingest/file", wrapper.IngestFile)
