@@ -7,6 +7,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -29,17 +30,9 @@ type NewAlertRule = gen.InsertAlertRuleParams
 // Alert is a firing, with the name and grouping of its rule.
 type Alert = gen.ListAlertsRow
 
-// GroupBy are the values a rule may group by, as the API names them.
+// GroupBy are the values a rule may group by, as the API names them. Each is
+// one of TopFields, and a group's key is recorded as the text Top reports.
 var GroupBy = []string{"src_ip", "dst_ip", "user", "host"}
-
-// groupColumns maps each GroupBy to the events column it groups on, and to
-// the text a group's key is recorded as.
-var groupColumns = map[string]struct{ column, key string }{
-	"src_ip": {"src_ip", "host(src_ip)"},
-	"dst_ip": {"dst_ip", "host(dst_ip)"},
-	"user":   {"user_name", "user_name"},
-	"host":   {"host", "host"},
-}
 
 // evaluateTimeout cancels a rule whose query runs longer, so one rule can't
 // hold up the others.
@@ -147,8 +140,8 @@ func (r *AlertRepo) Evaluate(ctx context.Context, rule AlertRule, end time.Time)
 // matching events by group, and insert a firing for each group at or over
 // the threshold.
 func evaluation(rule AlertRule, end time.Time) (string, []any, error) {
-	group, ok := groupColumns[rule.GroupBy]
-	if !ok {
+	group, ok := fieldColumns[rule.GroupBy]
+	if !ok || !slices.Contains(GroupBy, rule.GroupBy) {
 		return "", nil, errors.Internal(fmt.Sprintf("alert rule groups by unknown %q", rule.GroupBy)).With("rule_id", rule.ID)
 	}
 
@@ -191,7 +184,7 @@ func evaluation(rule AlertRule, end time.Time) (string, []any, error) {
 	// Parameters in the SELECT list are cast, or Postgres would type them as
 	// text before seeing the columns they go into.
 	sql := `WITH counted AS (
-  SELECT ` + group.key + ` AS group_key, count(*) AS matched
+  SELECT ` + group.text + ` AS group_key, count(*) AS matched
   FROM events
   WHERE ` + strings.Join(conds, "\n    AND ") + `
   GROUP BY ` + group.column + `
