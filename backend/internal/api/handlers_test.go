@@ -142,6 +142,9 @@ func newServer(t *testing.T, cfg api.Config) http.Handler {
 	if cfg.Users == nil {
 		cfg.Users = fakeUsers{}
 	}
+	if cfg.Tenants == nil {
+		cfg.Tenants = &fakeTenants{}
+	}
 	if cfg.Alerts == nil {
 		cfg.Alerts = &fakeAlerts{}
 	}

@@ -219,6 +219,10 @@ func TestAccess(t *testing.T) {
 		{"GET", "/api/v1/events", "", "", readEvents},
 		{"GET", "/api/v1/events/top?field=src_ip", "", "", readEvents},
 		{"GET", "/api/v1/events/timeline", "", "", readEvents},
+		{"GET", "/api/v1/tenants", "", "", map[string]string{
+			"anonymous": needed, "garbage": invalid, "expired": invalid,
+			"collector": forbidden, "admin": ok, "viewer": ok,
+		}},
 		{"POST", "/api/v1/alert-rules", "application/json", failedLoginRule, map[string]string{
 			"anonymous": needed, "garbage": invalid, "expired": invalid,
 			"collector": forbidden, "admin": created, "viewer": forbidden,
@@ -236,7 +240,8 @@ func TestAccess(t *testing.T) {
 			t.Run(tc.method+" "+tc.target+" as "+who, func(t *testing.T) {
 				var events fakeEvents
 				var alerts fakeAlerts
-				h := newServer(t, api.Config{Events: &events, Alerts: &alerts})
+				var tenants fakeTenants
+				h := newServer(t, api.Config{Events: &events, Alerts: &alerts, Tenants: &tenants})
 				// A refusal comes before the body is read, so a wrong content
 				// type doesn't hide it.
 				refused := !strings.HasPrefix(tc.want[who], "2")
@@ -258,7 +263,7 @@ func TestAccess(t *testing.T) {
 						t.Errorf("WWW-Authenticate = %q", challenge)
 					}
 				}
-				if refused && (len(events.inserted) > 0 || events.read() || alerts.called()) {
+				if refused && (len(events.inserted) > 0 || events.read() || alerts.called() || len(tenants.asked) > 0) {
 					t.Error("a refused request reached the store")
 				}
 			})

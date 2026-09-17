@@ -55,9 +55,10 @@ func serve(ctx context.Context) error {
 	db := store.New(pool)
 	events := store.NewEventRepo(db)
 	alerts := store.NewAlertRepo(db)
+	tenants := store.NewTenantRepo(db)
 
 	evaluator := alerting.New(alerting.Config{
-		Tenants: store.NewTenantRepo(db),
+		Tenants: tenants,
 		Rules:   alerts,
 		Logger:  logger,
 	})
@@ -74,6 +75,7 @@ func serve(ctx context.Context) error {
 		Logger:        logger,
 		Events:        events,
 		Users:         store.NewUserRepo(db),
+		Tenants:       tenants,
 		Alerts:        alerts,
 		Tokens:        tokens,
 		Authenticator: authenticator,

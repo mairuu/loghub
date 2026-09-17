@@ -126,3 +126,37 @@ func (q *Queries) ListTenantIDs(ctx context.Context) ([]string, error) {
 	}
 	return items, nil
 }
+
+const listTenants = `-- name: ListTenants :many
+SELECT id, name
+FROM tenants
+WHERE $1::text IS NULL OR id = $1
+ORDER BY id
+`
+
+type ListTenantsRow struct {
+	ID   string
+	Name string
+}
+
+// Every tenant, or only the one named. tenants has no row-level security, so
+// the caller's reach is applied here.
+func (q *Queries) ListTenants(ctx context.Context, id *string) ([]ListTenantsRow, error) {
+	rows, err := q.db.Query(ctx, listTenants, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListTenantsRow{}
+	for rows.Next() {
+		var i ListTenantsRow
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

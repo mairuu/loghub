@@ -20,6 +20,11 @@ var policies = []authz.Set{
 		authz.Grant(authz.Viewer).As(authz.OwnTenant).On(authz.Events).Can(authz.Read),
 		authz.Grant(authz.Collector).As(authz.AnyTenant).On(authz.Events).Can(authz.Create),
 	),
+	// A viewer may know their own tenant's name, for the UI to show it.
+	authz.NewSet("tenants",
+		authz.Grant(authz.Admin).As(authz.AnyTenant).On(authz.TenantNames).Can(authz.Read),
+		authz.Grant(authz.Viewer).As(authz.OwnTenant).On(authz.TenantNames).Can(authz.Read),
+	),
 	// Only the evaluator writes alerts, and it isn't a caller (ADR 0010).
 	authz.NewSet("alerts",
 		authz.Grant(authz.Admin).As(authz.AnyTenant).On(authz.AlertRules).Can(authz.Read, authz.Create),

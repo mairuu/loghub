@@ -32,6 +32,12 @@ type Users interface {
 	FindByEmail(ctx context.Context, email string) (store.User, error)
 }
 
+// Tenants lists tenants: every one, or only the one named.
+// *store.TenantRepo is the implementation.
+type Tenants interface {
+	List(ctx context.Context, only string) ([]store.Tenant, error)
+}
+
 // Alerts is where alert rules and the alerts they raise are kept.
 // *store.AlertRepo is the implementation.
 type Alerts interface {
@@ -41,10 +47,11 @@ type Alerts interface {
 }
 
 type Config struct {
-	Logger *slog.Logger
-	Events Events
-	Users  Users
-	Alerts Alerts
+	Logger  *slog.Logger
+	Events  Events
+	Users   Users
+	Tenants Tenants
+	Alerts  Alerts
 	// Tokens issues the tokens Login answers with, and Authenticator
 	// accepts them along with the ingest key.
 	Tokens        *auth.Tokens
@@ -60,6 +67,7 @@ type Server struct {
 	logger     *slog.Logger
 	events     Events
 	users      Users
+	tenants    Tenants
 	alerts     Alerts
 	tokens     *auth.Tokens
 	authn      *auth.Authenticator
@@ -80,6 +88,7 @@ func New(cfg Config) (*Server, error) {
 		logger:     cfg.Logger,
 		events:     cfg.Events,
 		users:      cfg.Users,
+		tenants:    cfg.Tenants,
 		alerts:     cfg.Alerts,
 		tokens:     cfg.Tokens,
 		authn:      cfg.Authenticator,

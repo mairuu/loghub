@@ -4,6 +4,7 @@ import (
 	"context"
 	"regexp"
 
+	"github.com/mairuu/loghub/backend/internal/platform/pg"
 	"github.com/mairuu/loghub/backend/internal/store/gen"
 )
 
@@ -36,4 +37,21 @@ func (r *TenantRepo) CreateIfMissing(ctx context.Context, p NewTenantParams) err
 
 func (r *TenantRepo) ListIDs(ctx context.Context) ([]string, error) {
 	return r.store.q.ListTenantIDs(ctx)
+}
+
+type Tenant = gen.ListTenantsRow
+
+// List returns every tenant, or only the one named if only isn't empty,
+// ordered by ID. tenants has no row-level security, so whoever calls this
+// decides which tenants the caller may know about.
+func (r *TenantRepo) List(ctx context.Context, only string) ([]Tenant, error) {
+	var id *string
+	if only != "" {
+		id = &only
+	}
+	tenants, err := r.store.q.ListTenants(ctx, id)
+	if err != nil {
+		return nil, pg.Wrap(err, "cannot list tenants")
+	}
+	return tenants, nil
 }

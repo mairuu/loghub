@@ -48,6 +48,9 @@ type ServerInterface interface {
 	// IngestFile Ingest a whole export file as NDJSON
 	// (POST /api/v1/ingest/file)
 	IngestFile(w http.ResponseWriter, r *http.Request, params IngestFileParams)
+	// ListTenants List tenants
+	// (GET /api/v1/tenants)
+	ListTenants(w http.ResponseWriter, r *http.Request)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -899,6 +902,20 @@ func (siw *ServerInterfaceWrapper) IngestFile(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
+// ListTenants operation middleware
+func (siw *ServerInterfaceWrapper) ListTenants(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTenants(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -1021,6 +1038,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/healthz", wrapper.GetHealth)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/auth/login", wrapper.Login)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/api/v1/tenants", wrapper.ListTenants)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/ingest", wrapper.IngestEvent)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/ingest/batch", wrapper.IngestBatch)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/api/v1/ingest/file", wrapper.IngestFile)

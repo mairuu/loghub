@@ -60,6 +60,8 @@ tags:
     description: Liveness and readiness.
   - name: Auth
     description: Signing in.
+  - name: Tenants
+    description: The tenants a caller may read, for choosing between them.
   - name: Ingest
     description: |
       Getting events in. Three paths, one normalizer: a single JSON event, an
@@ -149,6 +151,33 @@ paths:
           $ref: '#/components/responses/UnsupportedMediaType'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/v1/tenants:
+    get:
+      operationId: listTenants
+      summary: List tenants
+      description: |
+        The tenants the caller may read, ordered by ID: every tenant for an
+        admin, and a viewer's own tenant for a viewer. These are the values
+        the `tenant` filters accept.
+      tags: [Tenants]
+      security:
+        - sessionToken: []
+      responses:
+        '200':
+          description: The tenants.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/InternalError'
         '503':
@@ -1073,6 +1102,30 @@ components:
       description: |
         `admin` reads every tenant and may ingest. `viewer` reads one tenant.
       enum: [admin, viewer]
+
+    Tenant:
+      type: object
+      additionalProperties: false
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          description: What requests and events name the tenant by.
+          example: demoA
+        name:
+          type: string
+          description: A name for people to read.
+          example: Demo A
+
+    TenantList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tenant'
 
     Source:
       type: string

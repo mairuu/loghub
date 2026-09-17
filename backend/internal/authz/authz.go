@@ -60,10 +60,12 @@ const (
 	AlertRules
 	// Alerts are alert rules' firings.
 	Alerts
+	// TenantNames are the tenants themselves: their IDs and names.
+	TenantNames
 	resourceEnd
 )
 
-var resourceNames = [...]string{"", "health", "sessions", "events", "alert_rules", "alerts"}
+var resourceNames = [...]string{"", "health", "sessions", "events", "alert_rules", "alerts", "tenants"}
 
 func (r Resource) String() string { return name(resourceNames[:], r) }
 

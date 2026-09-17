@@ -326,9 +326,10 @@ func TestRBACEndToEnd(t *testing.T) {
 	}
 
 	h := newServer(t, api.Config{
-		Events: store.NewEventRepo(store.New(db.App)),
-		Users:  store.NewUserRepo(store.New(db.App)),
-		Ready:  func(ctx context.Context) error { return pg.Check(ctx, db.App) },
+		Events:  store.NewEventRepo(store.New(db.App)),
+		Users:   store.NewUserRepo(store.New(db.App)),
+		Tenants: store.NewTenantRepo(store.New(db.App)),
+		Ready:   func(ctx context.Context) error { return pg.Check(ctx, db.App) },
 	})
 
 	// The collector sends both tenants' events in one batch.
@@ -436,6 +437,27 @@ func TestRBACEndToEnd(t *testing.T) {
 		})
 	}
 
+	t.Run("tenants", func(t *testing.T) {
+		listed := func(credential string) []string {
+			t.Helper()
+			res := callAs(t, h, credential, "GET", "/api/v1/tenants", "", nil)
+			if res.status != 200 {
+				t.Fatalf("list tenants: %d %v", res.status, res.body)
+			}
+			var ids []string
+			for _, item := range res.body["items"].([]any) {
+				ids = append(ids, item.(map[string]any)["id"].(string))
+			}
+			return ids
+		}
+		// Other tests' tenants share the database.
+		if ids := listed(admin); !slices.Contains(ids, a) || !slices.Contains(ids, b) {
+			t.Errorf("admin lists %v, want %s and %s among them", ids, a, b)
+		}
+		if ids := listed(viewerB); !slices.Equal(ids, []string{b}) {
+			t.Errorf("viewer lists %v, want only %s", ids, b)
+		}
+	})
 	t.Run("viewer asks for another tenant", func(t *testing.T) {
 		for _, path := range []string{"/api/v1/events?", "/api/v1/events/top?field=user&", "/api/v1/events/timeline?"} {
 			callAs(t, h, viewerA, "GET", path+"tenant="+b, "", nil).
