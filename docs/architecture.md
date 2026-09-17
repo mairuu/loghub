@@ -90,6 +90,7 @@ The rules live in `backend/internal/ingest`, and every file in `samples/` is one
 ### Storage
 
 All events from one request are stored in one transaction. If the database fails, nothing is stored, the request answers 5xx, and Vector retries it.
+- An event whose tenant the caller may not write to is rejected with `tenant_not_permitted` before the insert. No caller that may ingest today is limited to some tenants, so this is only reached by a policy that grants one.
 - An event whose tenant doesn't exist is rejected with `unknown_tenant`.
 - Events are inserted one tenant at a time, with that tenant set as the transaction's row-level security context ([ADR 0003](adr/0003-tenant-isolation-rls.md)). A row for any other tenant would fail the policy check.
 - Inserts go to Postgres in batches of 1000, one round trip each. `COPY` would be faster, but Postgres doesn't allow it on a table with row-level security.
@@ -98,7 +99,7 @@ All events from one request are stored in one transaction. If the database fails
 ### Search
 
 `GET /api/v1/events` runs a single query, built at request time in `backend/internal/store/search.go` ([ADR 0008](adr/0008-sqlc-queries.md)). Every filter value is a bind parameter.
-- **Scope:** the query runs in a transaction whose row-level security context is the caller. A viewer's search is also given their tenant as an explicit filter. That changes nothing about what they can see, but it lets Postgres use the `(tenant_id, ts)` index, which the security policy's OR condition can't.
+- **Scope:** the policy set decides which tenants the caller may read, and a `tenant` outside them is refused with 403 `tenant_not_permitted`. The query then runs in a transaction whose row-level security context is the caller. A viewer's search is also given their tenant as an explicit filter. That changes nothing about what they can see, but it lets Postgres use the `(tenant_id, ts)` index, which the security policy's OR condition can't.
 - **Window:** the time window picks the daily partitions to read. It defaults to the last 24 hours, and reaches an hour into the future, because the normalizer accepts event times up to an hour ahead.
 - **Free text:** `q` matches any string or number value in `raw`, ignoring case. When the text contains nothing JSON would escape, a match against `raw`'s text form discards most rows first.
 - **Paging:** pages are ordered by `(ts, id)` and resume after the last row of the previous page, so events that arrive in between don't shift them. The cursor also carries the time window and a hash of the other filters, so a cursor reused with different filters is rejected.
@@ -107,3 +108,27 @@ All events from one request are stored in one transaction. If the database fails
 With a million events loaded, about 95,000 per tenant in a 24-hour window, a tenant's newest page takes under a millisecond, all tenants about 35 ms, and a free-text search 300–400 ms.
 
 The code is `EventRepo` in `backend/internal/store`. `make test-db` runs its tests against the dev Postgres, as the `loghub_app` role, so they exercise the real policies.
+
+## Authentication and authorization
+
+[ADR 0009](adr/0009-auth-jwt-rbac.md) has the reasoning. Every request passes through the middleware in `backend/internal/auth` before it is routed, which establishes who is calling:
+
+| Credential | Caller | Tenant |
+|---|---|---|
+| none | anonymous | none |
+| `INGEST_TOKEN` from `.env`, compared in constant time | collector | none, writes any |
+| a token from `POST /api/v1/auth/login` (HS256, 12 hours, signed with `AUTH_SECRET`) | the user's role, admin or viewer | a viewer's own |
+| anything else | refused with 401 `invalid_token` | |
+
+Each handler then asks the enforcer in `backend/internal/authz` whether the caller may act. The policies are in `backend/internal/api/policies.go`:
+
+| Role | Health, sign-in | Events |
+|---|---|---|
+| anonymous | yes | no |
+| admin | yes | read and create, any tenant |
+| viewer | yes | read, own tenant |
+| collector | yes | create, any tenant |
+
+A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search asks which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore still reads nothing it shouldn't. Ingest is the exception, because the insert runs as each record's tenant, so the per-record check is the only check on writes.
+
+Sign-in checks an unknown email against a fixed bcrypt hash, so it takes as long as a wrong password, and both are refused with 401 `invalid_credentials`. Tokens can't be revoked before they expire, and sign-in has no rate limit.

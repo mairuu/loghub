@@ -110,10 +110,13 @@ check-api: gen-api ## Fail if the committed API code is stale
 
 # Not part of `lint`: the converter stamps a random info._postman_id on every
 # run, so the output can never be drift-checked. Regenerate before a release.
+# docs/postman.jq adds the credential variables and the sign-in script.
 postman: ## Convert the spec into docs/postman_collection.json
 	$(NPX) openapi-to-postmanv2@$(P2C_VERSION) -s $(OAPI_SPEC) \
 	  -o docs/postman_collection.json -p \
 	  -O folderStrategy=Tags,requestParametersResolution=Example
+	jq --indent 4 -f docs/postman.jq docs/postman_collection.json > docs/postman_collection.json.tmp
+	mv docs/postman_collection.json.tmp docs/postman_collection.json
 
 lint-api: ## Validate api/openapi.yaml itself
 	$(NPX) @redocly/cli@$(REDOCLY_VER) lint $(OAPI_SPEC)

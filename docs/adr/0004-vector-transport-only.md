@@ -22,5 +22,4 @@ Syslog over UDP/TCP 514 and file drops are required inputs. A hand-written liste
 - Vector's HTTP sink retries 408, 429 and any 5xx without limit, and drops the batch on any other status. The batch endpoint therefore reports bad records inside a 200, and logs them, since Vector never reads the response.
 - The `file` source is built for tailing logs, and tells files apart by a checksum of the first line. Its checkpoints would skip a dropped file that repeats one already read, and start a different file with the same first line part-way through, so they are ignored. Every dropped file is read in full, but a file still in the inbox when Vector restarts is read again.
 - While two identical files sit in the inbox, Vector 0.58 holds back its most recent event until the next one arrives. Fingerprinting by inode instead avoids that but silently skips the start of a new file that reuses a deleted file's inode, which is worse.
-- Until ADR 0009 lands, the batch endpoint takes no token, so Vector sends none yet.
 - `make check-vector` validates the config and runs VRL unit tests in `ingest/vector.test.yaml`.

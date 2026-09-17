@@ -6,6 +6,9 @@
   samples/post_logs.py --file --tenant demoB export.ndjson
                                                   a whole file in one request
   jq -c . samples/json/api.json | samples/post_logs.py -
+
+Requests carry the ingest key, INGEST_TOKEN, from the checkout's .env unless
+--token or the environment gives another credential.
 """
 
 import argparse
@@ -22,6 +25,7 @@ from pathlib import Path
 PROG = os.path.basename(sys.argv[0])
 DEFAULT_URL = "http://127.0.0.1:8080"
 TIMEOUT = 30
+ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
 
 
 @dataclass
@@ -32,6 +36,10 @@ class Record:
 
 class Unreachable(Exception):
     """The request got no HTTP response."""
+
+
+class Refused(Exception):
+    """The server refused the credential, so every other request would fail too."""
 
 
 def main() -> int:
@@ -62,11 +70,11 @@ def main() -> int:
     sent = accepted = rejected = 0
     try:
         for label, records, body in requests:
-            a, r = send(endpoint, content_type, body, label, records, ctx)
+            a, r = send(endpoint, content_type, body, label, records, args.token, ctx)
             sent += len(records)
             accepted += a
             rejected += r
-    except Unreachable as e:
+    except (Unreachable, Refused) as e:
         sys.exit(f"{PROG}: {e}")
     print(f"sent {sent} event(s) to {endpoint}: {accepted} accepted, {rejected} rejected")
     return 1 if rejected else 0
@@ -84,6 +92,12 @@ def parse_args() -> argparse.Namespace:
         "--url",
         default=os.environ.get("LOGHUB_URL", DEFAULT_URL),
         help=f"loghub's base URL (default: $LOGHUB_URL, or {DEFAULT_URL})",
+    )
+    p.add_argument(
+        "--token",
+        default=os.environ.get("LOGHUB_TOKEN") or os.environ.get("INGEST_TOKEN"),
+        help="the credential to send: the ingest key, or an admin's token "
+        f"(default: $LOGHUB_TOKEN, $INGEST_TOKEN, or INGEST_TOKEN in {ENV_FILE})",
     )
     p.add_argument(
         "--file",
@@ -107,12 +121,29 @@ def parse_args() -> argparse.Namespace:
     args = p.parse_args()
     if (args.tenant or args.source) and not args.file:
         p.error("--tenant and --source need --file")
+    if not args.token:
+        args.token = env_file_value(ENV_FILE, "INGEST_TOKEN")
+    if not args.token:
+        p.error(f"no credential: pass --token, set LOGHUB_TOKEN, or add INGEST_TOKEN to {ENV_FILE}")
     if not args.files:
         samples = Path(sys.argv[0]).parent / "json"
         args.files = sorted(str(f) for f in samples.glob("*.json"))
         if not args.files:
             p.error(f"no FILE given, and {samples} has no .json files")
     return args
+
+
+def env_file_value(path: Path, key: str) -> str | None:
+    """Returns key's value in a KEY=VALUE file such as .env, if it has one."""
+    try:
+        lines = path.read_text().splitlines()
+    except OSError:
+        return None
+    for line in lines:
+        name, sep, value = line.partition("=")
+        if sep and name.strip() == key:
+            return value.strip() or None
+    return None
 
 
 def read(name: str, tags: list[str]) -> tuple[str, list[Record]]:
@@ -167,10 +198,13 @@ def retag(line: bytes, tags: list[str]) -> bytes:
         return line
 
 
-def send(url: str, content_type: str, body: bytes, label: str, records: list[Record], ctx) -> tuple[int, int]:
+def send(url: str, content_type: str, body: bytes, label: str, records: list[Record], token: str, ctx) -> tuple[int, int]:
     """Posts body, reports what was not stored on stderr, and returns how many
     of records were accepted and rejected."""
-    status, headers, raw = post(url, content_type, body, ctx)
+    status, headers, raw = post(url, content_type, body, token, ctx)
+    if status in (401, 403):
+        hint = "; send the ingest key (INGEST_TOKEN in .env) or an admin's token with --token"
+        raise Refused(f"{label}: not stored: {failure(status, headers, raw)}{hint}")
     if status == 200:
         try:
             result = json.loads(raw)
@@ -192,13 +226,17 @@ def send(url: str, content_type: str, body: bytes, label: str, records: list[Rec
     return accepted, rejected
 
 
-def post(url: str, content_type: str, body: bytes, ctx):
+def post(url: str, content_type: str, body: bytes, token: str, ctx):
     """Returns the status, headers and body of the response."""
     req = urllib.request.Request(
         url,
         data=body,
         method="POST",
-        headers={"Content-Type": content_type, "Accept": "application/json"},
+        headers={
+            "Content-Type": content_type,
+            "Accept": "application/json",
+            "Authorization": "Bearer " + token,
+        },
     )
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT, context=ctx) as resp:

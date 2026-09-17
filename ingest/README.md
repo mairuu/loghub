@@ -4,7 +4,7 @@ The collector: [Vector](https://vector.dev) 0.58, configured by [`vector.yaml`](
 
 - It receives syslog on port 514, over UDP and TCP.
 - It reads NDJSON files dropped into [`inbox/`](../inbox), then deletes them.
-- It keeps everything in a disk buffer and forwards it in batches to `POST /api/v1/ingest/batch`.
+- It keeps everything in a disk buffer and forwards it in batches to `POST /api/v1/ingest/batch`, sending the ingest key as a bearer token.
 
 Vector doesn't parse anything. Each syslog line is wrapped as `{"tenant", "message", "received_at", "peer_ip", "input"}`, and each inbox line is forwarded byte for byte. The backend normalizes both, exactly as it does for its HTTP endpoints.
 
@@ -37,10 +37,13 @@ make send-samples                                   # the syslog and JSON sample
 
 ## Checking delivery
 
-With `make dev-up`, the API is at `http://127.0.0.1:8080`:
+With `make dev-up`, the API is at `http://127.0.0.1:8080`. Searching needs a signed-in user; the admin sees every tenant:
 
 ```sh
-curl -s 'http://127.0.0.1:8080/api/v1/events?source=firewall&limit=5' | jq
+set -a; . ./.env; set +a
+TOKEN=$(curl -s http://127.0.0.1:8080/api/v1/auth/login -H 'Content-Type: application/json' \
+  -d "{\"email\":\"$ADMIN_EMAIL\",\"password\":\"$ADMIN_PASSWORD\"}" | jq -r .token)
+curl -s 'http://127.0.0.1:8080/api/v1/events?source=firewall&limit=5' -H "Authorization: Bearer $TOKEN" | jq
 docker compose logs backend | grep 'records rejected'
 docker compose logs vector
 ```
@@ -50,7 +53,7 @@ Vector never reads the backend's response, so a record the backend rejects appea
 In the Vector log:
 
 - **`Retrying after error` or `Retrying after response`:** the backend is down or answered 5xx, 408 or 429. The batch is retried until it succeeds.
-- **`Events dropped`:** the backend answered with any other status, and the batch is gone. The backend only does that when a whole request is unusable, so this points to a configuration problem.
+- **`Events dropped`:** the backend answered with any other status, and the batch is gone. The backend only does that when a whole request is unusable, so this points to a configuration problem. A 401 means Vector's key doesn't match the backend's: both read `INGEST_TOKEN` from `.env`, so recreate both with `make up` after changing it.
 - **`Source has acknowledgements enabled by a sink` at startup:** expected. The socket sources can't acknowledge.
 
 ## Delivery
@@ -58,12 +61,12 @@ In the Vector log:
 - **Backend unavailable:** events wait in the disk buffer (the `vector_data` volume, 256 MiB), which survives Vector restarts.
 - **Buffer full:** Vector stops reading. TCP senders slow down, UDP datagrams are lost, and inbox files wait.
 - **Inbox files:** a file is deleted only once every line is in the buffer.
-- **Authentication:** there is none yet. The batch endpoint takes no token until authentication lands ([ADR 0009](../docs/adr/0009-auth-jwt-rbac.md)). The token will then reach Vector through the `compose` secret backend.
+- **Authentication:** Vector sends `INGEST_TOKEN` from `.env` as a bearer token ([ADR 0009](../docs/adr/0009-auth-jwt-rbac.md)). Compose mounts it as the file `/run/secrets/ingest_token`, which Vector reads through its `compose` secret backend. The key may write events for any tenant, so each record's `tenant` is trusted as sent.
 
 ## Changing the configuration
 
 ```sh
-make check-vector                                   # validates vector.yaml and runs vector.test.yaml
+make check-vector                                   # validates vector.yaml and runs vector.test.yaml, with a placeholder key
 docker compose up -d --force-recreate vector
 ```
 
