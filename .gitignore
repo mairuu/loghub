@@ -4,3 +4,6 @@ inbox/*
 !inbox/.gitkeep
 
 __pycache__/
+
+# written by `make ca`
+loghub-root-ca.crt

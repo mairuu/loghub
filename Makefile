@@ -5,6 +5,8 @@ DEV_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.dev.yml
 SQLC_IMAGE  := sqlc/sqlc:1.31.1
 # Keep in step with docker-compose.yml.
 VECTOR_IMAGE := timberio/vector:0.58.0-alpine
+# Keep in step with frontend/Dockerfile.
+CADDY_IMAGE := caddy:2.11.4-alpine
 NODE_IMAGE  := node:24-alpine
 OAPI_SPEC   := api/openapi.yaml
 P2C_VERSION := 5.0.0
@@ -27,9 +29,9 @@ export
 DEV_DATABASE_URL         = postgres://loghub_app:$(APP_DB_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 DEV_MIGRATE_DATABASE_URL = postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 
-.PHONY: help env up down ps logs reset seed dev-up dev-deps dev-api dev-web web-deps send-samples \
-        test test-web test-db gen-sql check-sql gen-api check-api lint-api check-vector lint-web \
-        postman lint
+.PHONY: help env up down ps logs reset ca seed dev-up dev-deps dev-api dev-web web-deps send-samples \
+        test test-web test-db gen-sql check-sql gen-api check-api lint-api check-vector check-caddy \
+        lint-web postman lint
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -55,6 +57,10 @@ ps: ## Show service status
 
 logs: ## Follow logs; pick a service with s=backend
 	$(COMPOSE) logs -f $(s)
+
+ca: ## Save the root certificate Caddy signs localhost with to loghub-root-ca.crt, for browsers to trust
+	$(COMPOSE) cp caddy:/data/caddy/pki/authorities/local/root.crt loghub-root-ca.crt
+	@echo "Wrote loghub-root-ca.crt; docs/setup_appliance.md says how to trust it"
 
 reset: ## Stop the stack and DELETE all volumes
 	@read -r -p "Delete all loghub volumes? [y/N] " ans && [ "$$ans" = y ]
@@ -150,9 +156,13 @@ check-vector: ## Validate ingest/vector.yaml and run its unit tests
 	$(VECTOR_CHECK) validate --no-environment /etc/vector/vector.yaml
 	$(VECTOR_CHECK) test /etc/vector/vector.yaml /etc/vector/vector.test.yaml
 
+check-caddy: ## Check frontend/Caddyfile's formatting and validate it
+	docker run --rm -e SITE_ADDRESS=localhost -v "$(CURDIR)/frontend/Caddyfile:/etc/caddy/Caddyfile:ro" $(CADDY_IMAGE) \
+	  sh -c 'caddy fmt --diff /etc/caddy/Caddyfile && caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile'
+
 lint-web: $(WEB_DEPS) ## Type-check, lint and format-check the frontend
 	cd frontend && npm run typecheck && npm run lint
 
-lint: check-sql check-api lint-api check-vector lint-web ## gofmt, go vet, generated code drift, spec lint, collector config, frontend
+lint: check-sql check-api lint-api check-vector check-caddy lint-web ## gofmt, go vet, generated code drift, spec lint, collector and edge config, frontend
 	@out=$$(gofmt -l backend); if [ -n "$$out" ]; then echo "Files need gofmt:"; echo "$$out"; exit 1; fi
 	cd backend && go vet ./...

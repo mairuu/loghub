@@ -1,0 +1,59 @@
+# The edge (ADR 0005): the only public HTTP entry point. It terminates TLS,
+# serves the UI, and passes the API through to the backend.
+#
+# SITE_ADDRESS is the one name or address browsers use. localhost and private
+# addresses get a certificate from Caddy's own CA, which `make ca` exports;
+# a public domain gets one from Let's Encrypt.
+{
+	# A client that connects by IP address sends no server name.
+	default_sni {$SITE_ADDRESS}
+	servers {
+		# Only TCP 443 is published, so don't advertise HTTP/3.
+		protocols h1 h2
+	}
+}
+
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy no-referrer
+		-Server
+	}
+	# Browsers ignore HSTS for IP addresses, and it would stick to every port
+	# of localhost, dev servers included.
+	@hsts not host localhost
+	header @hsts Strict-Transport-Security "max-age=31536000"
+
+	# The form of the ingest endpoint the samples and the assignment use.
+	handle /ingest {
+		rewrite * /api/v1/ingest
+		reverse_proxy backend:8080
+	}
+
+	handle /api/* {
+		reverse_proxy backend:8080
+	}
+
+	# Built files have content hashes in their names, so they never change.
+	handle /assets/* {
+		root * /srv
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+
+	# Everything else is the UI, whose router reads the path.
+	handle {
+		root * /srv
+		header {
+			Cache-Control no-cache
+			# No inline scripts or styles: React sets styles through the DOM,
+			# which this doesn't restrict.
+			Content-Security-Policy "default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+		}
+		try_files {path} /index.html
+		file_server
+	}
+}
