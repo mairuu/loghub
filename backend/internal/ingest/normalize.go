@@ -46,9 +46,6 @@ const (
 // index an entry over about 2.7 kB.
 const maxText = 2048
 
-// Same rule as the CHECK on tenants.id.
-var tenantPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
-
 // collectorKeys are added to every record by the collector (ADR 0004). They
 // are read as fallbacks and are not part of the vendor payload.
 var collectorKeys = []string{"received_at", "peer_ip", "input"}
@@ -63,8 +60,8 @@ type Defaults struct {
 // report them once rather than reject every record that falls back on them.
 // The error is errors.Malformed with code invalid_parameter.
 func (d Defaults) Validate() error {
-	if d.Tenant != "" && !tenantPattern.MatchString(d.Tenant) {
-		return errors.Malformed("invalid_parameter", "tenant must be 1 to 64 letters, digits, '-' or '_'")
+	if d.Tenant != "" && !store.ValidTenantID(d.Tenant) {
+		return errors.Malformed("invalid_parameter", store.InvalidTenantID)
 	}
 	if d.Source != "" && !gen.Source(strings.ToLower(d.Source)).Valid() {
 		return errors.Malformed("invalid_parameter", fmt.Sprintf("source %q is not a known source category", clip(d.Source)))
@@ -95,8 +92,8 @@ func (n Normalizer) Normalize(record []byte, d Defaults) (store.NewEventParams, 
 		return store.NewEventParams{}, errors.Invalid("invalid_tenant", "tenant must be a string")
 	case tenant == "":
 		return store.NewEventParams{}, errors.Invalid("missing_tenant", "tenant is required")
-	case !tenantPattern.MatchString(tenant):
-		return store.NewEventParams{}, errors.Invalid("invalid_tenant", "tenant must be 1 to 64 letters, digits, '-' or '_'")
+	case !store.ValidTenantID(tenant):
+		return store.NewEventParams{}, errors.Invalid("invalid_tenant", store.InvalidTenantID)
 	}
 
 	source, ok := b.identity("source", d.Source)

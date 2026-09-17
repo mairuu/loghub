@@ -2,9 +2,19 @@ package store
 
 import (
 	"context"
+	"regexp"
 
 	"github.com/mairuu/loghub/backend/internal/store/gen"
 )
+
+// tenantIDPattern is the CHECK on tenants.id.
+var tenantIDPattern = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
+
+// ValidTenantID reports whether id could name a tenant.
+func ValidTenantID(id string) bool { return tenantIDPattern.MatchString(id) }
+
+// InvalidTenantID describes an id ValidTenantID refuses.
+const InvalidTenantID = "tenant must be 1 to 64 letters, digits, '-' or '_'"
 
 type TenantRepo struct{ store *Store }
 
