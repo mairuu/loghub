@@ -13,14 +13,29 @@ import (
 	"time"
 
 	"github.com/mairuu/loghub/backend/internal/api/gen"
+	"github.com/mairuu/loghub/backend/internal/authz"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 )
 
-type requestIDKey struct{}
+// requestInfo is what the request's log line reports, filled in as the
+// request is handled.
+type requestInfo struct {
+	id     string
+	caller authz.Caller
+}
+
+type requestInfoKey struct{}
+
+func infoFrom(ctx context.Context) *requestInfo {
+	info, _ := ctx.Value(requestInfoKey{}).(*requestInfo)
+	return info
+}
 
 func requestID(ctx context.Context) string {
-	id, _ := ctx.Value(requestIDKey{}).(string)
-	return id
+	if info := infoFrom(ctx); info != nil {
+		return info.id
+	}
+	return ""
 }
 
 // Crockford's alphabet, which is in ASCII order, so IDs sort as their bytes do.
@@ -35,14 +50,15 @@ func newRequestID() string {
 	return idEncoding.EncodeToString(b[:])
 }
 
-// observe gives each request an ID, logs it once it is answered, and turns a
-// panic into the 500 envelope.
+// observe gives each request an ID, logs it and its caller once it is
+// answered, and turns a panic into the 500 envelope.
 func (s *Server) observe(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		id := newRequestID()
 		w.Header().Set("X-Request-Id", id)
-		r = r.WithContext(context.WithValue(r.Context(), requestIDKey{}, id))
+		info := &requestInfo{id: id}
+		r = r.WithContext(context.WithValue(r.Context(), requestInfoKey{}, info))
 		rec := &statusRecorder{ResponseWriter: w}
 
 		defer func() {
@@ -65,13 +81,18 @@ func (s *Server) observe(next http.Handler) http.Handler {
 			if r.URL.Path == "/api/healthz" && rec.status == http.StatusOK {
 				level = slog.LevelDebug
 			}
-			s.logger.LogAttrs(r.Context(), level, "request",
+			attrs := []slog.Attr{
 				slog.String("request_id", id),
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.Path),
 				slog.Int("status", rec.statusOrOK()),
 				slog.Float64("duration_ms", float64(time.Since(start).Microseconds())/1000),
-			)
+				slog.String("role", info.caller.Role.String()),
+			}
+			if info.caller.UserID != 0 {
+				attrs = append(attrs, slog.Int64("user_id", info.caller.UserID))
+			}
+			s.logger.LogAttrs(r.Context(), level, "request", attrs...)
 		}()
 
 		next.ServeHTTP(rec, r)
@@ -158,6 +179,15 @@ func (s *Server) failWith(w http.ResponseWriter, r *http.Request, status int, er
 			out[i] = gen.FieldError{Field: f.Field, Code: f.Code, Message: f.Message}
 		}
 		body.Errors = &out
+	}
+
+	if status == http.StatusUnauthorized {
+		// RFC 6750: say which scheme to use, and why the one sent failed.
+		challenge := "Bearer"
+		if body.Code == "invalid_token" {
+			challenge += ` error="invalid_token"`
+		}
+		w.Header().Set("WWW-Authenticate", challenge)
 	}
 
 	level, message := slog.LevelDebug, "request failed"

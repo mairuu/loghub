@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/mairuu/loghub/backend/internal/api"
+	"github.com/mairuu/loghub/backend/internal/auth"
 	"github.com/mairuu/loghub/backend/internal/platform/config"
 	"github.com/mairuu/loghub/backend/internal/platform/log"
 	"github.com/mairuu/loghub/backend/internal/platform/pg"
@@ -18,6 +20,8 @@ type serveConfig struct {
 	LogLevel    slog.Level `env:"LOG_LEVEL" default:"info"`
 	ListenAddr  string     `env:"LISTEN_ADDR" default:":8080"`
 	DatabaseURL string     `env:"DATABASE_URL" required:"true"`
+	AuthSecret  string     `env:"AUTH_SECRET" required:"true"`
+	IngestToken string     `env:"INGEST_TOKEN" required:"true"`
 }
 
 func serve(ctx context.Context) error {
@@ -28,6 +32,15 @@ func serve(ctx context.Context) error {
 
 	logger := log.New(cfg.LogLevel)
 
+	tokens, err := auth.NewTokens(auth.TokenConfig{Secret: cfg.AuthSecret})
+	if err != nil {
+		return fmt.Errorf("AUTH_SECRET: %w", err)
+	}
+	authenticator, err := auth.NewAuthenticator(tokens, cfg.IngestToken)
+	if err != nil {
+		return fmt.Errorf("INGEST_TOKEN: %w", err)
+	}
+
 	pool, err := pg.NewPool(ctx, pg.Config{
 		URL: cfg.DatabaseURL,
 	})
@@ -36,11 +49,18 @@ func serve(ctx context.Context) error {
 	}
 	defer pool.Close()
 
-	server := api.New(api.Config{
-		Logger: logger,
-		Events: store.NewEventRepo(store.New(pool)),
-		Ready:  func(ctx context.Context) error { return pg.Check(ctx, pool) },
+	db := store.New(pool)
+	server, err := api.New(api.Config{
+		Logger:        logger,
+		Events:        store.NewEventRepo(db),
+		Users:         store.NewUserRepo(db),
+		Tokens:        tokens,
+		Authenticator: authenticator,
+		Ready:         func(ctx context.Context) error { return pg.Check(ctx, pool) },
 	})
+	if err != nil {
+		return err
+	}
 	srv := http.Server{
 		Addr:              cfg.ListenAddr,
 		Handler:           server.Handler(),

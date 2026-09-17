@@ -13,6 +13,8 @@ import (
 	"strings"
 
 	"github.com/mairuu/loghub/backend/internal/api/gen"
+	"github.com/mairuu/loghub/backend/internal/auth"
+	"github.com/mairuu/loghub/backend/internal/authz"
 	"github.com/mairuu/loghub/backend/internal/ingest"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
@@ -31,6 +33,10 @@ const (
 )
 
 func (s *Server) IngestEvent(w http.ResponseWriter, r *http.Request) {
+	b, ok := s.startBatch(w, r)
+	if !ok {
+		return
+	}
 	if err := requireMediaType(r, "application/json"); err != nil {
 		s.failWith(w, r, http.StatusUnsupportedMediaType, err)
 		return
@@ -41,7 +47,6 @@ func (s *Server) IngestEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var b batch
 	ev, err := s.normalizer.Normalize(body, ingest.Defaults{})
 	switch {
 	case errors.KindOf(err) == errors.KindMalformed:
@@ -54,14 +59,20 @@ func (s *Server) IngestEvent(w http.ResponseWriter, r *http.Request) {
 	default:
 		b.add(0, ev)
 	}
-	s.store(w, r, &b)
+	s.store(w, r, b)
 }
 
 func (s *Server) IngestBatch(w http.ResponseWriter, r *http.Request) {
-	s.ingestNDJSON(w, r, ingest.Defaults{})
+	if b, ok := s.startBatch(w, r); ok {
+		s.ingestNDJSON(w, r, b, ingest.Defaults{})
+	}
 }
 
 func (s *Server) IngestFile(w http.ResponseWriter, r *http.Request, p gen.IngestFileParams) {
+	b, ok := s.startBatch(w, r)
+	if !ok {
+		return
+	}
 	d := ingest.Defaults{
 		Tenant: strings.TrimSpace(deref(p.Tenant)),
 		Source: strings.TrimSpace(string(deref(p.Source))),
@@ -70,19 +81,32 @@ func (s *Server) IngestFile(w http.ResponseWriter, r *http.Request, p gen.Ingest
 		s.fail(w, r, err)
 		return
 	}
-	s.ingestNDJSON(w, r, d)
+	s.ingestNDJSON(w, r, b, d)
 }
 
-func (s *Server) ingestNDJSON(w http.ResponseWriter, r *http.Request, d ingest.Defaults) {
+// startBatch answers a caller that may not create events for any tenant,
+// and otherwise returns a batch that rejects each record whose tenant the
+// caller may not write to. An anonymous request goes no further than this.
+func (s *Server) startBatch(w http.ResponseWriter, r *http.Request) (*batch, bool) {
+	caller := auth.CallerFrom(r.Context())
+	if s.authz.Scopes(caller, authz.Events, authz.Create).Empty() {
+		s.fail(w, r, authz.Deny(caller))
+		return nil, false
+	}
+	return &batch{may: func(tenant string) bool {
+		return s.authz.Can(caller, authz.Events, authz.Create, tenant)
+	}}, true
+}
+
+func (s *Server) ingestNDJSON(w http.ResponseWriter, r *http.Request, b *batch, d ingest.Defaults) {
 	if err := requireMediaType(r, "application/x-ndjson"); err != nil {
 		s.failWith(w, r, http.StatusUnsupportedMediaType, err)
 		return
 	}
 
-	var b batch
 	err := eachRecord(http.MaxBytesReader(w, r.Body, maxNDJSONBytes), func(index int, record []byte) {
 		if record == nil {
-			b.reject(index, errors.Invalid("record_too_large", fmt.Sprintf("record exceeds %s", mebibytes(maxRecordBytes))))
+			b.reject(index, errors.Invalid("record_too_large", fmt.Sprintf("record exceeds %s", byteSize(maxRecordBytes))))
 			return
 		}
 		ev, err := s.normalizer.Normalize(record, d)
@@ -96,7 +120,7 @@ func (s *Server) ingestNDJSON(w http.ResponseWriter, r *http.Request, d ingest.D
 		s.failRead(w, r, err, maxNDJSONBytes)
 		return
 	}
-	s.store(w, r, &b)
+	s.store(w, r, b)
 }
 
 // store inserts the batch's events and answers with what happened to every
@@ -134,6 +158,8 @@ func (s *Server) store(w http.ResponseWriter, r *http.Request, b *batch) {
 
 // batch collects the outcome of each record in a request.
 type batch struct {
+	// may reports whether the caller may write to a tenant.
+	may    func(tenant string) bool
 	events []store.NewEventParams
 	// lines holds each event's index in the request.
 	lines []int
@@ -146,7 +172,14 @@ type batch struct {
 	reported []gen.IngestRejection
 }
 
+// add queues ev for the insert, unless the caller may not write to its
+// tenant. The record's tenant is trusted only that far (ADR 0009); the insert
+// itself runs as that tenant, so nothing beneath checks the caller.
 func (b *batch) add(index int, ev store.NewEventParams) {
+	if !b.may(ev.TenantID) {
+		b.reject(index, authz.TenantNotPermitted(ev.TenantID))
+		return
+	}
 	b.events = append(b.events, ev)
 	b.lines = append(b.lines, index)
 }
@@ -253,13 +286,19 @@ func (s *Server) failRead(w http.ResponseWriter, r *http.Request, err error, lim
 	var tooLarge *http.MaxBytesError
 	if errors.As(err, &tooLarge) {
 		s.failWith(w, r, http.StatusRequestEntityTooLarge,
-			errors.Malformed("body_too_large", "request body exceeds "+mebibytes(limit)))
+			errors.Malformed("body_too_large", "request body exceeds "+byteSize(limit)))
 		return
 	}
 	s.fail(w, r, errors.Malformed("unreadable_body", "cannot read the request body").Wrapping(err))
 }
 
-func mebibytes(n int64) string { return fmt.Sprintf("%d MiB", n>>20) }
+// byteSize is n in MiB, or in KiB when it is less than one.
+func byteSize(n int64) string {
+	if n < 1<<20 {
+		return fmt.Sprintf("%d KiB", n>>10)
+	}
+	return fmt.Sprintf("%d MiB", n>>20)
+}
 
 func deref[T any](p *T) T {
 	var zero T

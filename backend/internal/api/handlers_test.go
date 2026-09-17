@@ -17,6 +17,8 @@ import (
 	"time"
 
 	"github.com/mairuu/loghub/backend/internal/api"
+	"github.com/mairuu/loghub/backend/internal/auth"
+	"github.com/mairuu/loghub/backend/internal/authz"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
 	"github.com/mairuu/loghub/backend/internal/store/storetest"
@@ -71,6 +73,48 @@ func refuseTenant(tenant string) func(store.NewEventParams) error {
 	}
 }
 
+const (
+	testSecret    = "test-auth-secret-test-auth-secret"
+	testIngestKey = "test-ingest-key-test-ingest-key-0"
+)
+
+var (
+	adminCaller  = authz.Caller{Role: authz.Admin, UserID: 1}
+	viewerCaller = authz.Caller{Role: authz.Viewer, Tenant: "demoA", UserID: 2}
+)
+
+// newServer serves the API with the test secrets, to requests as they are
+// sent. Unset parts of cfg get stand-ins.
+func newServer(t *testing.T, cfg api.Config) http.Handler {
+	t.Helper()
+	tokens := newTokens(t, nil)
+	authn, err := auth.NewAuthenticator(tokens, testIngestKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg.Tokens, cfg.Authenticator = tokens, authn
+	if cfg.Logger == nil {
+		cfg.Logger = slog.New(slog.NewJSONHandler(t.Output(), &slog.HandlerOptions{Level: slog.LevelDebug}))
+	}
+	if cfg.Events == nil {
+		cfg.Events = &fakeEvents{}
+	}
+	if cfg.Users == nil {
+		cfg.Users = fakeUsers{}
+	}
+	if cfg.Ready == nil {
+		cfg.Ready = func(context.Context) error { return nil }
+	}
+	s, err := api.New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return s.Handler()
+}
+
+// newHandler serves the API to requests that come from an admin unless they
+// carry a credential of their own. An admin may ingest and search every
+// tenant, as any request could before authentication.
 func newHandler(t *testing.T, events api.Events) http.Handler {
 	t.Helper()
 	return newHandlerLogging(t, events, t.Output())
@@ -78,11 +122,44 @@ func newHandler(t *testing.T, events api.Events) http.Handler {
 
 func newHandlerLogging(t *testing.T, events api.Events, log io.Writer) http.Handler {
 	t.Helper()
-	return api.New(api.Config{
+	h := newServer(t, api.Config{
 		Logger: slog.New(slog.NewJSONHandler(log, &slog.HandlerOptions{Level: slog.LevelDebug})),
 		Events: events,
-		Ready:  func(context.Context) error { return nil },
-	}).Handler()
+	})
+	return asAdmin(t, h)
+}
+
+func asAdmin(t *testing.T, h http.Handler) http.Handler {
+	admin := tokenFor(t, adminCaller)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") == "" {
+			r.Header.Set("Authorization", "Bearer "+admin)
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
+// newTokens signs with the test secret, at a fixed time if at is set.
+func newTokens(t *testing.T, at *time.Time) *auth.Tokens {
+	t.Helper()
+	cfg := auth.TokenConfig{Secret: testSecret}
+	if at != nil {
+		cfg.Now = func() time.Time { return *at }
+	}
+	tokens, err := auth.NewTokens(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return tokens
+}
+
+func tokenFor(t *testing.T, c authz.Caller) string {
+	t.Helper()
+	token, _, err := newTokens(t, nil).Issue(c)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return token
 }
 
 type response struct {
@@ -90,20 +167,33 @@ type response struct {
 	requestID string
 	raw       string
 	body      map[string]any
+	header    http.Header
 }
 
 // call sends a request and checks what every response shares: a request ID,
 // and a JSON body that repeats it if it is an error.
 func call(t *testing.T, h http.Handler, method, target, contentType string, body io.Reader) response {
 	t.Helper()
+	return callAs(t, h, "", method, target, contentType, body)
+}
+
+// callAs is call with credential as the bearer token, unless it is empty.
+func callAs(t *testing.T, h http.Handler, credential, method, target, contentType string, body io.Reader) response {
+	t.Helper()
 	req := httptest.NewRequestWithContext(t.Context(), method, target, body)
 	if contentType != "" {
 		req.Header.Set("Content-Type", contentType)
 	}
+	if credential != "" {
+		req.Header.Set("Authorization", "Bearer "+credential)
+	}
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 
-	res := response{status: rec.Code, requestID: rec.Header().Get("X-Request-Id"), raw: rec.Body.String()}
+	res := response{
+		status: rec.Code, requestID: rec.Header().Get("X-Request-Id"), raw: rec.Body.String(),
+		header: rec.Header(),
+	}
 	if len(res.requestID) != 16 {
 		t.Errorf("X-Request-Id = %q, want 16 characters", res.requestID)
 	}
@@ -112,6 +202,9 @@ func call(t *testing.T, h http.Handler, method, target, contentType string, body
 	}
 	if err := json.Unmarshal(rec.Body.Bytes(), &res.body); err != nil {
 		t.Fatalf("body is not a JSON object: %v: %s", err, rec.Body)
+	}
+	if challenge := res.header.Get("WWW-Authenticate"); (res.status == 401) != (challenge != "") {
+		t.Errorf("status %d with WWW-Authenticate %q", res.status, challenge)
 	}
 	if res.status >= 400 {
 		if id := res.body["request_id"]; id != res.requestID {
@@ -489,7 +582,7 @@ func TestSearchEventsParams(t *testing.T) {
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("searched with\n%+v\nwant\n%+v", got, tc.want)
 			}
-			// Until authentication lands, nothing narrows the scope.
+			// An admin's search sees every tenant.
 			if events.scopes[0] != store.AdminScope {
 				t.Errorf("scope = %+v", events.scopes[0])
 			}
@@ -607,16 +700,15 @@ func TestHealth(t *testing.T) {
 		{"database unreachable", errors.Unavailable("database_unavailable", "cannot reach the database"), 503, errorBody("database_unavailable", "cannot reach the database")},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			h := api.New(api.Config{
-				Logger: slog.New(slog.NewJSONHandler(t.Output(), nil)),
-				Events: &fakeEvents{},
+			h := newServer(t, api.Config{
 				Ready: func(ctx context.Context) error {
 					if _, ok := ctx.Deadline(); !ok {
 						t.Error("readiness check has no deadline")
 					}
 					return tc.ready
 				},
-			}).Handler()
+			})
+			// Without a credential: the container healthcheck sends none.
 			call(t, h, "GET", "/api/healthz", "", nil).check(t, tc.status, tc.want)
 		})
 	}

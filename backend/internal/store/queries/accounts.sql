@@ -14,3 +14,10 @@ SELECT id FROM tenants WHERE id = ANY(@ids::text[]);
 INSERT INTO users (email, password_hash, role, tenant_id)
 VALUES (lower(@email), @password_hash, @role, sqlc.narg(tenant_id))
 ON CONFLICT (email) DO NOTHING;
+
+-- name: GetUserByEmail :one
+-- users has no row-level security: it is read to find out who is calling,
+-- before there is a tenant to scope by.
+SELECT id, password_hash, role, tenant_id
+FROM users
+WHERE email = lower(@email);

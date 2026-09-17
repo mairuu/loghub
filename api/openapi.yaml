@@ -664,7 +664,7 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             code: tenant_not_permitted
-            message: you may not read tenant demoB
+            message: you may not access tenant "demoB"
             request_id: 01J9Z3K2QW8XM4P7
 
     PayloadTooLarge:

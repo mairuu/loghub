@@ -8,10 +8,19 @@ import (
 	"strings"
 
 	"github.com/mairuu/loghub/backend/internal/api/gen"
+	"github.com/mairuu/loghub/backend/internal/auth"
+	"github.com/mairuu/loghub/backend/internal/authz"
 	"github.com/mairuu/loghub/backend/internal/store"
 )
 
 func (s *Server) SearchEvents(w http.ResponseWriter, r *http.Request, p gen.SearchEventsParams) {
+	caller := auth.CallerFrom(r.Context())
+	readable := s.authz.Scopes(caller, authz.Events, authz.Read)
+	if readable.Empty() {
+		s.fail(w, r, authz.Deny(caller))
+		return
+	}
+
 	q := store.SearchParams{
 		EventFilter: store.EventFilter{
 			Tenant:      deref(p.Tenant),
@@ -47,9 +56,19 @@ func (s *Server) SearchEvents(w http.ResponseWriter, r *http.Request, p gen.Sear
 		q.Limit = int(*p.Limit)
 	}
 
-	// There is no caller identity until authentication lands (ADR 0009), so
-	// every search may read every tenant, as the spec says for `tenant`.
-	page, err := s.events.Search(r.Context(), store.AdminScope, q)
+	// The tenant filter narrows within what the caller may read, and is that
+	// tenant when it is the only one.
+	tenant := strings.TrimSpace(q.Tenant)
+	only, one := readable.Only()
+	switch {
+	case tenant != "" && !readable.Contains(tenant):
+		s.fail(w, r, authz.TenantNotPermitted(tenant))
+		return
+	case tenant == "" && one:
+		q.Tenant = only
+	}
+
+	page, err := s.events.Search(r.Context(), scopeOf(caller), q)
 	if err != nil {
 		s.fail(w, r, err)
 		return
@@ -63,6 +82,13 @@ func (s *Server) SearchEvents(w http.ResponseWriter, r *http.Request, p gen.Sear
 		out.NextCursor = &page.NextCursor
 	}
 	s.respond(w, r, http.StatusOK, out)
+}
+
+// scopeOf is the row-level security context for the caller's queries. It
+// comes from who the caller is, never from a policy answer (ADR 0009): the
+// tenant is the caller's own, and only an admin reads every tenant.
+func scopeOf(c authz.Caller) store.Scope {
+	return store.Scope{TenantID: c.Tenant, Admin: c.Role == authz.Admin}
 }
 
 func toEvent(e store.Event) gen.Event {

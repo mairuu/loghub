@@ -34,6 +34,33 @@ func (q *Queries) FilterTenantIDs(ctx context.Context, ids []string) ([]string, 
 	return items, nil
 }
 
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, password_hash, role, tenant_id
+FROM users
+WHERE email = lower($1)
+`
+
+type GetUserByEmailRow struct {
+	ID           int64
+	PasswordHash string
+	Role         string
+	TenantID     *string
+}
+
+// users has no row-level security: it is read to find out who is calling,
+// before there is a tenant to scope by.
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i GetUserByEmailRow
+	err := row.Scan(
+		&i.ID,
+		&i.PasswordHash,
+		&i.Role,
+		&i.TenantID,
+	)
+	return i, err
+}
+
 const insertTenantIfMissing = `-- name: InsertTenantIfMissing :exec
 INSERT INTO tenants (id, name)
 VALUES ($1, $2)

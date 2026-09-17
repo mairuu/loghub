@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/mairuu/loghub/backend/internal/api/gen"
+	"github.com/mairuu/loghub/backend/internal/auth"
+	"github.com/mairuu/loghub/backend/internal/authz"
 	"github.com/mairuu/loghub/backend/internal/ingest"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
@@ -23,9 +25,19 @@ type Events interface {
 	Search(ctx context.Context, scope store.Scope, p store.SearchParams) (store.EventPage, error)
 }
 
+// Users is who may sign in. *store.UserRepo is the implementation.
+type Users interface {
+	FindByEmail(ctx context.Context, email string) (store.User, error)
+}
+
 type Config struct {
 	Logger *slog.Logger
 	Events Events
+	Users  Users
+	// Tokens issues the tokens Login answers with, and Authenticator
+	// accepts them along with the ingest key.
+	Tokens        *auth.Tokens
+	Authenticator *auth.Authenticator
 	// Ready reports whether the service can serve requests. Its error is
 	// rendered as the healthz response, normally 503 database_unavailable.
 	Ready func(context.Context) error
@@ -36,23 +48,37 @@ type Config struct {
 type Server struct {
 	logger     *slog.Logger
 	events     Events
+	users      Users
+	tokens     *auth.Tokens
+	authn      *auth.Authenticator
+	authz      *authz.Enforcer
 	ready      func(context.Context) error
 	normalizer ingest.Normalizer
 }
 
 var _ gen.ServerInterface = (*Server)(nil)
 
-func New(cfg Config) *Server {
+// New fails if the API's policy sets don't hold together.
+func New(cfg Config) (*Server, error) {
+	enforcer, err := authz.New(policies...)
+	if err != nil {
+		return nil, fmt.Errorf("api policies: %w", err)
+	}
 	return &Server{
 		logger:     cfg.Logger,
 		events:     cfg.Events,
+		users:      cfg.Users,
+		tokens:     cfg.Tokens,
+		authn:      cfg.Authenticator,
+		authz:      enforcer,
 		ready:      cfg.Ready,
 		normalizer: cfg.Normalizer,
-	}
+	}, nil
 }
 
 // Handler serves the generated API routes, the spec and the docs page. Every
-// response carries X-Request-Id, and every request is logged.
+// response carries X-Request-Id, and every request is logged with its
+// caller. A request whose credential is invalid is refused before routing.
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
 	gen.HandlerWithOptions(s, gen.StdHTTPServerOptions{
@@ -77,12 +103,28 @@ func (s *Server) Handler() http.Handler {
 		w.Write([]byte(docsPage))
 	})
 
-	return s.observe(mux)
+	return s.observe(s.authenticate(mux))
+}
+
+// authenticate puts the caller in the request context, and in the request's
+// log line.
+func (s *Server) authenticate(next http.Handler) http.Handler {
+	return s.authn.Middleware(s.fail)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if info := infoFrom(r.Context()); info != nil {
+			info.caller = auth.CallerFrom(r.Context())
+		}
+		next.ServeHTTP(w, r)
+	}))
 }
 
 const readyCheckTimeout = 2 * time.Second
 
 func (s *Server) GetHealth(w http.ResponseWriter, r *http.Request) {
+	if err := s.authz.Authorize(auth.CallerFrom(r.Context()), authz.Health, authz.Read, ""); err != nil {
+		s.fail(w, r, err)
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(r.Context(), readyCheckTimeout)
 	defer cancel()
 

@@ -25,11 +25,12 @@ import (
 func TestSamplesEndToEnd(t *testing.T) {
 	db := storetest.Open(t)
 	tenant := db.Tenant(t)
-	h := api.New(api.Config{
+	h := asAdmin(t, newServer(t, api.Config{
 		Logger: slog.New(slog.NewJSONHandler(t.Output(), nil)),
 		Events: store.NewEventRepo(store.New(db.App)),
+		Users:  store.NewUserRepo(store.New(db.App)),
 		Ready:  func(ctx context.Context) error { return pg.Check(ctx, db.App) },
-	}).Handler()
+	}))
 
 	call(t, h, "GET", "/api/healthz", "", nil).check(t, 200, `{"status":"ok"}`)
 
@@ -198,4 +199,107 @@ func remarshal(t *testing.T, from, to any) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+// The RBAC acceptance check, against the real store as loghub_app: a viewer
+// who signs in sees only their own tenant, and asking for another is refused.
+func TestRBACEndToEnd(t *testing.T) {
+	db := storetest.Open(t)
+	a, b := db.Tenant(t), db.Tenant(t)
+	const password = "correct horse"
+	hash := hashPassword(t, password)
+	users := store.NewUserRepo(store.New(db.Owner))
+	emails := map[string]string{"admin": "admin@" + a + ".test", a: "viewer@" + a + ".test", b: "viewer@" + b + ".test"}
+	for tenant, email := range emails {
+		p := store.NewUserParams{Email: email, PasswordHash: hash, Role: "viewer", TenantID: &tenant}
+		if tenant == "admin" {
+			p.Role, p.TenantID = "admin", nil
+		}
+		if _, err := users.CreateIfMissing(t.Context(), p); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	h := newServer(t, api.Config{
+		Events: store.NewEventRepo(store.New(db.App)),
+		Users:  store.NewUserRepo(store.New(db.App)),
+		Ready:  func(ctx context.Context) error { return pg.Check(ctx, db.App) },
+	})
+
+	// The collector sends both tenants' events in one batch.
+	var lines []string
+	for _, tenant := range []string{a, b, a, b} {
+		lines = append(lines, `{"tenant":"`+tenant+`","source":"api","event_type":"rbac"}`)
+	}
+	callAs(t, h, testIngestKey, "POST", "/api/v1/ingest/batch", "application/x-ndjson", strings.NewReader(strings.Join(lines, "\n"))).
+		check(t, 200, `{"accepted":4,"rejected":0}`)
+
+	signIn := func(email, password string) response {
+		body, _ := json.Marshal(map[string]string{"email": email, "password": password})
+		return call(t, h, "POST", "/api/v1/auth/login", "application/json", strings.NewReader(string(body)))
+	}
+	token := func(email string) string {
+		res := signIn(email, password)
+		if res.status != 200 {
+			t.Fatalf("sign in as %s: %d %v", email, res.status, res.body)
+		}
+		return res.body["token"].(string)
+	}
+	badCredentials := errorBody("invalid_credentials", "email or password is incorrect")
+	signIn(emails[a], "wrong").check(t, 401, badCredentials)
+	signIn("nobody@"+a+".test", password).check(t, 401, badCredentials)
+
+	admin, viewerA := token(emails["admin"]), token(strings.ToUpper(emails[a]))
+	viewerB := token(emails[b])
+
+	// tenants lists the tenant of every event a search returns.
+	tenants := func(credential string, q url.Values) []string {
+		t.Helper()
+		q.Set("event_type", "rbac")
+		res := callAs(t, h, credential, "GET", "/api/v1/events?"+q.Encode(), "", nil)
+		if res.status != 200 {
+			t.Fatalf("search %s: %d %v", q.Encode(), res.status, res.body)
+		}
+		var out []string
+		for _, item := range res.body["items"].([]any) {
+			out = append(out, item.(map[string]any)["tenant"].(string))
+		}
+		slices.Sort(out)
+		return out
+	}
+	for _, tc := range []struct {
+		name       string
+		credential string
+		query      url.Values
+		want       []string
+	}{
+		{"viewer sees their own tenant", viewerA, url.Values{}, []string{a, a}},
+		{"other viewer sees theirs", viewerB, url.Values{}, []string{b, b}},
+		{"viewer names their own tenant", viewerA, url.Values{"tenant": {a}}, []string{a, a}},
+		{"admin sees every tenant", admin, url.Values{}, []string{a, a, b, b}},
+		{"admin narrows to one", admin, url.Values{"tenant": {b}}, []string{b, b}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tenants(tc.credential, tc.query); !slices.Equal(got, tc.want) {
+				t.Errorf("tenants %q, want %q", got, tc.want)
+			}
+		})
+	}
+
+	t.Run("viewer asks for another tenant", func(t *testing.T) {
+		callAs(t, h, viewerA, "GET", "/api/v1/events?tenant="+b, "", nil).
+			check(t, 403, errorBody("tenant_not_permitted", `you may not access tenant "`+b+`"`))
+	})
+	t.Run("viewer can't ingest", func(t *testing.T) {
+		callAs(t, h, viewerA, "POST", "/api/v1/ingest", "application/json", strings.NewReader(lines[0])).
+			check(t, 403, errorBody("permission_denied", "you may not do this"))
+	})
+	t.Run("collector can't search", func(t *testing.T) {
+		callAs(t, h, testIngestKey, "GET", "/api/v1/events", "", nil).
+			check(t, 403, errorBody("permission_denied", "you may not do this"))
+	})
+	t.Run("anonymous can't search", func(t *testing.T) {
+		call(t, h, "GET", "/api/v1/events", "", nil).
+			check(t, 401, errorBody("authentication_required", "this request needs a credential"))
+	})
 }
