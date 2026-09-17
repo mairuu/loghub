@@ -13,7 +13,7 @@ Short records of the decisions that shape loghub.
 | [0007](0007-openapi-spec-first.md) | Spec-first OpenAPI with code generation | Accepted |
 | [0008](0008-sqlc-queries.md) | sqlc for fixed queries, hand-written SQL for search | Accepted |
 | [0009](0009-auth-jwt-rbac.md) | JWT sessions and a policy-set RBAC enforcer | Accepted |
-| [0010](0010-alerting.md) | Threshold alert rules evaluated on a schedule | Draft |
+| [0010](0010-alerting.md) | Threshold alert rules evaluated on a schedule | Accepted |
 | [0011](0011-deployment-compose.md) | One Compose file for both deployment modes | Draft |
 
 ## Template
