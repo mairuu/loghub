@@ -130,6 +130,23 @@ func (r *EventRepo) knownTenants(ctx context.Context, events []NewEventParams) (
 	return known, nil
 }
 
+// MaintainPartitions creates the daily partitions from the retention cutoff
+// to two days ahead, moving in any of their rows that landed in DEFAULT, and
+// drops the older ones (ADR 0002). retention is rounded up to whole days, and
+// a day's partition is dropped only once the whole day is older than that,
+// so an event is kept for at least retention.
+func (r *EventRepo) MaintainPartitions(ctx context.Context, retention time.Duration) error {
+	const day = 24 * time.Hour
+	days := (retention + day - 1) / day
+	if days < 1 {
+		return errors.Internal(fmt.Sprintf("retention must be positive, got %v", retention))
+	}
+	if err := r.store.q.MaintainPartitions(ctx, int32(days)); err != nil {
+		return pg.Wrap(err, "cannot maintain partitions")
+	}
+	return nil
+}
+
 // insertEvents inserts the events at idx in a savepoint. If the database
 // refuses one of them, it rolls the batch back and retries the events one at
 // a time, so only the refused ones are rejected.

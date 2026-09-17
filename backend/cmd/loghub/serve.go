@@ -10,6 +10,8 @@ import (
 
 	"github.com/mairuu/loghub/backend/internal/api"
 	"github.com/mairuu/loghub/backend/internal/auth"
+	"github.com/mairuu/loghub/backend/internal/ingest"
+	"github.com/mairuu/loghub/backend/internal/jobs"
 	"github.com/mairuu/loghub/backend/internal/platform/config"
 	"github.com/mairuu/loghub/backend/internal/platform/log"
 	"github.com/mairuu/loghub/backend/internal/platform/pg"
@@ -50,9 +52,20 @@ func serve(ctx context.Context) error {
 	defer pool.Close()
 
 	db := store.New(pool)
+	events := store.NewEventRepo(db)
+
+	stopJobs := jobs.Start(ctx, logger, jobs.Job{
+		Name:  "maintain_partitions",
+		Every: time.Hour,
+		Run: func(ctx context.Context) error {
+			return events.MaintainPartitions(ctx, ingest.DefaultRetention)
+		},
+	})
+	defer stopJobs()
+
 	server, err := api.New(api.Config{
 		Logger:        logger,
-		Events:        store.NewEventRepo(db),
+		Events:        events,
 		Users:         store.NewUserRepo(db),
 		Tokens:        tokens,
 		Authenticator: authenticator,

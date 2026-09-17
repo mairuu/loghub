@@ -96,6 +96,13 @@ All events from one request are stored in one transaction. If the database fails
 - Inserts go to Postgres in batches of 1000, one round trip each. `COPY` would be faster, but Postgres doesn't allow it on a table with row-level security.
 - If Postgres refuses a value anyway, the batch is rolled back to a savepoint and retried one event at a time. Only the refused event is rejected, with `unstorable_event`; failing the whole batch would make Vector retry it forever. The normalizer is meant to make this impossible, so the tests store every sample and a set of hostile records and expect no rejections.
 
+### Retention
+
+Events are kept for 7 days. `serve` calls `loghub_maintain_partitions` when it starts and then every hour ([ADR 0002](adr/0002-postgres-event-store.md)), from the job runner in `backend/internal/jobs`.
+- Each call creates the daily partitions (UTC dates) from 7 days back to 2 days ahead. If maintenance hasn't run for more than 2 days, events for a day without a partition land in DEFAULT, and they move into that day's partition when it is created.
+- A day's partition is dropped once the whole day is more than 7 days old, so an event is kept for between 7 and 8 days. Expired rows in DEFAULT are deleted.
+- A failed call is logged and retried an hour later. Partitions exist 2 days ahead, so new events keep landing in their own partition for many failed runs in a row.
+
 ### Search
 
 `GET /api/v1/events` runs a single query, built at request time in `backend/internal/store/search.go` ([ADR 0008](adr/0008-sqlc-queries.md)). Every filter value is a bind parameter.

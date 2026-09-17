@@ -26,7 +26,8 @@ import (
 	"github.com/mairuu/loghub/backend/internal/store"
 )
 
-// DefaultRetention matches the retention the partitions are created for.
+// DefaultRetention is how long events are kept. serve drops partitions older
+// than this, and the normalizer rebases event times older than this.
 const DefaultRetention = 7 * 24 * time.Hour
 
 // futureSkew is how far ahead of receipt an event time may be before it is
