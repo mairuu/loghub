@@ -305,14 +305,14 @@ func TestSearchRejectsParameters(t *testing.T) {
 
 func TestSearchError(t *testing.T) {
 	timeout := &pgconn.PgError{Code: "57014"}
-	if got := code(store.SearchError(t.Context(), timeout)); got != "search_timeout" {
+	if got := code(store.SearchError(t.Context(), timeout, "cannot search events")); got != "search_timeout" {
 		t.Errorf("statement timeout: code = %s", got)
 	}
 
 	// The same code when the request itself was cancelled is not a timeout.
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
-	if got := code(store.SearchError(ctx, timeout)); got != "internal_error" {
+	if got := code(store.SearchError(ctx, timeout, "cannot search events")); got != "internal_error" {
 		t.Errorf("cancelled request: code = %s", got)
 	}
 }

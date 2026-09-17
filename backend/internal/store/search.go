@@ -93,32 +93,14 @@ type EventPage struct {
 // are reported as errors.Malformed, with code invalid_parameter or
 // invalid_cursor and a message naming the API parameter.
 func (r *EventRepo) Search(ctx context.Context, scope Scope, p SearchParams) (EventPage, error) {
-	if !scope.Admin && strings.TrimSpace(p.Tenant) == "" {
-		// Row-level security limits a viewer to their tenant anyway, but its
-		// condition is an OR that Postgres can't use an index for.
-		p.Tenant = scope.TenantID
-	}
+	p.EventFilter = p.scopedTo(scope)
 	q, err := resolveSearch(p, time.Now())
 	if err != nil {
 		return EventPage{}, err
 	}
 	sql, args := q.sql()
 
-	var events []Event
-	err = r.store.InScope(ctx, scope, func(s *Store) error {
-		if _, err := s.db.Exec(ctx, "SELECT set_config('statement_timeout', $1, true)", strconv.FormatInt(searchTimeout.Milliseconds(), 10)); err != nil {
-			return pg.Wrap(err, "cannot set search timeout")
-		}
-		rows, err := s.db.Query(ctx, sql, args...)
-		if err != nil {
-			return searchError(ctx, err)
-		}
-		events, err = pgx.CollectRows(rows, pgx.RowToStructByName[Event])
-		if err != nil {
-			return searchError(ctx, err)
-		}
-		return nil
-	})
+	events, err := read(ctx, r.store, scope, "cannot search events", sql, args, pgx.RowToStructByName[Event])
 	if err != nil {
 		return EventPage{}, err
 	}
@@ -131,30 +113,65 @@ func (r *EventRepo) Search(ctx context.Context, scope Scope, p SearchParams) (Ev
 	return page, nil
 }
 
-func searchError(ctx context.Context, err error) error {
+// scopedTo returns f with the tenant filter set to scope's tenant when scope
+// isn't an admin and f names none. Row-level security limits the query to
+// that tenant anyway, but its condition is an OR that Postgres can't use an
+// index for.
+func (f EventFilter) scopedTo(scope Scope) EventFilter {
+	if !scope.Admin && strings.TrimSpace(f.Tenant) == "" {
+		f.Tenant = scope.TenantID
+	}
+	return f
+}
+
+// read runs one query over events in scope, cancelling it after
+// searchTimeout, and collects its rows. message describes a failure.
+func read[T any](ctx context.Context, store *Store, scope Scope, message, sql string, args []any, row pgx.RowToFunc[T]) ([]T, error) {
+	var out []T
+	err := store.InScope(ctx, scope, func(s *Store) error {
+		if _, err := s.db.Exec(ctx, "SELECT set_config('statement_timeout', $1, true)", strconv.FormatInt(searchTimeout.Milliseconds(), 10)); err != nil {
+			return pg.Wrap(err, "cannot set search timeout")
+		}
+		rows, err := s.db.Query(ctx, sql, args...)
+		if err == nil {
+			out, err = pgx.CollectRows(rows, row)
+		}
+		if err != nil {
+			return searchError(ctx, err, message)
+		}
+		return nil
+	})
+	return out, err
+}
+
+func searchError(ctx context.Context, err error, message string) error {
 	var pgErr *pgconn.PgError
 	if ctx.Err() == nil && errors.As(err, &pgErr) && pgErr.Code == "57014" { // query_canceled, by statement_timeout
 		return errors.Unavailable("search_timeout",
 			fmt.Sprintf("the search took longer than %s; narrow the time range or the free-text query", searchTimeout)).
 			Wrapping(err)
 	}
-	return pg.Wrap(err, "cannot search events")
+	return pg.Wrap(err, message)
+}
+
+// eventQuery is a validated EventFilter with its window resolved.
+type eventQuery struct {
+	EventFilter
+	srcIP    *netip.Addr
+	from, to time.Time
 }
 
 // searchQuery is a validated SearchParams with its defaults filled in.
 type searchQuery struct {
-	EventFilter
-	srcIP    *netip.Addr
-	from, to time.Time
-	order    Order
-	limit    int
-	after    *cursor
-	hash     string
+	eventQuery
+	order Order
+	limit int
+	after *cursor
+	hash  string
 }
 
 func resolveSearch(p SearchParams, now time.Time) (*searchQuery, error) {
-	q := &searchQuery{EventFilter: p.EventFilter, order: p.Order, limit: p.Limit}
-	f := &q.EventFilter
+	q := &searchQuery{order: p.Order, limit: p.Limit}
 
 	switch {
 	case q.limit == 0:
@@ -170,16 +187,45 @@ func resolveSearch(p SearchParams, now time.Time) (*searchQuery, error) {
 		return nil, invalidParam("order must be asc or desc")
 	}
 
+	var err error
+	if q.eventQuery, err = resolveFilter(p.EventFilter); err != nil {
+		return nil, err
+	}
+	q.hash = q.filterHash()
+
+	from, to := defaultWindow(now)
+	if p.Cursor != "" {
+		c, err := decodeCursor(p.Cursor)
+		if err != nil {
+			return nil, err
+		}
+		if c.Filter != q.hash || !sameTime(q.From, c.From) || !sameTime(q.To, c.To) {
+			return nil, errors.Malformed("invalid_cursor", "cursor was issued for different parameters; start again without it")
+		}
+		from, to, q.after = c.From, c.To, &c
+	}
+	if err := q.setWindow(from, to); err != nil {
+		return nil, err
+	}
+	return q, nil
+}
+
+// resolveFilter checks filter and normalizes its text. The window is left
+// for setWindow.
+func resolveFilter(filter EventFilter) (eventQuery, error) {
+	q := eventQuery{EventFilter: filter}
+	f := &q.EventFilter
+
 	for _, sev := range []struct {
 		name  string
 		value *int
 	}{{"severity_min", f.SeverityMin}, {"severity_max", f.SeverityMax}} {
 		if sev.value != nil && (*sev.value < 0 || *sev.value > 10) {
-			return nil, invalidParam("%s must be between 0 and 10", sev.name)
+			return eventQuery{}, invalidParam("%s must be between 0 and 10", sev.name)
 		}
 	}
 	if f.SeverityMin != nil && f.SeverityMax != nil && *f.SeverityMin > *f.SeverityMax {
-		return nil, invalidParam("severity_min must not be greater than severity_max")
+		return eventQuery{}, invalidParam("severity_min must not be greater than severity_max")
 	}
 
 	// Checked before anything else touches the text: case mapping would
@@ -197,7 +243,7 @@ func resolveSearch(p SearchParams, now time.Time) (*searchQuery, error) {
 	for _, t := range texts {
 		// Postgres refuses both, and would fail the query with a 500.
 		if !utf8.ValidString(t[1]) || strings.ContainsRune(t[1], 0) {
-			return nil, invalidParam("%s must be UTF-8 text without NUL characters", t[0])
+			return eventQuery{}, invalidParam("%s must be UTF-8 text without NUL characters", t[0])
 		}
 	}
 
@@ -214,34 +260,33 @@ func resolveSearch(p SearchParams, now time.Time) (*searchQuery, error) {
 	if s := strings.TrimSpace(f.SrcIP); s != "" {
 		addr, err := netip.ParseAddr(s)
 		if err != nil {
-			return nil, invalidParam("src_ip must be an IPv4 or IPv6 address")
+			return eventQuery{}, invalidParam("src_ip must be an IPv4 or IPv6 address")
 		}
 		addr = addr.Unmap().WithZone("")
 		q.srcIP = &addr
 	}
-	q.hash = q.filterHash()
-
-	q.from, q.to = now.Add(-defaultSearchWindow), now.Add(searchAhead)
-	if p.Cursor != "" {
-		c, err := decodeCursor(p.Cursor)
-		if err != nil {
-			return nil, err
-		}
-		if c.Filter != q.hash || !sameTime(f.From, c.From) || !sameTime(f.To, c.To) {
-			return nil, errors.Malformed("invalid_cursor", "cursor was issued for different parameters; start again without it")
-		}
-		q.from, q.to, q.after = c.From, c.To, &c
-	}
-	if f.From != nil {
-		q.from = *f.From
-	}
-	if f.To != nil {
-		q.to = *f.To
-	}
-	if !q.from.Before(q.to) {
-		return nil, invalidParam("from must be before to")
-	}
 	return q, nil
+}
+
+// defaultWindow is the window of a query that names neither end.
+func defaultWindow(now time.Time) (from, to time.Time) {
+	return now.Add(-defaultSearchWindow), now.Add(searchAhead)
+}
+
+// setWindow sets the window to the filter's From and To, using from and to
+// for either one the filter leaves nil.
+func (q *eventQuery) setWindow(from, to time.Time) error {
+	if q.From != nil {
+		from = *q.From
+	}
+	if q.To != nil {
+		to = *q.To
+	}
+	if !from.Before(to) {
+		return invalidParam("from must be before to")
+	}
+	q.from, q.to = from, to
+	return nil
 }
 
 // normalizeSet trims, maps, drops empty values and duplicates, and sorts, so
@@ -270,12 +315,36 @@ const eventColumns = `id, ts, received_at, tenant_id, source, vendor, product,
 	rule_id, cloud_account_id, cloud_region, cloud_service, raw, tags`
 
 func (q *searchQuery) sql() (string, []any) {
-	var args []any
-	arg := func(v any) string {
-		args = append(args, v)
-		return "$" + strconv.Itoa(len(args))
+	args, arg := bind()
+	conds := q.where(arg)
+
+	dir, cmp := "DESC", "<"
+	if q.order == OrderAsc {
+		dir, cmp = "ASC", ">"
+	}
+	if q.after != nil {
+		conds = append(conds, "(ts, id) "+cmp+" ("+arg(q.after.Ts)+", "+arg(q.after.ID)+")")
 	}
 
+	sql := "SELECT " + eventColumns + "\nFROM events\nWHERE " + strings.Join(conds, "\n  AND ") +
+		"\nORDER BY ts " + dir + ", id " + dir +
+		"\nLIMIT " + arg(q.limit+1)
+	return sql, *args
+}
+
+// bind returns a statement's bind parameters, and a func that adds one and
+// returns the placeholder that refers to it.
+func bind() (*[]any, func(any) string) {
+	args := new([]any)
+	return args, func(v any) string {
+		*args = append(*args, v)
+		return "$" + strconv.Itoa(len(*args))
+	}
+}
+
+// where returns the conditions an event must meet, adding their values with
+// arg.
+func (q *eventQuery) where(arg func(any) string) []string {
 	conds := []string{"ts >= " + arg(q.from), "ts < " + arg(q.to)}
 	if q.Tenant != "" {
 		conds = append(conds, "tenant_id = "+arg(q.Tenant))
@@ -319,18 +388,7 @@ func (q *searchQuery) sql() (string, []any) {
 	WHERE jsonb_typeof(v) IN ('string', 'number') AND v #>> '{}' ILIKE `+pattern+`)`)
 	}
 
-	dir, cmp := "DESC", "<"
-	if q.order == OrderAsc {
-		dir, cmp = "ASC", ">"
-	}
-	if q.after != nil {
-		conds = append(conds, "(ts, id) "+cmp+" ("+arg(q.after.Ts)+", "+arg(q.after.ID)+")")
-	}
-
-	sql := "SELECT " + eventColumns + "\nFROM events\nWHERE " + strings.Join(conds, "\n  AND ") +
-		"\nORDER BY ts " + dir + ", id " + dir +
-		"\nLIMIT " + arg(q.limit+1)
-	return sql, args
+	return conds
 }
 
 var likeEscaper = strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`)
