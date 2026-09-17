@@ -2,3 +2,5 @@
 # files dropped for the collector; see ingest/README.md
 inbox/*
 !inbox/.gitkeep
+
+__pycache__/
