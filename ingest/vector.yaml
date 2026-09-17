@@ -6,13 +6,14 @@
 
 data_dir: /var/lib/vector
 
-# For the ingest token once authentication lands
-# (docs/adr/0009-auth-jwt-rbac.md). Vector 0.58 doesn't expand environment
-# variables in config files, so secrets arrive as files.
+# Compose mounts the ingest token here (docs/adr/0009-auth-jwt-rbac.md).
+# Vector 0.58 doesn't expand environment variables in config files, so
+# secrets arrive as files.
 secret:
   compose:
     type: directory
     path: /run/secrets
+    remove_trailing_whitespace: true
 
 # Serves /health for the container healthcheck.
 api:
@@ -94,6 +95,11 @@ sinks:
       headers:
         # The text codec would otherwise send text/plain.
         Content-Type: application/x-ndjson
+    # A missing or wrong token is a 401, which Vector doesn't retry: the
+    # batch is dropped and logged as `Events dropped`.
+    auth:
+      strategy: bearer
+      token: SECRET[compose.ingest_token]
     healthcheck:
       uri: http://backend:8080/api/healthz
     batch:

@@ -59,6 +59,8 @@ services:
     environment:
       <<: *backend-env
       DATABASE_URL: postgres://loghub_app:${APP_DB_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      AUTH_SECRET: ${AUTH_SECRET:?set it in .env}
+      INGEST_TOKEN: ${INGEST_TOKEN:?set it in .env}
     depends_on:
       seed:
         condition: service_completed_successfully
@@ -78,6 +80,9 @@ services:
     environment:
       # Read by the syslog transform at runtime.
       SYSLOG_DEFAULT_TENANT: ${SYSLOG_DEFAULT_TENANT:-demoA}
+    # Vector reads secrets from files, not the environment (ADR 0004).
+    secrets:
+      - ingest_token
     ports:
       - "514:5514/udp"
       - "514:5514/tcp"
@@ -94,6 +99,11 @@ services:
       interval: 10s
       timeout: 3s
       retries: 6
+
+secrets:
+  # Mounted at /run/secrets/ingest_token.
+  ingest_token:
+    environment: INGEST_TOKEN
 
 volumes:
   postgres_data:

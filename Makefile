@@ -118,11 +118,14 @@ postman: ## Convert the spec into docs/postman_collection.json
 lint-api: ## Validate api/openapi.yaml itself
 	$(NPX) @redocly/cli@$(REDOCLY_VER) lint $(OAPI_SPEC)
 
+# The tests resolve every SECRET[], so they get a placeholder token.
+VECTOR_CHECK := docker run --rm -e SYSLOG_DEFAULT_TENANT=t_test \
+  -v "$(CURDIR)/ingest:/etc/vector:ro" \
+  -v "$(CURDIR)/ingest/testdata/secrets:/run/secrets:ro" $(VECTOR_IMAGE)
+
 check-vector: ## Validate ingest/vector.yaml and run its unit tests
-	docker run --rm -e SYSLOG_DEFAULT_TENANT=t_test -v "$(CURDIR)/ingest:/etc/vector:ro" $(VECTOR_IMAGE) \
-	  validate --no-environment /etc/vector/vector.yaml
-	docker run --rm -e SYSLOG_DEFAULT_TENANT=t_test -v "$(CURDIR)/ingest:/etc/vector:ro" $(VECTOR_IMAGE) \
-	  test /etc/vector/vector.yaml /etc/vector/vector.test.yaml
+	$(VECTOR_CHECK) validate --no-environment /etc/vector/vector.yaml
+	$(VECTOR_CHECK) test /etc/vector/vector.yaml /etc/vector/vector.test.yaml
 
 lint: check-sql check-api lint-api check-vector ## gofmt, go vet, sqlc drift, api drift, spec lint, collector config
 	@out=$$(gofmt -l backend); if [ -n "$$out" ]; then echo "Files need gofmt:"; echo "$$out"; exit 1; fi
