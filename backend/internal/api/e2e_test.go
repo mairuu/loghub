@@ -280,8 +280,10 @@ func TestRBACEndToEnd(t *testing.T) {
 		{"admin narrows to one", admin, url.Values{"tenant": {b}}, []string{b, b}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := tenants(tc.credential, tc.query); !slices.Equal(got, tc.want) {
-				t.Errorf("tenants %q, want %q", got, tc.want)
+			// The tenant IDs are random, so a and b sort either way.
+			want := slices.Sorted(slices.Values(tc.want))
+			if got := tenants(tc.credential, tc.query); !slices.Equal(got, want) {
+				t.Errorf("tenants %q, want %q", got, want)
 			}
 		})
 	}

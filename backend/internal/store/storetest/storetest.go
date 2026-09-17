@@ -118,10 +118,12 @@ func create(ctx context.Context, adminURL string) (_ *DB, _ func(), err error) {
 	}()
 
 	// The migrations grant privileges to the app role. The dev role already
-	// exists; leave it and its password alone.
+	// exists; leave it and its password alone. On a fresh server, another
+	// test package may be creating it at the same moment, and the loser of
+	// that race gets unique_violation rather than duplicate_object.
 	if _, err := admin.Exec(ctx, "CREATE ROLE "+appRole); err != nil {
 		var pgErr *pgconn.PgError
-		if !errors.As(err, &pgErr) || pgErr.Code != "42710" { // duplicate_object
+		if !errors.As(err, &pgErr) || (pgErr.Code != "42710" && pgErr.Code != "23505") {
 			return nil, nil, fmt.Errorf("create role: %w", err)
 		}
 	}
