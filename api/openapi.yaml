@@ -112,6 +112,12 @@ paths:
         A wrong password and an unknown email get the same
         `invalid_credentials`. The email is matched ignoring case. The body
         may be at most 64 KiB.
+
+        Each client address may make 10 attempts a minute, right or wrong,
+        and all 10 at once after a quiet minute. An IPv6 address shares its
+        allowance with the rest of its /64. Only attempts that reach the
+        password check count, and their responses carry the `RateLimit-*`
+        headers.
       tags: [Auth]
       security: []
       requestBody:
@@ -126,6 +132,13 @@ paths:
       responses:
         '200':
           description: Signed in.
+          headers:
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
@@ -137,6 +150,12 @@ paths:
           headers:
             X-Request-Id:
               $ref: '#/components/headers/XRequestId'
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
           content:
             application/json:
               schema:
@@ -151,6 +170,31 @@ paths:
           $ref: '#/components/responses/UnsupportedMediaType'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          description: |
+            This address has used its attempts for now (`too_many_attempts`).
+            The password was not checked.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/XRequestId'
+            Retry-After:
+              description: Seconds until the next attempt is allowed.
+              schema:
+                type: integer
+            RateLimit-Limit:
+              $ref: '#/components/headers/RateLimitLimit'
+            RateLimit-Remaining:
+              $ref: '#/components/headers/RateLimitRemaining'
+            RateLimit-Reset:
+              $ref: '#/components/headers/RateLimitReset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: too_many_attempts
+                message: too many sign-in attempts from this address; try again in 6 seconds
+                request_id: 01J9Z3K2QW8XM4P7
         '500':
           $ref: '#/components/responses/InternalError'
         '503':
@@ -1055,6 +1099,18 @@ components:
       description: Correlates this response with the server log line.
       schema:
         type: string
+    RateLimitLimit:
+      description: How many sign-in attempts this address may make at once.
+      schema:
+        type: integer
+    RateLimitRemaining:
+      description: How many more attempts it may make straight away.
+      schema:
+        type: integer
+    RateLimitReset:
+      description: Seconds until it may make the full number again.
+      schema:
+        type: integer
 
   schemas:
 

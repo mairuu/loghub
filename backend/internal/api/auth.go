@@ -3,19 +3,29 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
+	"math"
 	"net/http"
+	"net/netip"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mairuu/loghub/backend/internal/api/gen"
 	"github.com/mairuu/loghub/backend/internal/auth"
 	"github.com/mairuu/loghub/backend/internal/authz"
+	"github.com/mairuu/loghub/backend/internal/limiter"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 )
 
 // maxLoginBytes bounds a sign-in body.
 const maxLoginBytes = 64 << 10
+
+// signInsPerMinute is how many sign-in attempts one client address may make
+// a minute
+const signInsPerMinute = 10
 
 var invalidCredentials = errors.Unauthenticated("invalid_credentials", "email or password is incorrect")
 
@@ -40,6 +50,20 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	email := strings.TrimSpace(req.Email)
+	// Only attempts that reach the password check count.
+	client := clientAddr(r)
+	limit := s.signIns.Allow(r.Context(), limitKey(client))
+	setRateLimitHeaders(w.Header(), limit)
+	if !limit.Allowed {
+		s.logger.LogAttrs(r.Context(), slog.LevelInfo, "sign-in limited",
+			slog.String("request_id", requestID(r.Context())),
+			slog.String("email", email),
+			slog.String("client", client.String()),
+		)
+		s.fail(w, r, tooManyAttempts(limit.RetryAfter))
+		return
+	}
+
 	// An unknown email carries on with no hash, so it takes as long to
 	// refuse as a wrong password.
 	user, err := s.users.FindByEmail(r.Context(), email)
@@ -51,6 +75,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		s.logger.LogAttrs(r.Context(), slog.LevelInfo, "sign-in refused",
 			slog.String("request_id", requestID(r.Context())),
 			slog.String("email", email),
+			slog.String("client", client.String()),
 		)
 		s.fail(w, r, invalidCredentials)
 		return
@@ -81,6 +106,62 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		Role:      gen.Role(role.String()),
 		Tenant:    user.TenantID,
 	})
+}
+
+// clientAddr is the address a request came from. Caddy is the only way in
+// from outside, and it replaces X-Forwarded-For with the address it saw,
+// since it trusts no proxy in front of it. A request without the header came
+// straight to the backend, from inside the stack.
+func clientAddr(r *http.Request) netip.Addr {
+	if values := r.Header.Values("X-Forwarded-For"); len(values) > 0 {
+		last := values[len(values)-1]
+		if i := strings.LastIndexByte(last, ','); i >= 0 {
+			last = last[i+1:]
+		}
+		if addr, err := netip.ParseAddr(strings.TrimSpace(last)); err == nil {
+			return addr.Unmap().WithZone("")
+		}
+	}
+	addr, _ := netip.ParseAddrPort(r.RemoteAddr)
+	return addr.Addr().Unmap().WithZone("")
+}
+
+// limitKey counts an IPv6 client by its /64, the block one subscriber is
+// usually given, so that it can't get a fresh allowance from each address in
+// it.
+func limitKey(addr netip.Addr) string {
+	if addr.Is6() {
+		prefix, _ := addr.Prefix(64)
+		return prefix.String()
+	}
+	return addr.String()
+}
+
+// setRateLimitHeaders tells the client how many attempts it has left, and
+// when it has them all again, in the fields of the IETF RateLimit draft.
+func setRateLimitHeaders(h http.Header, d limiter.Decision) {
+	h.Set("RateLimit-Limit", strconv.Itoa(d.Limit))
+	h.Set("RateLimit-Remaining", strconv.Itoa(d.Remaining))
+	h.Set("RateLimit-Reset", strconv.Itoa(wholeSeconds(d.ResetAfter)))
+	if !d.Allowed {
+		h.Set("Retry-After", strconv.Itoa(wholeSeconds(d.RetryAfter)))
+	}
+}
+
+func tooManyAttempts(retryAfter time.Duration) error {
+	unit := "seconds"
+	n := wholeSeconds(retryAfter)
+	if n == 1 {
+		unit = "second"
+	}
+	return errors.RateLimited("too_many_attempts",
+		fmt.Sprintf("too many sign-in attempts from this address; try again in %d %s", n, unit))
+}
+
+// wholeSeconds rounds up, so that a client that waits as long as it is told
+// is never early.
+func wholeSeconds(d time.Duration) int {
+	return int(math.Ceil(d.Seconds()))
 }
 
 func decodeLogin(body []byte) (gen.LoginRequest, error) {

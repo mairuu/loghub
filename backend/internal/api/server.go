@@ -14,6 +14,7 @@ import (
 	"github.com/mairuu/loghub/backend/internal/auth"
 	"github.com/mairuu/loghub/backend/internal/authz"
 	"github.com/mairuu/loghub/backend/internal/ingest"
+	"github.com/mairuu/loghub/backend/internal/limiter"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
 )
@@ -61,6 +62,9 @@ type Config struct {
 	Ready func(context.Context) error
 	// Normalizer's zero value is the production configuration.
 	Normalizer ingest.Normalizer
+	// SignIns limits sign-in attempts by client address. nil means
+	// signInsPerMinute, counted in memory.
+	SignIns *limiter.Limiter
 }
 
 type Server struct {
@@ -74,6 +78,7 @@ type Server struct {
 	authz      *authz.Enforcer
 	ready      func(context.Context) error
 	normalizer ingest.Normalizer
+	signIns    *limiter.Limiter
 }
 
 var _ gen.ServerInterface = (*Server)(nil)
@@ -83,6 +88,10 @@ func New(cfg Config) (*Server, error) {
 	enforcer, err := authz.New(policies...)
 	if err != nil {
 		return nil, fmt.Errorf("api policies: %w", err)
+	}
+	signIns := cfg.SignIns
+	if signIns == nil {
+		signIns = limiter.New(&limiter.Memory{}, "sign-in", signInsPerMinute)
 	}
 	return &Server{
 		logger:     cfg.Logger,
@@ -95,6 +104,7 @@ func New(cfg Config) (*Server, error) {
 		authz:      enforcer,
 		ready:      cfg.Ready,
 		normalizer: cfg.Normalizer,
+		signIns:    signIns,
 	}, nil
 }
 

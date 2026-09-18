@@ -526,4 +526,4 @@ Status as of 2026-09-18.
 - [x] Integration tests — database tests (`make test-db`), API end-to-end tests, Vector config tests (`make check-vector`), acceptance checks against a deployment (`make acceptance`)
 - [ ] Metrics
 - [ ] Traces
-- [x] Hardening — least-privilege database role, secrets as files for Vector, Caddy with CSP/HSTS headers and dropped capabilities, constant-time token comparison
+- [x] Hardening — least-privilege database role, secrets as files for Vector, Caddy with CSP/HSTS headers and dropped capabilities, constant-time token comparison, a sign-in rate limit per client address

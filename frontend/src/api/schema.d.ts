@@ -44,6 +44,12 @@ export interface paths {
          *     A wrong password and an unknown email get the same
          *     `invalid_credentials`. The email is matched ignoring case. The body
          *     may be at most 64 KiB.
+         *
+         *     Each client address may make 10 attempts a minute, right or wrong,
+         *     and all 10 at once after a quiet minute. An IPv6 address shares its
+         *     allowance with the rest of its /64. Only attempts that reach the
+         *     password check count, and their responses carry the `RateLimit-*`
+         *     headers.
          */
         post: operations["login"];
         delete?: never;
@@ -1089,6 +1095,12 @@ export interface components {
     headers: {
         /** @description Correlates this response with the server log line. */
         XRequestId: string;
+        /** @description How many sign-in attempts this address may make at once. */
+        RateLimitLimit: number;
+        /** @description How many more attempts it may make straight away. */
+        RateLimitRemaining: number;
+        /** @description Seconds until it may make the full number again. */
+        RateLimitReset: number;
     };
     pathItems: never;
 }
@@ -1137,6 +1149,9 @@ export interface operations {
             /** @description Signed in. */
             200: {
                 headers: {
+                    "RateLimit-Limit": components["headers"]["RateLimitLimit"];
+                    "RateLimit-Remaining": components["headers"]["RateLimitRemaining"];
+                    "RateLimit-Reset": components["headers"]["RateLimitReset"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -1148,6 +1163,9 @@ export interface operations {
             401: {
                 headers: {
                     "X-Request-Id": components["headers"]["XRequestId"];
+                    "RateLimit-Limit": components["headers"]["RateLimitLimit"];
+                    "RateLimit-Remaining": components["headers"]["RateLimitRemaining"];
+                    "RateLimit-Reset": components["headers"]["RateLimitReset"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -1164,6 +1182,31 @@ export interface operations {
             413: components["responses"]["PayloadTooLarge"];
             415: components["responses"]["UnsupportedMediaType"];
             422: components["responses"]["UnprocessableEntity"];
+            /**
+             * @description This address has used its attempts for now (`too_many_attempts`).
+             *     The password was not checked.
+             */
+            429: {
+                headers: {
+                    "X-Request-Id": components["headers"]["XRequestId"];
+                    /** @description Seconds until the next attempt is allowed. */
+                    "Retry-After"?: number;
+                    "RateLimit-Limit": components["headers"]["RateLimitLimit"];
+                    "RateLimit-Remaining": components["headers"]["RateLimitRemaining"];
+                    "RateLimit-Reset": components["headers"]["RateLimitReset"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "too_many_attempts",
+                     *       "message": "too many sign-in attempts from this address; try again in 6 seconds",
+                     *       "request_id": "01J9Z3K2QW8XM4P7"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             500: components["responses"]["InternalError"];
             503: components["responses"]["ServiceUnavailable"];
         };

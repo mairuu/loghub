@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"slices"
 	"strings"
 	"testing"
@@ -13,6 +14,7 @@ import (
 	"github.com/mairuu/loghub/backend/internal/api"
 	"github.com/mairuu/loghub/backend/internal/auth"
 	"github.com/mairuu/loghub/backend/internal/authz"
+	"github.com/mairuu/loghub/backend/internal/limiter"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
 )
@@ -165,13 +167,101 @@ func TestLoginLogged(t *testing.T) {
 	for _, entry := range logEntries(t, &log) {
 		switch entry["msg"] {
 		case "sign-in refused":
-			got = append(got, "refused "+entry["email"].(string))
+			got = append(got, "refused "+entry["email"].(string)+" from "+entry["client"].(string))
 		case "signed in":
 			got = append(got, "signed in "+entry["role"].(string))
 		}
 	}
-	if want := []string{"refused viewer@demoa.local", "signed in viewer"}; !slices.Equal(got, want) {
+	if want := []string{"refused viewer@demoa.local from 192.0.2.1", "signed in viewer"}; !slices.Equal(got, want) {
 		t.Errorf("logged %q, want %q", got, want)
+	}
+}
+
+// forwardedFor sends every request on as Caddy does, from the address given.
+func forwardedFor(h http.Handler, value string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Header.Set("X-Forwarded-For", value)
+		h.ServeHTTP(w, r)
+	})
+}
+
+// Each client address has its own allowance of sign-in attempts, right or
+// wrong, and is told how much is left.
+func TestLoginRateLimited(t *testing.T) {
+	users := fakeUsers{"viewer@demoa.local": {ID: 2, PasswordHash: hashPassword(t, "right"), Role: "viewer", TenantID: new("demoA")}}
+	var log bytes.Buffer
+	now := time.Date(2026, 9, 18, 12, 0, 0, 0, time.UTC)
+	h := newServer(t, api.Config{
+		Users:   users,
+		SignIns: limiter.New(&limiter.Memory{Now: func() time.Time { return now }}, "sign-in", 2),
+		Logger:  slog.New(slog.NewJSONHandler(&log, &slog.HandlerOptions{Level: slog.LevelDebug})),
+	})
+	signIn := func(client, password string) response {
+		t.Helper()
+		body := `{"email":"viewer@demoa.local","password":"` + password + `"}`
+		target := h
+		if client != "" {
+			target = forwardedFor(h, client)
+		}
+		return call(t, target, "POST", "/api/v1/auth/login", "application/json", strings.NewReader(body))
+	}
+	headers := func(res response) string {
+		t.Helper()
+		return strings.Join([]string{
+			res.header.Get("RateLimit-Limit"), res.header.Get("RateLimit-Remaining"),
+			res.header.Get("RateLimit-Reset"), res.header.Get("Retry-After"),
+		}, " ")
+	}
+	limited := errorBody("too_many_attempts", "too many sign-in attempts from this address; try again in 30 seconds")
+
+	for _, step := range []struct {
+		name, client, password string
+		status                 int
+		// headers are RateLimit-Limit, -Remaining, -Reset and Retry-After.
+		headers string
+	}{
+		{"wrong password", "198.51.100.7", "wrong", 401, "2 1 30 "},
+		{"right password", "198.51.100.7", "right", 200, "2 0 60 "},
+		{"one too many", "198.51.100.7", "right", 429, "2 0 60 30"},
+		{"another address", "198.51.100.8", "right", 200, "2 1 30 "},
+		{"only the last proxy is believed", "198.51.100.9, 198.51.100.7", "right", 429, "2 0 60 30"},
+		{"straight to the backend", "", "right", 200, "2 1 30 "},
+		{"IPv6", "2001:db8:1:2::1", "right", 200, "2 1 30 "},
+		{"another IPv6 address in the /64", "2001:db8:1:2::ffff", "right", 200, "2 0 60 "},
+		{"the /64's third", "2001:db8:1:2:abcd::1", "right", 429, "2 0 60 30"},
+		{"another /64", "2001:db8:1:3::1", "right", 200, "2 1 30 "},
+		{"IPv4 as IPv6", "::ffff:198.51.100.7", "right", 429, "2 0 60 30"},
+	} {
+		res := signIn(step.client, step.password)
+		if res.status != step.status || headers(res) != step.headers {
+			t.Errorf("%s: got %d with %q, want %d with %q", step.name, res.status, headers(res), step.status, step.headers)
+		}
+		if step.status == 429 {
+			res.check(t, 429, limited)
+		}
+	}
+
+	// A malformed attempt never reaches the password check, so it doesn't
+	// count, and has nothing to say about the limit.
+	res := call(t, forwardedFor(h, "198.51.100.10"), "POST", "/api/v1/auth/login", "application/json", strings.NewReader(`{}`))
+	if res.status != 422 || res.header.Get("RateLimit-Limit") != "" {
+		t.Errorf("malformed: got %d with RateLimit-Limit %q", res.status, res.header.Get("RateLimit-Limit"))
+	}
+
+	// A second later, the wait is a second shorter.
+	now = now.Add(time.Second)
+	if res := signIn("198.51.100.7", "right"); res.header.Get("Retry-After") != "29" {
+		t.Errorf("a second later: Retry-After %q, want 29", res.header.Get("Retry-After"))
+	}
+
+	var got []string
+	for _, entry := range logEntries(t, &log) {
+		if entry["msg"] == "sign-in limited" {
+			got = append(got, entry["email"].(string)+" from "+entry["client"].(string))
+		}
+	}
+	if len(got) != 5 || got[0] != "viewer@demoa.local from 198.51.100.7" || got[2] != "viewer@demoa.local from 2001:db8:1:2:abcd::1" {
+		t.Errorf("logged limits %q", got)
 	}
 }
 

@@ -46,7 +46,7 @@ sed -i 's/^SITE_ADDRESS=.*/SITE_ADDRESS=loghub.example.com/' .env
 make up
 ```
 
-`make env` writes `.env` with random secrets and passwords, as on an appliance. Keep the generated passwords rather than choosing easier ones: sign-in has no rate limit, and this site is on the internet. `make up` builds the images, runs the migrations, seeds the demo accounts and waits until every service is healthy.
+`make env` writes `.env` with random secrets and passwords, as on an appliance. Keep the generated passwords rather than choosing easier ones, since this site is on the internet. Sign-in allows each address 10 attempts a minute, which slows guessing but can't stop someone with many addresses. `make up` builds the images, runs the migrations, seeds the demo accounts and waits until every service is healthy.
 
 Caddy requests its certificate as it starts, and `make up` doesn't wait for it, so check that separately:
 
