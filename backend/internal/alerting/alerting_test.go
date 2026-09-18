@@ -21,6 +21,8 @@ import (
 	"github.com/mairuu/loghub/backend/internal/api/gen"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/testutil"
 )
 
 func TestWindowEnd(t *testing.T) {
@@ -57,12 +59,14 @@ func TestRunEvaluatesEachTenantsRules(t *testing.T) {
 	}
 	notifier := &fakeNotifier{}
 	var log logBuffer
+	reg := prometheus.NewRegistry()
 	e := alerting.New(alerting.Config{
 		Tenants:  fakeTenants{ids: []string{"a", "b"}},
 		Rules:    rules,
 		Logger:   log.logger(),
 		Notifier: notifier,
 		Now:      func() time.Time { return now },
+		Metrics:  reg,
 	})
 
 	if err := e.Run(t.Context()); err != nil {
@@ -99,6 +103,23 @@ func TestRunEvaluatesEachTenantsRules(t *testing.T) {
 	if strings.Contains(log.String(), "secret-token") {
 		t.Errorf("the log holds the webhook URL:\n%s", log.String())
 	}
+
+	wantMetrics := `
+# HELP loghub_alerts_raised_total Alerts raised by alert rules, by tenant.
+# TYPE loghub_alerts_raised_total counter
+loghub_alerts_raised_total{tenant="a"} 2
+# HELP loghub_alert_rule_evaluations_total Alert rule evaluations, by outcome: ok or failed.
+# TYPE loghub_alert_rule_evaluations_total counter
+loghub_alert_rule_evaluations_total{outcome="failed"} 1
+loghub_alert_rule_evaluations_total{outcome="ok"} 2
+# HELP loghub_webhook_deliveries_total Alerts sent to a rule's webhook, by outcome: delivered or failed.
+# TYPE loghub_webhook_deliveries_total counter
+loghub_webhook_deliveries_total{outcome="delivered"} 2
+loghub_webhook_deliveries_total{outcome="failed"} 0
+`
+	if err := testutil.GatherAndCompare(reg, strings.NewReader(wantMetrics)); err != nil {
+		t.Error(err)
+	}
 }
 
 func TestRunCarriesOnPastFailures(t *testing.T) {
@@ -109,11 +130,13 @@ func TestRunCarriesOnPastFailures(t *testing.T) {
 		listFails: map[string]error{"a": errors.Unavailable("database_unavailable", "cannot reach the database")},
 	}
 	var log logBuffer
+	reg := prometheus.NewRegistry()
 	e := alerting.New(alerting.Config{
 		Tenants:  fakeTenants{ids: []string{"a", "b"}},
 		Rules:    rules,
 		Logger:   log.logger(),
 		Notifier: &fakeNotifier{err: stderrors.New("webhook answered 500 Internal Server Error")},
+		Metrics:  reg,
 	})
 
 	if err := e.Run(t.Context()); err != nil {
@@ -132,6 +155,15 @@ func TestRunCarriesOnPastFailures(t *testing.T) {
 	}
 	if entries[2]["level"] != "WARN" || entries[2]["webhook_host"] != "hooks.example" {
 		t.Errorf("delivery failure logged as %v", entries[2])
+	}
+	wantMetrics := `
+# HELP loghub_webhook_deliveries_total Alerts sent to a rule's webhook, by outcome: delivered or failed.
+# TYPE loghub_webhook_deliveries_total counter
+loghub_webhook_deliveries_total{outcome="delivered"} 0
+loghub_webhook_deliveries_total{outcome="failed"} 1
+`
+	if err := testutil.GatherAndCompare(reg, strings.NewReader(wantMetrics), "loghub_webhook_deliveries_total"); err != nil {
+		t.Error(err)
 	}
 }
 

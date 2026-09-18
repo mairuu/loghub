@@ -218,6 +218,32 @@ To see a whole incident, search for the address in its alert.
 
 To keep the simulation running with the stack, including after a reboot, add `COMPOSE_PROFILES=demo` to `.env` and run `make up`. The `simulator` service then runs the script inside the stack and sends directly to the backend and the collector. `make logs s=simulator` shows each incident as it starts. To stop it, remove that line from `.env` and run `docker compose rm -sf simulator`.
 
+## Watch the metrics
+
+The backend and the collector count what they do: events stored by tenant and source, rejected records, API requests and their latency, sign-ins by outcome, alerts raised, background jobs, and the database connection pool. [Architecture](architecture.md#metrics) lists every metric. Prometheus and Grafana chart them in the `monitoring` profile. To start them with the stack, name the profile in `.env`, with `demo` too if the simulation should run:
+
+```sh
+echo COMPOSE_PROFILES=demo,monitoring >> .env
+make up
+```
+
+Open <https://localhost/grafana/> and sign in with `ADMIN_EMAIL` and `ADMIN_PASSWORD` from `.env`. The loghub dashboard is the home page. With the simulation running, its charts fill within a minute, and an incident shows on them: a brute-force burst as refused sign-ins or `auth_failure` events, and then as an alert.
+
+Grafana keeps the password it was first started with. After changing `ADMIN_PASSWORD`, reset it there too:
+
+```sh
+docker compose exec grafana grafana cli admin reset-admin-password "$(grep ^ADMIN_PASSWORD= .env | cut -d= -f2-)"
+```
+
+Prometheus's own page is at <http://127.0.0.1:9090> on the machine itself; its Status > Targets page shows whether the backend and Vector are being scraped. Neither metrics endpoint is published, so to read one directly, ask from inside the stack. Vector's image has `wget`, and the backend's has no shell:
+
+```sh
+docker compose exec vector wget -qO- http://backend:9090/metrics | grep ^loghub_
+docker compose exec vector wget -qO- http://127.0.0.1:9598/metrics | grep received_events
+```
+
+To stop Prometheus and Grafana, remove `monitoring` from `COMPOSE_PROFILES` and run `docker compose rm -sf prometheus grafana`. Their data stays in the `prometheus_data` and `grafana_data` volumes until `make reset`.
+
 ## Check everything at once
 
 `make acceptance` runs the acceptance checks in [`tests/README.md`](../tests/README.md) against the appliance. It sends events over syslog, `POST /ingest` and a file upload and searches for them, compares the dashboard's counts with search, checks that each viewer sees only their own tenant, and waits for the sample alert rule to fire. It takes one to three minutes, and trusts Caddy's certificate once `make ca` has saved it:

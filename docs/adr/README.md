@@ -15,6 +15,7 @@ Short records of the decisions that shape loghub.
 | [0009](0009-auth-jwt-rbac.md) | JWT sessions and a policy-set RBAC enforcer | Accepted |
 | [0010](0010-alerting.md) | Threshold alert rules evaluated on a schedule | Accepted |
 | [0011](0011-deployment-compose.md) | One Compose file for both deployment modes | Accepted |
+| [0012](0012-metrics-prometheus.md) | Prometheus metrics, with Grafana in an optional profile | Accepted |
 
 ## Template
 

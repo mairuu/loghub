@@ -68,6 +68,15 @@ jobs:
       # Every kind of event and incident the simulator sends, which the
       # backend must store without rejecting any.
       - run: samples/simulate.py --backfill 6h --incident-every 5m --for 0
+      # What was just sent shows in the counts Prometheus would scrape, read
+      # from inside the stack since neither port is published.
+      - name: Check the metrics
+        run: |
+          backend=$(docker compose exec -T vector wget -q -O - http://backend:9090/metrics)
+          grep -E '^loghub_ingested_events_total\{source="firewall",tenant="demoA"\} [1-9]' <<<"$backend"
+          grep -E '^loghub_sign_ins_total\{outcome="signed_in"\} [1-9]' <<<"$backend"
+          vector=$(docker compose exec -T vector wget -q -O - http://127.0.0.1:9598/metrics)
+          grep -E '^vector_component_received_events_total\{.*component_id="syslog_udp"' <<<"$vector"
       - name: Show the stack's state and logs
         if: failure()
         run: |

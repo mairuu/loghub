@@ -55,6 +55,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	limit := s.signIns.Allow(r.Context(), limitKey(client))
 	setRateLimitHeaders(w.Header(), limit)
 	if !limit.Allowed {
+		s.metrics.signIns.WithLabelValues(signInLimited).Inc()
 		s.logger.LogAttrs(r.Context(), slog.LevelInfo, "sign-in limited",
 			slog.String("request_id", requestID(r.Context())),
 			slog.String("email", email),
@@ -72,6 +73,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !auth.CheckPassword(user.PasswordHash, req.Password) {
+		s.metrics.signIns.WithLabelValues(signInRefused).Inc()
 		s.logger.LogAttrs(r.Context(), slog.LevelInfo, "sign-in refused",
 			slog.String("request_id", requestID(r.Context())),
 			slog.String("email", email),
@@ -93,6 +95,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s.metrics.signIns.WithLabelValues(signInOK).Inc()
 	s.logger.LogAttrs(r.Context(), slog.LevelInfo, "signed in",
 		slog.String("request_id", requestID(r.Context())),
 		slog.Int64("user_id", user.ID),

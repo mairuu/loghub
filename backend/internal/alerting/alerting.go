@@ -14,6 +14,7 @@ import (
 	"github.com/mairuu/loghub/backend/internal/jobs"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -57,6 +58,9 @@ type Config struct {
 	Notifier Notifier
 	// Now nil means time.Now.
 	Now func() time.Time
+	// Metrics is where the evaluator's counts are registered. nil keeps them
+	// to itself.
+	Metrics prometheus.Registerer
 }
 
 type Evaluator struct {
@@ -65,6 +69,7 @@ type Evaluator struct {
 	logger   *slog.Logger
 	notifier Notifier
 	now      func() time.Time
+	metrics  *metrics
 }
 
 func New(cfg Config) *Evaluator {
@@ -74,6 +79,7 @@ func New(cfg Config) *Evaluator {
 		logger:   cfg.Logger,
 		notifier: cfg.Notifier,
 		now:      cfg.Now,
+		metrics:  newMetrics(cfg.Metrics),
 	}
 	if e.notifier == nil {
 		e.notifier = NewWebhook(nil)
@@ -123,12 +129,15 @@ func (e *Evaluator) evaluate(ctx context.Context, rule store.AlertRule, end time
 	fired, err := e.rules.Evaluate(ctx, rule, end)
 	if err != nil {
 		if ctx.Err() == nil {
+			e.metrics.evaluations.WithLabelValues("failed").Inc()
 			e.logFailure(ctx, "cannot evaluate an alert rule", err,
 				slog.Int64("rule_id", rule.ID), slog.String("tenant", rule.TenantID))
 		}
 		return
 	}
+	e.metrics.evaluations.WithLabelValues("ok").Inc()
 	for _, a := range fired {
+		e.metrics.raised.WithLabelValues(a.TenantID).Inc()
 		e.logger.LogAttrs(ctx, slog.LevelInfo, "alert raised",
 			slog.Int64("alert_id", a.ID),
 			slog.Int64("rule_id", a.RuleID),
@@ -156,9 +165,11 @@ func (e *Evaluator) deliver(ctx context.Context, target string, a store.Alert) {
 		if ctx.Err() != nil {
 			return
 		}
+		e.metrics.deliveries.WithLabelValues("failed").Inc()
 		e.logger.LogAttrs(ctx, slog.LevelWarn, "webhook delivery failed", append(attrs, slog.String("error", err.Error()))...)
 		return
 	}
+	e.metrics.deliveries.WithLabelValues("delivered").Inc()
 	e.logger.LogAttrs(ctx, slog.LevelInfo, "webhook delivered", attrs...)
 }
 

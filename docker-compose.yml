@@ -147,6 +147,69 @@ services:
       vector:
         condition: service_healthy
 
+  # Metrics (ADR 0012), in the monitoring profile: Prometheus scrapes the
+  # backend and Vector, and Grafana charts them at https://SITE_ADDRESS/grafana.
+  # Enable with COMPOSE_PROFILES=monitoring in .env.
+  prometheus:
+    image: prom/prometheus:v3.14.0
+    profiles: [monitoring]
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    # Only on the host's loopback: reach it with an SSH tunnel.
+    ports:
+      - "127.0.0.1:9090:9090"
+    cap_drop: [ALL]
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
+  grafana:
+    image: grafana/grafana:13.2.2
+    profiles: [monitoring]
+    restart: unless-stopped
+    environment:
+      # The same account as the loghub admin. Grafana stores it on its first
+      # start, so changing ADMIN_PASSWORD later doesn't change it here.
+      GF_SECURITY_ADMIN_USER: ${ADMIN_EMAIL:-admin@loghub.local}
+      GF_SECURITY_ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@loghub.local}
+      GF_SECURITY_ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set it in .env}
+      GF_SECURITY_COOKIE_SECURE: "true"
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      # Caddy passes /grafana/ through unchanged.
+      GF_SERVER_ROOT_URL: https://${SITE_ADDRESS:-localhost}/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/dashboards/loghub.json
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    cap_drop: [ALL]
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+
 secrets:
   # Mounted at /run/secrets/ingest_token.
   ingest_token:
@@ -157,3 +220,5 @@ volumes:
   vector_data:
   caddy_data:
   caddy_config:
+  prometheus_data:
+  grafana_data:

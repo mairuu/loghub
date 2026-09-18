@@ -126,14 +126,17 @@ func (s *Server) ingestNDJSON(w http.ResponseWriter, r *http.Request, b *batch, 
 // store inserts the batch's events and answers with what happened to every
 // record. Nothing is stored if the insert fails.
 func (s *Server) store(w http.ResponseWriter, r *http.Request, b *batch) {
+	var refused []error
 	if len(b.events) > 0 {
-		refused, err := s.events.Insert(r.Context(), b.events)
+		var err error
+		refused, err = s.events.Insert(r.Context(), b.events)
 		if err != nil {
 			s.fail(w, r, err)
 			return
 		}
 		b.merge(refused)
 	}
+	s.countBatch(b, refused)
 
 	res := b.result()
 	if b.rejected > 0 {
@@ -154,6 +157,20 @@ func (s *Server) store(w http.ResponseWriter, r *http.Request, b *batch) {
 		)
 	}
 	s.respond(w, r, http.StatusOK, res)
+}
+
+// countBatch counts a batch once it is stored: nothing counts when the insert
+// fails, since the collector sends the whole batch again.
+func (s *Server) countBatch(b *batch, refused []error) {
+	for i, ev := range b.events {
+		if i < len(refused) && refused[i] != nil {
+			continue
+		}
+		s.metrics.ingested.WithLabelValues(ev.TenantID, ev.Source).Inc()
+	}
+	for code, n := range b.codes {
+		s.metrics.rejected.WithLabelValues(code).Add(float64(n))
+	}
 }
 
 // batch collects the outcome of each record in a request.

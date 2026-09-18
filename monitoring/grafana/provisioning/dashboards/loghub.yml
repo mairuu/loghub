@@ -1,0 +1,12 @@
+apiVersion: 1
+
+# The dashboards in monitoring/grafana/dashboards, which Compose mounts at
+# /etc/grafana/dashboards. Edit the JSON in the repository: changes made in
+# Grafana can't be saved over a provisioned dashboard.
+providers:
+  - name: loghub
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    options:
+      path: /etc/grafana/dashboards

@@ -17,6 +17,9 @@ import (
 	"github.com/mairuu/loghub/backend/internal/platform/log"
 	"github.com/mairuu/loghub/backend/internal/platform/pg"
 	"github.com/mairuu/loghub/backend/internal/store"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type serveConfig struct {
@@ -25,6 +28,9 @@ type serveConfig struct {
 	DatabaseURL string     `env:"DATABASE_URL" required:"true"`
 	AuthSecret  string     `env:"AUTH_SECRET" required:"true"`
 	IngestToken string     `env:"INGEST_TOKEN" required:"true"`
+	// MetricsAddr serves /metrics for Prometheus (ADR 0012). Compose
+	// publishes no port for it, and Caddy doesn't route to it.
+	MetricsAddr string `env:"METRICS_ADDR" default:":9090"`
 }
 
 func serve(ctx context.Context) error {
@@ -52,6 +58,14 @@ func serve(ctx context.Context) error {
 	}
 	defer pool.Close()
 
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(
+		collectors.NewGoCollector(),
+		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+		collectors.NewBuildInfoCollector(),
+		pg.NewPoolCollector(pool),
+	)
+
 	db := store.New(pool)
 	events := store.NewEventRepo(db)
 	alerts := store.NewAlertRepo(db)
@@ -61,8 +75,9 @@ func serve(ctx context.Context) error {
 		Tenants: tenants,
 		Rules:   alerts,
 		Logger:  logger,
+		Metrics: reg,
 	})
-	stopJobs := jobs.Start(ctx, logger, jobs.Job{
+	stopJobs := jobs.Start(ctx, logger, reg, jobs.Job{
 		Name:  "maintain_partitions",
 		Every: time.Hour,
 		Run: func(ctx context.Context) error {
@@ -80,6 +95,7 @@ func serve(ctx context.Context) error {
 		Tokens:        tokens,
 		Authenticator: authenticator,
 		Ready:         func(ctx context.Context) error { return pg.Check(ctx, pool) },
+		Metrics:       reg,
 	})
 	if err != nil {
 		return err
@@ -89,17 +105,27 @@ func serve(ctx context.Context) error {
 		Handler:           server.Handler(),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
+	metricsMux := http.NewServeMux()
+	metricsMux.Handle("GET /metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
+	metricsSrv := http.Server{
+		Addr:              cfg.MetricsAddr,
+		Handler:           metricsMux,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
 
-	errc := make(chan error, 1)
-	go func() {
-		logger.Info("listening", slog.String("addr", cfg.ListenAddr))
+	// Either server failing stops serve.
+	errc := make(chan error, 2)
+	for name, s := range map[string]*http.Server{"api": &srv, "metrics": &metricsSrv} {
+		go func() {
+			logger.Info("listening", slog.String("server", name), slog.String("addr", s.Addr))
 
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			errc <- err
-			return
-		}
-		errc <- nil
-	}()
+			if err := s.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				errc <- fmt.Errorf("%s server: %w", name, err)
+				return
+			}
+			errc <- nil
+		}()
+	}
 
 	select {
 	case err := <-errc:
@@ -111,6 +137,8 @@ func serve(ctx context.Context) error {
 	defer cancel()
 
 	logger.Info("shutting down")
+	// Scrapes can stop straight away; API requests get to finish.
+	metricsSrv.Close()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		// force close if graceful shutdown fails
 		srv.Close()

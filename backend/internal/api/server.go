@@ -17,6 +17,7 @@ import (
 	"github.com/mairuu/loghub/backend/internal/limiter"
 	"github.com/mairuu/loghub/backend/internal/platform/errors"
 	"github.com/mairuu/loghub/backend/internal/store"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 // Events is where ingested events go, and what searches and counts read.
@@ -65,6 +66,9 @@ type Config struct {
 	// SignIns limits sign-in attempts by client address. nil means
 	// signInsPerMinute, counted in memory.
 	SignIns *limiter.Limiter
+	// Metrics is where the API's counts are registered. nil keeps them to
+	// itself.
+	Metrics prometheus.Registerer
 }
 
 type Server struct {
@@ -79,6 +83,7 @@ type Server struct {
 	ready      func(context.Context) error
 	normalizer ingest.Normalizer
 	signIns    *limiter.Limiter
+	metrics    *metrics
 }
 
 var _ gen.ServerInterface = (*Server)(nil)
@@ -105,6 +110,7 @@ func New(cfg Config) (*Server, error) {
 		ready:      cfg.Ready,
 		normalizer: cfg.Normalizer,
 		signIns:    signIns,
+		metrics:    newMetrics(cfg.Metrics),
 	}, nil
 }
 
@@ -135,7 +141,7 @@ func (s *Server) Handler() http.Handler {
 		w.Write([]byte(docsPage))
 	})
 
-	return s.observe(s.authenticate(mux))
+	return s.observe(mux, s.authenticate(mux))
 }
 
 // authenticate puts the caller in the request context, and in the request's

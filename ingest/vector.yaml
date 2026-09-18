@@ -52,6 +52,12 @@ sources:
     # The backend's limit for one record.
     max_line_bytes: 1048576
 
+  # Vector's own counts: events into and out of each component above, and
+  # the disk buffer.
+  vector_metrics:
+    type: internal_metrics
+    scrape_interval_secs: 15
+
 transforms:
   # Wraps each line in the shape the backend reads syslog in. The tenant
   # comes from the environment at runtime, since the config can't expand it.
@@ -81,6 +87,13 @@ transforms:
       . = {"message": .message}
 
 sinks:
+  # Served to Prometheus in the monitoring profile (ADR 0012). Compose
+  # publishes no port for it.
+  prometheus:
+    type: prometheus_exporter
+    inputs: [vector_metrics]
+    address: 0.0.0.0:9598
+
   backend:
     type: http
     inputs: [syslog_envelope, inbox_lines]

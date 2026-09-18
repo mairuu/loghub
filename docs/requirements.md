@@ -524,6 +524,6 @@ Status as of 2026-09-18.
 - [ ] Helm — ruled out in ADR 0011
 - [x] Unit tests
 - [x] Integration tests — database tests (`make test-db`), API end-to-end tests, Vector config tests (`make check-vector`), acceptance checks against a deployment (`make acceptance`)
-- [ ] Metrics
+- [x] Metrics — the backend and Vector serve Prometheus metrics on private ports; Prometheus and a provisioned Grafana dashboard run in the `monitoring` profile, with Grafana at `/grafana/` (ADR 0012)
 - [ ] Traces
 - [x] Hardening — least-privilege database role, secrets as files for Vector, Caddy with CSP/HSTS headers and dropped capabilities, constant-time token comparison, a sign-in rate limit per client address

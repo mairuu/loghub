@@ -75,6 +75,8 @@ Send those four lines privately, never in the repository or an issue. These are 
 | `viewer@demoa.local` | viewer | demoA | `VIEWER_PASSWORD` |
 | `viewer@demob.local` | viewer | demoB | `VIEWER_PASSWORD` |
 
+With the `monitoring` profile running, the admin email and `ADMIN_PASSWORD` also sign in to Grafana at `https://loghub.example.com/grafana/`, which shows what the system is doing: events stored per tenant and source, rejections, sign-ins by outcome, alerts, API latency and background jobs.
+
 ### What reviewers can do from their own machines
 
 The UI is at `https://loghub.example.com`, and the API reference is at `https://loghub.example.com/api/docs`. In the Postman collection, set `baseUrl` to the URL.
@@ -103,14 +105,16 @@ tests/acceptance.py --url https://loghub.example.com
 
 ## Keep demo traffic flowing
 
-A new install has no events. On the VM, fill the last day once, then keep the simulation running with the stack ([Simulate two companies](setup_appliance.md#simulate-two-companies)):
+A new install has no events. On the VM, fill the last day once, then keep the simulation running with the stack ([Simulate two companies](setup_appliance.md#simulate-two-companies)), along with Prometheus and Grafana to chart it ([Watch the metrics](setup_appliance.md#watch-the-metrics)):
 
 ```sh
 samples/simulate.py --backfill 24h --for 0
-echo COMPOSE_PROFILES=demo >> .env
+echo COMPOSE_PROFILES=demo,monitoring >> .env
 make up
 make logs s=simulator                          # each incident as it starts
 ```
+
+Grafana is then at `https://loghub.example.com/grafana/`. Prometheus is on the VM's loopback only; `ssh -L 9090:127.0.0.1:9090` with the VM's address reaches it from your machine at `http://127.0.0.1:9090`.
 
 Brute-force incidents raise alerts only in a tenant that has a failed-login rule, such as the one `tests/acceptance.py` creates in demoA. The acceptance checks look only at events tagged with their own run, so the simulation doesn't disturb them.
 

@@ -1,0 +1,22 @@
+# Scrapes the stack's metrics endpoints (ADR 0012). None of them is
+# published or routed by Caddy; Prometheus reaches them on the Compose
+# network.
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  # The backend's /metrics: API, ingest, sign-ins, alerts, jobs, the
+  # database pool and the Go runtime (METRICS_ADDR in serve).
+  - job_name: backend
+    static_configs:
+      - targets: ["backend:9090"]
+
+  # Vector's own counts, from its prometheus_exporter sink.
+  - job_name: vector
+    static_configs:
+      - targets: ["vector:9598"]
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ["127.0.0.1:9090"]

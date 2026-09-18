@@ -49,10 +49,10 @@ env: ## Create .env from .env.example with generated secrets (never overwrites)
 up: env ## Build and start the appliance, then wait until it's healthy
 	$(COMPOSE) up -d --build --wait
 
-# The demo profile is named so that the simulator stops too, even once
-# COMPOSE_PROFILES no longer names it.
+# Every profile is named, so that the simulator, Prometheus and Grafana stop
+# too, even once COMPOSE_PROFILES no longer names theirs.
 down: ## Stop the stack (keeps data)
-	$(COMPOSE) --profile demo down
+	$(COMPOSE) --profile '*' down
 
 ps: ## Show service status
 	$(COMPOSE) ps
@@ -66,7 +66,7 @@ ca: ## Save the root certificate Caddy signs localhost with to loghub-root-ca.cr
 
 reset: ## Stop the stack and DELETE all volumes
 	@read -r -p "Delete all loghub volumes? [y/N] " ans && [ "$$ans" = y ]
-	$(COMPOSE) --profile demo down -v
+	$(COMPOSE) --profile '*' down -v
 
 seed: ## Create demo tenants, the admin and one viewer per tenant
 	cd backend && MIGRATE_DATABASE_URL='$(DEV_MIGRATE_DATABASE_URL)' go run ./cmd/loghub seed

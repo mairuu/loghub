@@ -51,8 +51,9 @@ func newRequestID() string {
 }
 
 // observe gives each request an ID, logs it and its caller once it is
-// answered, and turns a panic into the 500 envelope.
-func (s *Server) observe(next http.Handler) http.Handler {
+// answered, counts it by the pattern it matches in routes, and turns a panic
+// into the 500 envelope.
+func (s *Server) observe(routes *http.ServeMux, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		id := newRequestID()
@@ -93,6 +94,10 @@ func (s *Server) observe(next http.Handler) http.Handler {
 				attrs = append(attrs, slog.Int64("user_id", info.caller.UserID))
 			}
 			s.logger.LogAttrs(r.Context(), level, "request", attrs...)
+			// Looked up rather than read from r.Pattern, so that a request
+			// refused before routing still counts under its route.
+			_, route := routes.Handler(r)
+			s.metrics.request(r.Method, route, rec.statusOrOK(), time.Since(start))
 		}()
 
 		next.ServeHTTP(rec, r)
