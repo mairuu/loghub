@@ -6,7 +6,7 @@ A demo multi-tenant log management system.
 make up    # then open https://localhost
 ```
 
-The SaaS deployment is at <https://loghub-mairuu.indonesiacentral.cloudapp.azure.com>.
+The SaaS deployment is at <https://loghub.mairuu.online>.
 
 ## Docs
 - [Architecture](docs/architecture.md)

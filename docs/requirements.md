@@ -499,7 +499,7 @@ Status as of 2026-09-18.
 - [x] Tenant isolation — policies plus PostgreSQL row-level security
 - [x] Appliance deployment — `make up` (Docker Compose)
 - [x] SaaS/Cloud deployment — the same Compose stack on an Azure VM (ADR 0011, `docs/setup_saas.md`)
-- [x] Public SaaS URL — <https://loghub-mairuu.indonesiacentral.cloudapp.azure.com>
+- [x] Public SaaS URL — <https://loghub.mairuu.online>
 - [x] HTTPS for SaaS — a Let's Encrypt certificate, which Caddy gets for the public `SITE_ADDRESS`
 - [x] At least 7-day data retention — daily partitions dropped after 7 days, run hourly
 - [ ] Architecture documentation — diagram, components and data flow are done; there is no dedicated tenant model section yet
