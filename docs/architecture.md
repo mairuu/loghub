@@ -125,6 +125,71 @@ The code is `EventRepo` in `backend/internal/store`. `make test-db` runs its tes
 
 With a million events spread over 24 hours, 100,000 per tenant, either count takes 50–70 ms for one tenant, 200–300 ms for all tenants, and about 350 ms with free text. Unlike a search, which stops at a page, a count reads every matching event in the window.
 
+## Tenant model
+
+A tenant is one customer's data, such as demoA and demoB in the demo. All tenants share one database, one set of tables and one set of services. Every row of tenant data carries a `tenant_id`, and PostgreSQL row-level security decides which of those rows a transaction may read or write ([ADR 0003](adr/0003-tenant-isolation-rls.md)).
+
+### What belongs to a tenant
+
+| Table | Tenant | Row-level security |
+|---|---|---|
+| `tenants` | its `id`: 1 to 64 letters, digits, `-` or `_` | none. It is read before there is a tenant to scope by, and holds only IDs and names. |
+| `users` | a viewer's one tenant. An admin has none, which a `CHECK` enforces. | none. It is read to find out who is calling, and `loghub_app` can only select from it. |
+| `events` | `tenant_id`, required | the tenant policy |
+| `alert_rules` | `tenant_id`, required | the tenant policy |
+| `alerts` | `tenant_id`, required. Its foreign key is the rule's ID and tenant together, so an alert is always in its rule's tenant. | the tenant policy |
+
+There is no API for tenants or users. `loghub seed` creates demoA and demoB, a viewer for each and the admin, and the `seed` service runs it on every `make up`, leaving rows that exist alone.
+
+### Where the tenant comes from
+
+When events are written, the tenant is part of each event:
+
+| Path | Tenant |
+|---|---|
+| Syslog, UDP or TCP 514 | `SYSLOG_DEFAULT_TENANT` in `.env`, demoA by default, for every sender. Vector adds it to each line. |
+| `POST /ingest`, the batch endpoint and `inbox/` files | the record's `tenant` |
+| `POST /api/v1/ingest/file` and the UI's Upload page | the record's `tenant`, or the `tenant` query parameter for records without one |
+
+The ingest key and an admin's token may write to any tenant, and a viewer's token to none. A tenant that doesn't exist is rejected with `unknown_tenant`.
+
+When data is read, the tenant comes from the caller's token, never from the request. A viewer's token carries their tenant, and an admin's carries none. A `tenant` query parameter narrows what the caller may read and never widens it: a viewer who names another tenant gets 403 `tenant_not_permitted`.
+
+### How it is enforced
+
+There are two layers, and either one alone keeps a viewer out of another tenant's data:
+
+1. **Policies:** each handler asks the enforcer whether the caller may act on a tenant's resource, or which tenants a list may include. [Authentication and authorization](#authentication-and-authorization) has the rules.
+2. **Row-level security:** every query runs in a transaction that first sets `app.tenant_id` and `app.is_admin` with `set_config(..., true)`, through `Store.InScope` in `backend/internal/store`. `events`, `alert_rules` and `alerts` have the same policy, for reads and writes:
+
+   ```sql
+   tenant_id = current_setting('app.tenant_id', true) OR current_setting('app.is_admin', true) = 'on'
+   ```
+
+The backend connects as `loghub_app`, which doesn't own the tables, so the policy always applies to it. Only the one-shot `migrate` and `seed` services connect as the owner. The settings are transaction-local, so a pooled connection can't carry one request's tenant into the next, and a query outside a scoped transaction matches no rows at all.
+
+The row-level security context comes from the caller or from the data, never from a policy's answer:
+
+| Work | Context |
+|---|---|
+| Search, dashboard counts, rule and alert lists | the caller: a viewer's tenant, or every tenant for an admin |
+| Ingest | each record's tenant in turn, so a row for any other tenant fails the policy's check |
+| Alert evaluation | each tenant in turn, never every tenant at once |
+| Retention | the owner, through `loghub_maintain_partitions`, which drops a whole day for every tenant at once |
+
+### What tenants share
+
+- One retention period of seven days, and one partition a day that holds every tenant's events.
+- Indexes that start with `tenant_id`, so a search for one tenant reads only that tenant's entries. A viewer's search names their tenant explicitly as well, because Postgres can't use an index for the policy's `OR`.
+- One ingest key, which may write to every tenant, and one tenant for every syslog sender.
+- Capacity. There are no per-tenant limits, so one tenant's heavy searches or bursts of events slow the others down.
+
+### Limits
+
+- A user belongs to one tenant or, as an admin, to all of them. Access to some tenants but not others needs a membership table, and a policy that takes a set of tenants ([ADR 0009](adr/0009-auth-jwt-rbac.md)).
+- Syslog senders aren't told apart. Mapping sender addresses to tenants is a change in the backend ([ADR 0004](adr/0004-vector-transport-only.md)).
+- A schema or database per tenant would isolate tenants more strongly and allow retention per tenant. Every query already goes through the one scoped helper, which is where that change would start ([ADR 0003](adr/0003-tenant-isolation-rls.md)).
+
 ## Authentication and authorization
 
 [ADR 0009](adr/0009-auth-jwt-rbac.md) has the reasoning. Every request passes through the middleware in `backend/internal/auth` before it is routed, which establishes who is calling:

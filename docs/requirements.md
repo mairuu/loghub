@@ -502,7 +502,7 @@ Status as of 2026-09-18.
 - [x] Public SaaS URL — <https://loghub.mairuu.online>
 - [x] HTTPS for SaaS — a Let's Encrypt certificate, which Caddy gets for the public `SITE_ADDRESS`
 - [x] At least 7-day data retention — daily partitions dropped after 7 days, run hourly
-- [ ] Architecture documentation — diagram, components and data flow are done; there is no dedicated tenant model section yet
+- [x] Architecture documentation — diagram, components, data flow and tenant model (`docs/architecture.md`)
 - [x] Appliance setup documentation — `docs/setup_appliance.md`
 - [x] SaaS setup documentation — `docs/setup_saas.md`
 - [x] Docker Compose and/or Helm — Compose only
