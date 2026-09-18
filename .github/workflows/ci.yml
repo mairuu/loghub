@@ -65,6 +65,9 @@ jobs:
       - run: make up
       - run: make ca
       - run: make acceptance
+      # Every kind of event and incident the simulator sends, which the
+      # backend must store without rejecting any.
+      - run: samples/simulate.py --backfill 6h --incident-every 5m --for 0
       - name: Show the stack's state and logs
         if: failure()
         run: |
