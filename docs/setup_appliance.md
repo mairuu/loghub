@@ -37,7 +37,7 @@ An admin reads every tenant and may send events. A viewer reads only their own t
 Check that it's running:
 
 ```sh
-make ps                                  # services healthy; migrate exited with 0
+make ps                                  # every service healthy
 curl -k https://localhost/api/healthz
 ```
 
