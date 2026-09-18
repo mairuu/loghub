@@ -519,7 +519,7 @@ Status as of 2026-09-18.
 - [x] Field/tenant-level RBAC — tenant-scoped policies; viewers don't see rules' webhook URLs
 - [ ] Reverse DNS
 - [ ] GeoIP
-- [ ] CI/CD — no pipeline; `make lint` and `make test` run locally
+- [x] CI/CD — CI only: GitHub Actions runs `make lint`, the tests, and the acceptance checks against a fresh appliance on every push (`.github/workflows/ci.yml`); deploys stay manual (ADR 0011)
 - [ ] Terraform
 - [ ] Helm — ruled out in ADR 0011
 - [x] Unit tests

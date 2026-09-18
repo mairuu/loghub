@@ -1,5 +1,7 @@
 # loghub
 
+[![CI](https://github.com/mairuu/loghub/actions/workflows/ci.yml/badge.svg)](https://github.com/mairuu/loghub/actions/workflows/ci.yml)
+
 A demo multi-tenant log management system.
 
 ```sh

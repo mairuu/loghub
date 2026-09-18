@@ -2,6 +2,8 @@
 
 The unit and integration tests sit next to the code they test, as Go and Vitest expect. This folder holds the acceptance checks, which run against a deployed loghub.
 
+GitHub Actions runs all of them on every push and pull request ([`.github/workflows/ci.yml`](../.github/workflows/ci.yml)): `make lint`, `make test-db` and `make test-web`, and `make up`, `make ca` and `make acceptance` on a fresh runner.
+
 ## Acceptance checks
 
 `tests/acceptance.py` checks a running loghub, an appliance or a SaaS deployment, against the acceptance criteria in [requirements §10](../docs/requirements.md#10-acceptance-criteria). It needs only Python 3.10 or later.
