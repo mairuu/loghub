@@ -95,6 +95,12 @@ samples/post_logs.py --url https://loghub.example.com                           
 samples/post_logs.py --url https://loghub.example.com --file samples/json/m365_audit.json   # one file, as an upload
 ```
 
+To run every acceptance check at once, from the same clone, use [`tests/acceptance.py`](../tests/README.md). It is also a quick way for the operator to check a new install. It takes one to three minutes, and leaves a few events tagged with the run:
+
+```sh
+tests/acceptance.py --url https://loghub.example.com
+```
+
 ## Run it
 
 - **Upgrade:** `git pull`, then `make up`. The running services keep serving while the new images build, and then only what changed is restarted, which takes a few seconds. Migrations and seeding run again and leave existing data alone.

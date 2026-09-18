@@ -509,7 +509,7 @@ Status as of 2026-09-18.
 - [x] Sample data and sender scripts — `samples/send_syslog.sh`, `samples/post_logs.py`, `make send-samples`
 - [x] Initialization/seed scripts, `.env.example`, Makefile — `loghub seed`, `make env`
 - [x] Backend/frontend/ingest source code — `backend/`, `frontend/`, `ingest/`
-- [x] 2–3 example tests — Go and Vitest tests sit next to the code rather than in `/tests/`
+- [x] 2–3 example tests — `tests/acceptance.py` checks a running deployment against §10; the Go and Vitest tests sit next to the code (`tests/README.md`)
 - [ ] 30-minute demo video
 - [x] API collection — `docs/postman_collection.json`, generated from `api/openapi.yaml`
 
@@ -523,7 +523,7 @@ Status as of 2026-09-18.
 - [ ] Terraform
 - [ ] Helm — ruled out in ADR 0011
 - [x] Unit tests
-- [x] Integration tests — database tests (`make test-db`), API end-to-end tests, Vector config tests (`make check-vector`)
+- [x] Integration tests — database tests (`make test-db`), API end-to-end tests, Vector config tests (`make check-vector`), acceptance checks against a deployment (`make acceptance`)
 - [ ] Metrics
 - [ ] Traces
 - [x] Hardening — least-privilege database role, secrets as files for Vector, Caddy with CSP/HSTS headers and dropped capabilities, constant-time token comparison

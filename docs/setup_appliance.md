@@ -181,3 +181,14 @@ make logs s=backend                                                             
 ```
 
 After an alert, the same address stays quiet for the rule's cooldown, five minutes here, however many failed logins follow.
+
+## Check everything at once
+
+`make acceptance` runs the acceptance checks in [`tests/README.md`](../tests/README.md) against the appliance. It sends events over syslog, `POST /ingest` and a file upload and searches for them, compares the dashboard's counts with search, checks that each viewer sees only their own tenant, and waits for the sample alert rule to fire. It takes one to three minutes, and trusts Caddy's certificate once `make ca` has saved it:
+
+```sh
+make ca
+make acceptance
+```
+
+It creates the sample alert rule if demoA has none like it, and leaves a few events tagged with the run.

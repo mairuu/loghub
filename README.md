@@ -15,3 +15,4 @@ The SaaS deployment is at <https://loghub.mairuu.online>.
 - [SaaS setup](docs/setup_saas.md)
 - [Collector: syslog and the inbox](ingest/README.md)
 - [UI and edge](frontend/README.md)
+- [Tests and acceptance checks](tests/README.md)
