@@ -101,6 +101,19 @@ To run every acceptance check at once, from the same clone, use [`tests/acceptan
 tests/acceptance.py --url https://loghub.example.com
 ```
 
+## Keep demo traffic flowing
+
+A new install has no events. On the VM, fill the last day once, then keep the simulation running with the stack ([Simulate two companies](setup_appliance.md#simulate-two-companies)):
+
+```sh
+samples/simulate.py --backfill 24h --for 0
+echo COMPOSE_PROFILES=demo >> .env
+make up
+make logs s=simulator                          # each incident as it starts
+```
+
+Brute-force incidents raise alerts only in a tenant that has a failed-login rule, such as the one `tests/acceptance.py` creates in demoA. The acceptance checks look only at events tagged with their own run, so the simulation doesn't disturb them.
+
 ## Run it
 
 - **Upgrade:** `git pull`, then `make up`. The running services keep serving while the new images build, and then only what changed is restarted, which takes a few seconds. Migrations and seeding run again and leave existing data alone.

@@ -126,6 +126,27 @@ services:
       timeout: 3s
       retries: 6
 
+  # Made-up traffic for a demo, from samples/simulate.py. Starts only in the
+  # demo profile, with COMPOSE_PROFILES=demo in .env.
+  simulator:
+    image: python:3.14-alpine
+    profiles: [demo]
+    restart: unless-stopped
+    command: ["python", "/samples/simulate.py", "--url", "http://backend:8080", "--syslog", "vector:5514"]
+    environment:
+      INGEST_TOKEN: ${INGEST_TOKEN:?set it in .env}
+      SYSLOG_DEFAULT_TENANT: ${SYSLOG_DEFAULT_TENANT:-demoA}
+    volumes:
+      - ./samples:/samples:ro
+    user: "65534:65534"
+    read_only: true
+    cap_drop: [ALL]
+    depends_on:
+      backend:
+        condition: service_healthy
+      vector:
+        condition: service_healthy
+
 secrets:
   # Mounted at /run/secrets/ingest_token.
   ingest_token:
