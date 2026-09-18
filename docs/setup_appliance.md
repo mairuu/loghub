@@ -182,6 +182,40 @@ make logs s=backend                                                             
 
 After an alert, the same address stays quiet for the rule's cooldown, five minutes here, however many failed logins follow.
 
+## Simulate two companies
+
+`samples/simulate.py` sends made-up security logs from two companies as they happen, until it is stopped, so that the dashboard, search and alerts have something to show:
+
+- **demoA** runs Windows and an in-house portal. Its firewall and router send syslog to port 514, over UDP and TCP.
+- **demoB** runs on Microsoft 365 and AWS, and sells an online product. Its firewall's lines arrive over HTTP.
+- Both have endpoint agents. Everything that isn't syslog is posted to `/api/v1/ingest/batch` with the ingest key.
+
+Ordinary traffic averages one event a second, and is busiest in the afternoon. Every 20 minutes or so, an incident plays out on top of it:
+
+| Incident | What happens |
+|---|---|
+| `brute-force` | 6 to 14 failed logins from one address within three minutes, against Windows, the portal, Microsoft 365 or the product. Sometimes a login from that address then works. The sample alert rule catches it in a tenant that has the rule. |
+| `port-scan` | One address probes 20 to 50 ports on a firewall, which denies each probe. |
+| `malware` | An endpoint agent quarantines a script that a document started, and the firewall blocks the workstation's calls to its controller. |
+
+It trusts Caddy's certificate once `make ca` has saved it:
+
+```sh
+make simulate                                             # until ^C
+make simulate backfill=24h                                # the last 24 hours at once, then live
+samples/simulate.py --incident brute-force:demoA --for 0  # one burst of failed logins in demoA, now
+```
+
+A backfill posts everything over HTTP with the events' own past times, so that the charts have a history. It raises no alerts, because rules look only at the last few minutes. Each backfill adds its events again, so run it once.
+
+Addresses come from the ranges that RFC 5737 sets aside for documentation:
+
+- attackers: 203.0.113.0/24
+- the companies' public addresses: 198.51.100.0/24
+- everyone else: 192.0.2.0/24
+
+To see a whole incident, search for the address in its alert.
+
 ## Check everything at once
 
 `make acceptance` runs the acceptance checks in [`tests/README.md`](../tests/README.md) against the appliance. It sends events over syslog, `POST /ingest` and a file upload and searches for them, compares the dashboard's counts with search, checks that each viewer sees only their own tenant, and waits for the sample alert rule to fire. It takes one to three minutes, and trusts Caddy's certificate once `make ca` has saved it:

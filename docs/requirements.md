@@ -506,7 +506,7 @@ Status as of 2026-09-18.
 - [x] Appliance setup documentation — `docs/setup_appliance.md`
 - [x] SaaS setup documentation — `docs/setup_saas.md`
 - [x] Docker Compose and/or Helm — Compose only
-- [x] Sample data and sender scripts — `samples/send_syslog.sh`, `samples/post_logs.py`, `make send-samples`
+- [x] Sample data and sender scripts — `samples/send_syslog.sh`, `samples/post_logs.py`, `make send-samples`, and `samples/simulate.py`, which sends two made-up companies' logs and incidents as they happen (`make simulate`)
 - [x] Initialization/seed scripts, `.env.example`, Makefile — `loghub seed`, `make env`
 - [x] Backend/frontend/ingest source code — `backend/`, `frontend/`, `ingest/`
 - [x] 2–3 example tests — `tests/acceptance.py` checks a running deployment against §10; the Go and Vitest tests sit next to the code (`tests/README.md`)

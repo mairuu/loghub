@@ -30,7 +30,7 @@ DEV_DATABASE_URL         = postgres://loghub_app:$(APP_DB_PASSWORD)@127.0.0.1:54
 DEV_MIGRATE_DATABASE_URL = postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/$(POSTGRES_DB)?sslmode=disable
 
 .PHONY: help env up down ps logs reset ca seed dev-up dev-deps dev-api dev-web web-deps send-samples \
-        acceptance test test-web test-db gen-sql check-sql gen-api check-api lint-api check-vector check-caddy \
+        simulate acceptance test test-web test-db gen-sql check-sql gen-api check-api lint-api check-vector check-caddy \
         lint-web postman lint
 
 help: ## Show this help
@@ -99,6 +99,9 @@ send-samples: ## Send samples/ through the collector: syslog to port 514, JSON v
 	  jq -c --arg run "$$run" '._tags = ((._tags // []) + [$$run])' samples/json/*.json > inbox/.$$run.tmp && \
 	  mv inbox/.$$run.tmp inbox/$$run.ndjson && \
 	  echo "Sent samples/syslog to port 514, and samples/json to inbox/ tagged $$run"
+
+simulate: ## Send made-up traffic until interrupted; backfill=24h fills the last day first, url=https://... sends to another stack
+	samples/simulate.py $(if $(backfill),--backfill '$(backfill)') $(if $(url),--url '$(url)')
 
 # Leaves a few tagged events, and creates the sample alert rule if demoA has
 # none like it; tests/README.md has the details.
