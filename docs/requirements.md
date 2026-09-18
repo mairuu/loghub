@@ -498,13 +498,13 @@ Status as of 2026-09-18.
 - [x] Admin/Viewer roles
 - [x] Tenant isolation — policies plus PostgreSQL row-level security
 - [x] Appliance deployment — `make up` (Docker Compose)
-- [ ] SaaS/Cloud deployment — the same Compose stack is meant to run on a cloud VM (ADR 0011), but nothing is deployed yet
-- [ ] Public SaaS URL
-- [ ] HTTPS for SaaS — Caddy gets Let's Encrypt certificates for a public `SITE_ADDRESS`; not yet shown on a live deployment
+- [x] SaaS/Cloud deployment — the same Compose stack on an Azure VM (ADR 0011, `docs/setup_saas.md`)
+- [x] Public SaaS URL — <https://loghub-mairuu.indonesiacentral.cloudapp.azure.com>
+- [x] HTTPS for SaaS — a Let's Encrypt certificate, which Caddy gets for the public `SITE_ADDRESS`
 - [x] At least 7-day data retention — daily partitions dropped after 7 days, run hourly
 - [ ] Architecture documentation — diagram, components and data flow are done; there is no dedicated tenant model section yet
 - [x] Appliance setup documentation — `docs/setup_appliance.md`
-- [ ] SaaS setup documentation — `docs/setup_saas.md` is a placeholder
+- [x] SaaS setup documentation — `docs/setup_saas.md`
 - [x] Docker Compose and/or Helm — Compose only
 - [x] Sample data and sender scripts — `samples/send_syslog.sh`, `samples/post_logs.py`, `make send-samples`
 - [x] Initialization/seed scripts, `.env.example`, Makefile — `loghub seed`, `make env`
