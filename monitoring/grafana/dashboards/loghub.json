@@ -649,7 +649,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(vector_buffer_events{component_id=\"backend\"}) or sum(vector_buffer_size_events{component_id=\"backend\"})",
+          "expr": "sum(vector_buffer_size_events{component_id=\"backend\"})",
           "legendFormat": "waiting",
           "refId": "A",
           "range": true

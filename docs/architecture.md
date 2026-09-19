@@ -254,7 +254,7 @@ Each client address may make 10 sign-in attempts a minute, right or wrong, and a
 - **Labels:** every label has a closed set of values, so no request can add a series. `route` is the ServeMux pattern the request matched, or `unmatched`, and it is looked up even when authentication refuses the request before routing. An unmatched request's method is kept only if it is a standard one. `tenant` and `source` come from stored events, whose tenant exists and whose source the normalizer knows. A rejected record counts only by its code.
 - **What isn't counted:** a batch the database refuses as a whole counts nothing, since the collector sends it again. A job run stopped by shutdown doesn't count either.
 - **Resets:** the counts live in the backend's memory, so a restart sets them to zero. Prometheus's `rate()` and `increase()` allow for that.
-- **Vector:** `vector_component_received_events_total` by `component_id` shows syslog over UDP and TCP and inbox lines as they arrive, and `vector_buffer_events` shows what is waiting in the disk buffer for the backend.
+- **Vector:** `vector_component_received_events_total` by `component_id` shows syslog over UDP and TCP and inbox lines as they arrive, and `vector_buffer_size_events` shows what is waiting in the disk buffer for the backend.
 
 ## Edge and UI
 
