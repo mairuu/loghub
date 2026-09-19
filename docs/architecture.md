@@ -96,7 +96,7 @@ The rules live in `backend/internal/ingest`, and every event in `samples/json` a
 ### Storage
 
 All events from one request are stored in one transaction. If the database fails, nothing is stored, the request answers 5xx, and Vector retries it.
-- An event whose tenant the caller may not write to is rejected with `tenant_not_permitted` before the insert. No caller that may ingest today is limited to some tenants, so this is only reached by a policy that grants one.
+- An event whose tenant the caller may not write to is rejected with `tenant_not_permitted` before the insert. No caller that may ingest today is limited to some tenants, so this check only fires once a policy limits an ingesting caller to some tenants.
 - An event whose tenant doesn't exist is rejected with `unknown_tenant`.
 - Events are inserted one tenant at a time, with that tenant set as the transaction's row-level security context ([ADR 0003](adr/0003-tenant-isolation-rls.md)). A row for any other tenant would fail the policy check.
 - Inserts go to Postgres in batches of 1000, one round trip each. `COPY` would be faster, but Postgres doesn't allow it on a table with row-level security.
@@ -107,12 +107,12 @@ All events from one request are stored in one transaction. If the database fails
 Events are kept for 7 days. `serve` calls `loghub_maintain_partitions` when it starts and then every hour ([ADR 0002](adr/0002-postgres-event-store.md)), from the job runner in `backend/internal/jobs`.
 - Each call creates the daily partitions (UTC dates) from 7 days back to 2 days ahead. If maintenance hasn't run for more than 2 days, events for a day without a partition land in DEFAULT, and they move into that day's partition when it is created.
 - A day's partition is dropped once the whole day is more than 7 days old, so an event is kept for between 7 and 8 days. Expired rows in DEFAULT are deleted.
-- A failed call is logged and retried an hour later. Partitions exist 2 days ahead, so new events keep landing in their own partition for many failed runs in a row.
+- A failed call is logged and retried an hour later. Partitions exist 2 days ahead, so new events keep landing in their own partition through at least 2 days of failed runs.
 
 ### Search
 
 `GET /api/v1/events` runs a single query, built at request time in `backend/internal/store/search.go` ([ADR 0008](adr/0008-sqlc-queries.md)). Every filter value is a bind parameter.
-- **Scope:** the policy set decides which tenants the caller may read, and a `tenant` outside them is refused with 403 `tenant_not_permitted`. The query then runs in a transaction whose row-level security context is the caller. A viewer's search is also given their tenant as an explicit filter. That changes nothing about what they can see, but it lets Postgres use the `(tenant_id, ts)` index, which the security policy's OR condition can't.
+- **Scope:** the policy set decides which tenants the caller may read, and a `tenant` outside them is refused with 403 `tenant_not_permitted`. The query then runs in a transaction whose row-level security context is the caller. A viewer's search is also given their tenant as an explicit filter. That changes nothing about what they can see, but it lets Postgres use the `(tenant_id, ts)` index, which it can't do for the security policy's OR condition.
 - **Window:** the time window picks the daily partitions to read. It defaults to the last 24 hours, and reaches an hour into the future, because the normalizer accepts event times up to an hour ahead.
 - **Free text:** `q` matches any string or number value in `raw`, ignoring case. When the text contains nothing JSON would escape, a match against `raw`'s text form discards most rows first.
 - **Paging:** pages are ordered by `(ts, id)` and resume after the last row of the previous page, so events that arrive in between don't shift them. The cursor also carries the time window and a hash of the other filters, so a cursor reused with different filters is rejected.
@@ -144,7 +144,7 @@ A tenant is one customer's data, such as demoA and demoB in the demo. All tenant
 | `alert_rules` | `tenant_id`, required | the tenant policy |
 | `alerts` | `tenant_id`, required. Its foreign key is the rule's ID and tenant together, so an alert is always in its rule's tenant. | the tenant policy |
 
-There is no API for tenants or users. `loghub seed` creates demoA and demoB, a viewer for each and the admin, and the `seed` service runs it on every `make up`, leaving rows that exist alone.
+There is no API for tenants or users. `loghub seed` creates demoA and demoB, a viewer for each and the admin, and the `seed` service runs it on every `make up`, leaving existing rows alone.
 
 ### Where the tenant comes from
 
@@ -197,7 +197,7 @@ The row-level security context comes from the caller or from the data, never fro
 
 ## Authentication and authorization
 
-[ADR 0009](adr/0009-auth-jwt-rbac.md) has the reasoning. Every request passes through the middleware in `backend/internal/auth` before it is routed, which establishes who is calling:
+[ADR 0009](adr/0009-auth-jwt-rbac.md) has the reasoning. Before a request is routed, the middleware in `backend/internal/auth` establishes who is calling:
 
 | Credential | Caller | Tenant |
 |---|---|---|
@@ -215,7 +215,7 @@ Each handler then asks the enforcer in `backend/internal/authz` whether the call
 | viewer | yes | list, own | read, own tenant | read, own tenant | read, own tenant |
 | collector | yes | no | create, any tenant | no | no |
 
-A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search and the dashboard counts ask which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore still reads nothing it shouldn't. There are two exceptions. Ingest inserts as each record's tenant, so the per-record check is the only check on writes. `tenants` has no row-level security, since it is read before there is a tenant to scope by, so `GET /api/v1/tenants` narrows its list to the policy's answer itself. The list holds only IDs and names.
+A refused anonymous caller gets 401 `authentication_required`, and a refused signed-in one gets 403. Search and the dashboard counts ask which tenants the caller may read, and ingest asks about each record's tenant. The row-level security context comes from the caller, not from a policy answer: a viewer's own tenant, or every tenant for an admin. A policy that is too generous about tenants therefore can't let a caller read rows outside that context. There are two exceptions. Ingest inserts as each record's tenant, so the per-record check is the only check on writes. `tenants` has no row-level security, since it is read before there is a tenant to scope by, so `GET /api/v1/tenants` narrows its list to the policy's answer itself. The list holds only IDs and names.
 
 Sign-in checks an unknown email against a fixed bcrypt hash, so it takes as long as a wrong password, and both are refused with 401 `invalid_credentials`. Tokens can't be revoked before they expire.
 
@@ -251,7 +251,7 @@ Each client address may make 10 sign-in attempts a minute, right or wrong, and a
 | `loghub_db_pool_*` | gauges and counters | none | read from the connection pool at each scrape |
 | `go_*`, `process_*` | client_golang's own | | read from the runtime and `/proc` at each scrape |
 
-- **Labels:** every label has a closed set of values, so no request can add a series. `route` is the ServeMux pattern the request matched, looked up even when authentication refuses it before routing, or `unmatched`. An unmatched request's method is kept only if it is a standard one. `tenant` and `source` come from stored events, whose tenant exists and whose source the normalizer knows, and a rejected record counts only by its code.
+- **Labels:** every label has a closed set of values, so no request can add a series. `route` is the ServeMux pattern the request matched, or `unmatched`, and it is looked up even when authentication refuses the request before routing. An unmatched request's method is kept only if it is a standard one. `tenant` and `source` come from stored events, whose tenant exists and whose source the normalizer knows. A rejected record counts only by its code.
 - **What isn't counted:** a batch the database refuses as a whole counts nothing, since the collector sends it again. A job run stopped by shutdown doesn't count either.
 - **Resets:** the counts live in the backend's memory, so a restart sets them to zero. Prometheus's `rate()` and `increase()` allow for that.
 - **Vector:** `vector_component_received_events_total` by `component_id` shows syslog over UDP and TCP and inbox lines as they arrive, and `vector_buffer_events` shows what is waiting in the disk buffer for the backend.
@@ -262,7 +262,7 @@ Each client address may make 10 sign-in attempts a minute, right or wrong, and a
 
 Caddy ([ADR 0005](adr/0005-caddy-edge.md)) is the only service with HTTP ports published beyond the host itself. Prometheus is published on `127.0.0.1:9090` only. Its configuration, [`frontend/Caddyfile`](../frontend/Caddyfile), is built into its image along with the UI.
 - **Address:** Caddy answers to the one name or address in `SITE_ADDRESS`. `localhost` and private addresses get certificates from Caddy's own CA, and public names get them from Let's Encrypt. A client that connects by IP address sends no server name, so that address's certificate is the default. Any other host gets an empty response, and port 80 only redirects to HTTPS.
-- **Routes:** `/api/*` goes to the backend unchanged, and `/ingest` is rewritten to `/api/v1/ingest`. `/grafana/` goes to Grafana, which answers 502 when the `monitoring` profile isn't running. Everything else is the UI. Files under `/assets/` have a content hash in their names and are cached for a year. Any other path gets `index.html`, which is never cached, so a new build shows on the next load.
+- **Routes:** `/api/*` goes to the backend unchanged, and `/ingest` is rewritten to `/api/v1/ingest`. `/grafana/` goes to Grafana, and Caddy answers 502 when the `monitoring` profile isn't running. Everything else is the UI. Files under `/assets/` have a content hash in their names and are cached for a year. Any other path gets `index.html`, which is never cached, so a new build shows on the next load.
 - **Headers:** every response has `X-Content-Type-Options`, `X-Frame-Options` and `Referrer-Policy`. HSTS is added unless the site is `localhost`, where it would stick to every local port. The UI's pages also get a Content-Security-Policy that allows nothing but files and requests from their own origin: no inline scripts or styles, and no framing. The API reference at `/api/docs` loads Scalar from a CDN and runs an inline script, so it has no such policy.
 - **Privileges:** Caddy runs as an unprivileged user, with only the capability to bind ports 80 and 443. Its certificates and CA are kept in the `caddy_data` volume.
 
