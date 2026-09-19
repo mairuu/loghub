@@ -132,7 +132,7 @@ With a million events spread over 24 hours, 100,000 per tenant, either count tak
 
 ## Tenant model
 
-A tenant is one customer's data, such as demoA and demoB in the demo. All tenants share one database, one set of tables and one set of services. Every row of tenant data carries a `tenant_id`, and PostgreSQL row-level security decides which of those rows a transaction may read or write ([ADR 0003](adr/0003-tenant-isolation-rls.md)).
+A tenant is one customer's data, such as demoA, demoB and demoC in the demo. All tenants share one database, one set of tables and one set of services. Every row of tenant data carries a `tenant_id`, and PostgreSQL row-level security decides which of those rows a transaction may read or write ([ADR 0003](adr/0003-tenant-isolation-rls.md)).
 
 ### What belongs to a tenant
 
@@ -144,7 +144,7 @@ A tenant is one customer's data, such as demoA and demoB in the demo. All tenant
 | `alert_rules` | `tenant_id`, required | the tenant policy |
 | `alerts` | `tenant_id`, required. Its foreign key is the rule's ID and tenant together, so an alert is always in its rule's tenant. | the tenant policy |
 
-There is no API for tenants or users. `loghub seed` creates demoA and demoB, a viewer for each and the admin, and the `seed` service runs it on every `make up`, leaving existing rows alone.
+There is no API for tenants or users. `loghub seed` creates demoA, demoB and demoC, a viewer for each and the admin, and the `seed` service runs it on every `make up`, leaving existing rows alone.
 
 ### Where the tenant comes from
 

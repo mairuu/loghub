@@ -19,6 +19,7 @@ type SeedParams struct {
 var demoTenants = []NewTenantParams{
 	{ID: "demoA", Name: "Demo A"},
 	{ID: "demoB", Name: "Demo B"},
+	{ID: "demoC", Name: "Demo C"}, // for reviewers: neither the simulator nor the acceptance checks write here
 }
 
 // Seed creates the demo tenants and their users in one transaction. It is safe

@@ -31,8 +31,9 @@ make up
 | `admin@loghub.local` | admin | all | `ADMIN_PASSWORD` in `.env` |
 | `viewer@demoa.local` | viewer | demoA | `VIEWER_PASSWORD` in `.env` |
 | `viewer@demob.local` | viewer | demoB | `VIEWER_PASSWORD` in `.env` |
+| `viewer@democ.local` | viewer | demoC | `VIEWER_PASSWORD` in `.env` |
 
-An admin reads every tenant and may send events. A viewer reads only their own tenant.
+An admin reads every tenant and may send events. A viewer reads only their own tenant. The simulator and the acceptance checks write to demoA and demoB only, so demoC holds only what you send it.
 
 Check that it's running:
 

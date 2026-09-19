@@ -40,6 +40,9 @@ grep -E '^(ADMIN|VIEWER)_PASSWORD=' .env
 | `admin@loghub.local` | admin | every tenant | `ADMIN_PASSWORD` |
 | `viewer@demoa.local` | viewer | demoA | `VIEWER_PASSWORD` |
 | `viewer@demob.local` | viewer | demoB | `VIEWER_PASSWORD` |
+| `viewer@democ.local` | viewer | demoC | `VIEWER_PASSWORD` |
+
+demoA and demoB get the simulated traffic and the acceptance checks' events. demoC gets neither, so it holds only what you send it.
 
 [Appliance setup](docs/setup_appliance.md) walks through each feature, with the API calls.
 

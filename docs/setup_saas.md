@@ -74,6 +74,7 @@ Send those four lines privately, never in the repository or an issue. These are 
 | `admin@loghub.local` | admin | all | `ADMIN_PASSWORD` |
 | `viewer@demoa.local` | viewer | demoA | `VIEWER_PASSWORD` |
 | `viewer@demob.local` | viewer | demoB | `VIEWER_PASSWORD` |
+| `viewer@democ.local` | viewer | demoC | `VIEWER_PASSWORD` |
 
 With the `monitoring` profile running, the admin email and `ADMIN_PASSWORD` also sign in to Grafana at `https://loghub.example.com/grafana/`, which shows what the system is doing: events stored per tenant and source, rejections, sign-ins by outcome, alerts, API latency and background jobs.
 
@@ -96,6 +97,14 @@ logger -n loghub.example.com -P 514 -t myapp "user=alice action=deny"           
 samples/post_logs.py --url https://loghub.example.com                                       # samples/json over HTTPS
 samples/post_logs.py --url https://loghub.example.com --file samples/json/m365_audit.json   # one file, as an upload
 ```
+
+demoC is there to try things in. Neither the simulator nor the acceptance checks write to it, so it holds only what reviewers send it. Send events and add alert rules to it as the admin, on the **Upload** and **Alerts** pages, or with the ingest key. Then sign in as `viewer@democ.local` to see it as its viewer does. The JSON samples name demoA or demoB, so re-address them first:
+
+```sh
+jq -c '.tenant = "demoC"' samples/json/*.json | samples/post_logs.py --url https://loghub.example.com -
+```
+
+Syslog can't reach demoC, because every syslog line is stored under `SYSLOG_DEFAULT_TENANT`, which is demoA.
 
 To run every acceptance check at once, from the same clone, use [`tests/acceptance.py`](../tests/README.md). It is also a quick way for the operator to check a new install. It takes one to three minutes, and leaves a few events tagged with the run:
 
